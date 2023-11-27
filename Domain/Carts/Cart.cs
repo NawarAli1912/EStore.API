@@ -1,19 +1,12 @@
 ﻿using Domain.Carts.ValueObjects;
 using Domain.Customers;
+using Domain.Kernal.Models;
 
 namespace Domain.Carts;
 
-public class Cart
+public class Cart : AggregateRoot<Guid>
 {
-    private Cart(Guid id, Guid customerId)
-    {
-        Id = id;
-        CustomerId = customerId;
-    }
-
     private readonly HashSet<CartItem> _cartItems = new();
-
-    public Guid Id { get; set; }
 
     public Guid CustomerId { get; set; }
 
@@ -21,10 +14,13 @@ public class Cart
 
     public static Cart Create(Customer customer)
     {
-        return new(Guid.NewGuid(), customer.Id);
+        return new Cart
+        {
+            CustomerId = customer.Id,
+        };
     }
 
-    private Cart()
+    private Cart() : base(Guid.NewGuid())
     {
     }
 }

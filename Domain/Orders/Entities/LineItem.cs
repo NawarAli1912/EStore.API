@@ -1,18 +1,16 @@
-﻿using Domain.Kernal.ValueObjects;
+﻿using Domain.Kernal.Models;
+using Domain.Kernal.ValueObjects;
 
 namespace Domain.Orders.Entities;
 
-public class LineItem
+public class LineItem : Entity<Guid>
 {
-    private LineItem(Guid id, Guid productId, Guid orderId, Money price)
+    private LineItem(Guid id, Guid productId, Guid orderId, Money price) : base(id)
     {
-        Id = id;
         ProductId = productId;
         OrderId = orderId;
         Price = price;
     }
-
-    public Guid Id { get; private set; }
 
     public Guid ProductId { get; private set; }
 
@@ -25,7 +23,7 @@ public class LineItem
         return new LineItem(id, productId, orderId, price);
     }
 
-    private LineItem()
+    private LineItem() : base(Guid.NewGuid())
     {
     }
 }

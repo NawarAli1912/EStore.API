@@ -1,18 +1,11 @@
-﻿using Domain.Products;
+﻿using Domain.Kernal.Models;
+using Domain.Products;
 
 namespace Domain.Categories;
 
-public class Category
+public class Category : AggregateRoot<Guid>
 {
     private readonly HashSet<Product> _products = new();
-
-    private Category(Guid id, string name)
-    {
-        Id = id;
-        Name = name;
-    }
-
-    public Guid Id { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
 
@@ -20,10 +13,13 @@ public class Category
 
     public static Category Create(string name)
     {
-        return new(Guid.NewGuid(), name);
+        return new Category
+        {
+            Name = name
+        };
     }
 
-    private Category()
+    private Category() : base(Guid.NewGuid())
     {
     }
 }

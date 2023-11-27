@@ -1,14 +1,13 @@
 ﻿using Domain.Categories;
+using Domain.Kernal.Models;
 using Domain.Kernal.ValueObjects;
 using Domain.Products.ValueObjects;
 
 namespace Domain.Products;
 
-public class Product
+public class Product : AggregateRoot<Guid>
 {
     private readonly List<Category> _cateogries = new();
-
-    public Guid Id { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
 
@@ -22,7 +21,7 @@ public class Product
 
     public IReadOnlyList<Category> Categories => _cateogries.ToList();
 
-    private Product()
+    private Product() : base(Guid.NewGuid())
     {
     }
 }

@@ -1,21 +1,13 @@
 ﻿using Domain.Customers;
+using Domain.Kernal.Models;
 using Domain.Orders.Entities;
 using Domain.Products;
 
 namespace Domain.Orders;
 
-public class Order
+public class Order : AggregateRoot<Guid>
 {
-    private Order(Guid id, Guid customerId)
-    {
-        Id = id;
-        CustomerId = customerId;
-        Status = OrderStatus.Pending;
-    }
-
     private readonly HashSet<LineItem> _lineItems = new();
-
-    public Guid Id { get; private set; }
 
     public Guid CustomerId { get; private set; }
 
@@ -25,7 +17,10 @@ public class Order
 
     public static Order Create(Customer customer)
     {
-        return new Order(Guid.NewGuid(), customer.Id);
+        return new Order
+        {
+            CustomerId = customer.Id
+        };
     }
 
     public void Add(Product product)
@@ -35,7 +30,7 @@ public class Order
         _lineItems.Add(lineItem);
     }
 
-    private Order()
+    private Order() : base(Guid.NewGuid())
     {
     }
 }

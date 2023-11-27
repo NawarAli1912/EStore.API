@@ -1,6 +1,8 @@
-﻿namespace Domain.Products.ValueObjects;
+﻿using Domain.Kernal.Models;
 
-public record Sku
+namespace Domain.Products.ValueObjects;
+
+public class Sku : ValueObject
 {
     private const int DefaultLength = 15;
 
@@ -24,5 +26,10 @@ public record Sku
         }
 
         return new Sku(value);
+    }
+
+    public override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
     }
 }
