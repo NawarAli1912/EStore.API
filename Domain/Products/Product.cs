@@ -1,11 +1,12 @@
-﻿using Domain.Kernal.ValueObjects;
+﻿using Domain.Categories;
+using Domain.Kernal.ValueObjects;
 using Domain.Products.ValueObjects;
 
 namespace Domain.Products;
 
 public class Product
 {
-    private readonly List<Guid> _cateogries = new();
+    private readonly List<Category> _cateogries = new();
 
     public Guid Id { get; private set; }
 
@@ -19,5 +20,9 @@ public class Product
 
     public Sku Sku { get; private set; } = default!;
 
-    public IReadOnlyList<Guid> Categories => _cateogries.ToList();
+    public IReadOnlyList<Category> Categories => _cateogries.ToList();
+
+    private Product()
+    {
+    }
 }

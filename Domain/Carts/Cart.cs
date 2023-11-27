@@ -5,7 +5,6 @@ namespace Domain.Carts;
 
 public class Cart
 {
-
     private Cart(Guid id, Guid customerId)
     {
         Id = id;
@@ -23,5 +22,9 @@ public class Cart
     public static Cart Create(Customer customer)
     {
         return new(Guid.NewGuid(), customer.Id);
+    }
+
+    private Cart()
+    {
     }
 }

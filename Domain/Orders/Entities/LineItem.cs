@@ -24,4 +24,8 @@ public class LineItem
     {
         return new LineItem(id, productId, orderId, price);
     }
+
+    private LineItem()
+    {
+    }
 }
