@@ -1,3 +1,4 @@
+using Application;
 using Infrastructure;
 using Presentation;
 
@@ -5,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services
         .AddPresentation()
+        .AddApplication()
         .AddInfrastructure(builder.Configuration);
 
     builder.Services.AddEndpointsApiExplorer();
