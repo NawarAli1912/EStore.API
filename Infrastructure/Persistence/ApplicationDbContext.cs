@@ -3,11 +3,12 @@ using Domain.Categories;
 using Domain.Customers;
 using Domain.Orders;
 using Domain.Products;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext
 {
     public DbSet<Product> Products { get; set; } = default!;
 
