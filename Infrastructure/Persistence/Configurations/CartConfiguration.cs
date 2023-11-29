@@ -8,14 +8,14 @@ internal class CartConfiguration : IEntityTypeConfiguration<Cart>
 {
     public void Configure(EntityTypeBuilder<Cart> builder)
     {
-        builder.ToTable(TablesNames.Cart, Schemas.Carts);
+        builder.ToTable(TablesNames.Cart, Schemas.Customers);
 
         builder
             .HasKey(c => c.Id);
 
         builder.OwnsMany(c => c.CartItems, cartItemsBuilder =>
         {
-            cartItemsBuilder.ToTable(TablesNames.CartItemsTable, Schemas.Carts);
+            cartItemsBuilder.ToTable(TablesNames.CartItemsTable, Schemas.Customers);
         });
     }
 }

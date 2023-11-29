@@ -2,7 +2,7 @@
 
 namespace Domain.Customers.ValueObjects;
 
-public class Address : ValueObject
+public sealed class Address : ValueObject
 {
     public string? Building { get; private set; } = default;
 

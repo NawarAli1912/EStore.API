@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options), IApplicationDbContext
 {
     public DbSet<Product> Products { get; set; } = default!;
 
@@ -17,10 +17,6 @@ public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
     public DbSet<Order> Orders { get; set; } = default!;
 
     public DbSet<Customer> Customers { get; set; } = default!;
-
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

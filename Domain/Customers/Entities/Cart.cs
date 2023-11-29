@@ -3,9 +3,9 @@ using Domain.Kernal.Models;
 
 namespace Domain.Customers.Entities;
 
-public class Cart : Entity<Guid>
+public sealed class Cart : Entity<Guid>
 {
-    private readonly HashSet<CartItem> _cartItems = new();
+    private readonly HashSet<CartItem> _cartItems = [];
 
     public Guid CustomerId { get; set; }
 

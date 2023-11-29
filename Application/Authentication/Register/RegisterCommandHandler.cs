@@ -1,4 +1,5 @@
-﻿using Application.Common.Authentication.Jwt;
+﻿using Application.Authentication.Common;
+using Application.Common.Authentication.Jwt;
 using Application.Common.Data;
 using Domain.Customers;
 using Domain.Customers.ValueObjects;
@@ -9,23 +10,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Authentication.Register;
 
-internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<string>>
+internal class RegisterCommandHandler(
+    UserManager<IdentityUser> userManager,
+    IJwtTokenGenerator jwtTokenGenerator,
+    IApplicationDbContext context) : IRequestHandler<RegisterCommand, Result<AuthenticationResult>>
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly IJwtTokenGenerator _jwtTokenGenerator;
-    private readonly IApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager = userManager;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
+    private readonly IApplicationDbContext _context = context;
 
-    public RegisterCommandHandler(
-        UserManager<IdentityUser> userManager,
-        IJwtTokenGenerator jwtTokenGenerator,
-        IApplicationDbContext context)
-    {
-        _userManager = userManager;
-        _jwtTokenGenerator = jwtTokenGenerator;
-        _context = context;
-    }
-
-    public async Task<Result<string>> Handle(
+    public async Task<Result<AuthenticationResult>> Handle(
         RegisterCommand request,
         CancellationToken cancellationToken)
     {
@@ -63,6 +57,12 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _jwtTokenGenerator.Generate(user.Id, user.UserName, user.Email);
+        var token = _jwtTokenGenerator.Generate(user.Id, user.UserName, user.Email);
+
+        return new AuthenticationResult(
+            userId,
+            user.UserName,
+            user.Email,
+            token);
     }
 }
