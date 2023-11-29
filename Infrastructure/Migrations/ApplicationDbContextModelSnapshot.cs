@@ -34,7 +34,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryProduct");
+                    b.ToTable("CategoryProduct", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
@@ -380,7 +380,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Domain.Carts.ValueObjects.CartItem", "CartItems", b1 =>
+                    b.OwnsMany("Domain.Carts.Cart.CartItems#Domain.Carts.ValueObjects.CartItem", "CartItems", b1 =>
                         {
                             b1.Property<Guid>("CartId")
                                 .HasColumnType("uniqueidentifier");
@@ -422,7 +422,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Domain.Kernal.ValueObjects.Money", "Price", b1 =>
+                    b.OwnsOne("Domain.Orders.Entities.LineItem.Price#Domain.Kernal.ValueObjects.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("LineItemId")
                                 .HasColumnType("uniqueidentifier");
@@ -458,7 +458,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Products.Product", b =>
                 {
-                    b.OwnsOne("Domain.Kernal.ValueObjects.Money", "Price", b1 =>
+                    b.OwnsOne("Domain.Products.Product.Price#Domain.Kernal.ValueObjects.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
                                 .HasColumnType("uniqueidentifier");

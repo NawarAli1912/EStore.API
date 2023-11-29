@@ -1,6 +1,6 @@
-﻿using Domain.Carts;
-using Domain.Categories;
+﻿using Domain.Categories;
 using Domain.Customers;
+using Domain.Customers.Entities;
 using Domain.Orders;
 using Domain.Products;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

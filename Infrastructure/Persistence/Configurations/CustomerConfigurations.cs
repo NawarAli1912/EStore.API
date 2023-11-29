@@ -1,5 +1,5 @@
-﻿using Domain.Carts;
-using Domain.Customers;
+﻿using Domain.Customers;
+using Domain.Customers.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,18 +13,19 @@ internal class CustomerConfigurations : IEntityTypeConfiguration<Customer>
         builder
             .HasKey(c => c.Id);
 
-        builder
-            .HasIndex(c => c.Email)
-            .IsUnique();
+        builder.OwnsOne(b => b.Address, addressBuilder =>
+        {
+            addressBuilder
+                .Property(a => a.City)
+                .IsRequired();
 
-        builder.Property(c => c.Name)
-            .HasMaxLength(256);
+            addressBuilder
+                .Property(a => a.County)
+                .IsRequired();
+        });
 
-        builder.Property(c => c.Email)
-            .HasMaxLength(256);
-
-        builder.HasOne<Cart>()
+        builder.HasOne(c => c.Cart)
             .WithOne()
-            .HasForeignKey<Cart>(c => c.CustomerId);
+            .HasForeignKey<Cart>(cart => cart.CustomerId);
     }
 }
