@@ -1,19 +1,20 @@
 ﻿using Domain.Customers;
 using Domain.Kernal.Models;
 using Domain.Orders.Entities;
+using Domain.Orders.Enums;
 using Domain.Products;
 
 namespace Domain.Orders;
 
-public class Order : AggregateRoot<Guid>
+public sealed class Order : AggregateRoot<Guid>
 {
-    private readonly HashSet<LineItem> _lineItems = new();
+    private readonly HashSet<LineItem> _lineItems = [];
 
     public Guid CustomerId { get; private set; }
 
     public OrderStatus Status { get; private set; }
 
-    public IReadOnlyList<LineItem> LineItems => _lineItems.ToList();
+    public IReadOnlySet<LineItem> LineItems => _lineItems.ToHashSet();
 
     public static Order Create(Customer customer)
     {

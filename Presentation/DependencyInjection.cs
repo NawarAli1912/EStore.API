@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Presentation.Common.Errors;
+using Presentation.Common.Mapping;
 
 namespace Presentation;
 
@@ -9,6 +10,7 @@ public static class DependencyInjection
     {
         services.AddControllers();
         services.AddSingleton<ProblemDetailsFactory, EStoreProblemDetailsFactory>();
+        services.AddMapping();
 
         return services;
     }

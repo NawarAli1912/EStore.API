@@ -7,7 +7,7 @@ namespace Domain.Products;
 
 public class Product : AggregateRoot<Guid>
 {
-    private readonly List<Category> _cateogries = new();
+    private readonly List<Category> _cateogries = [];
 
     public string Name { get; private set; } = string.Empty;
 

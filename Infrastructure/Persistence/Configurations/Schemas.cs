@@ -8,7 +8,5 @@ public static class Schemas
 
     public const string Products = "Porduct";
 
-    public const string Carts = "Cart";
-
     public const string Customers = "Customer";
 }

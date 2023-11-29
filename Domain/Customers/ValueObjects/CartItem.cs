@@ -2,7 +2,7 @@
 
 namespace Domain.Customers.ValueObjects;
 
-public class CartItem : ValueObject
+public sealed class CartItem : ValueObject
 {
     private CartItem(Guid cartId, Guid productId, int quantity)
     {

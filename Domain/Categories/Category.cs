@@ -3,9 +3,9 @@ using Domain.Products;
 
 namespace Domain.Categories;
 
-public class Category : AggregateRoot<Guid>
+public sealed class Category : AggregateRoot<Guid>
 {
-    private readonly HashSet<Product> _products = new();
+    private readonly HashSet<Product> _products = [];
 
     public string Name { get; private set; } = string.Empty;
 

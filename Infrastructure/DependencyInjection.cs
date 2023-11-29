@@ -1,9 +1,8 @@
 ﻿using Application.Common.Authentication.Jwt;
-using Domain.Repositories;
+using Application.Common.Data;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.Models;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +18,9 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        services.AddScoped<IApplicationDbContext>(sp =>
+            sp.GetRequiredService<ApplicationDbContext>());
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
@@ -53,14 +55,12 @@ public static class DependencyInjection
                 ValidateAudience = true,
                 RequireExpirationTime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings.Issuer,
-                ValidAudience = jwtSettings.Audience,
+                ValidIssuer = jwtSettings!.Issuer,
+                ValidAudience = jwtSettings!.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(jwtSettings.Secret))
+                    Encoding.UTF8.GetBytes(jwtSettings!.Secret))
             };
         });
-
-        services.AddScoped<ICustomersRepository, CustomersRepository>();
 
         return services;
     }

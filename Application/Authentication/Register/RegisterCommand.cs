@@ -1,7 +1,8 @@
-﻿using Domain.Kernal;
+﻿using Application.Authentication.Common;
+using Domain.Kernal;
 using MediatR;
 
-namespace Application.Authentication.Commands;
+namespace Application.Authentication.Register;
 
 public record RegisterCommand(
     string UserName,
@@ -11,4 +12,4 @@ public record RegisterCommand(
     string? Builing,
     string? City,
     string? Country,
-    string? PostalCode) : IRequest<Result<string>>;
+    string? PostalCode) : IRequest<Result<AuthenticationResult>>;

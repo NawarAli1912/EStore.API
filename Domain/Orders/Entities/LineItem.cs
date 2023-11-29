@@ -3,7 +3,7 @@ using Domain.Kernal.ValueObjects;
 
 namespace Domain.Orders.Entities;
 
-public class LineItem : Entity<Guid>
+public sealed class LineItem : Entity<Guid>
 {
     private LineItem(Guid id, Guid productId, Guid orderId, Money price) : base(id)
     {

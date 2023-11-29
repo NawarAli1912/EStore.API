@@ -2,7 +2,7 @@
 
 namespace Domain.Products.ValueObjects;
 
-public class Sku : ValueObject
+public sealed class Sku : ValueObject
 {
     private const int DefaultLength = 15;
 
