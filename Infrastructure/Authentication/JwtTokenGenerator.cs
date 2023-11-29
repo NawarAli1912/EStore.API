@@ -1,5 +1,6 @@
 ﻿using Application.Common.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,15 +12,14 @@ internal class JwtTokenGenerator : IJwtTokenGenerator
 {
     private readonly JwtSettings _jwtSettings;
 
-    public JwtTokenGenerator(JwtSettings jwtSettings)
+    public JwtTokenGenerator(IOptions<JwtSettings> jwtSettings)
     {
-        _jwtSettings = jwtSettings;
+        _jwtSettings = jwtSettings.Value;
     }
 
     public string Generate(
         string userId,
-        string firstName,
-        string lastName,
+        string userName,
         string email)
     {
         var signingCredentials = new SigningCredentials(
@@ -31,8 +31,7 @@ internal class JwtTokenGenerator : IJwtTokenGenerator
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.GivenName, firstName),
-            new Claim(JwtRegisteredClaimNames.FamilyName, lastName),
+            new Claim(JwtRegisteredClaimNames.GivenName, userName),
             new Claim(JwtRegisteredClaimNames.Email, email)
         };
 

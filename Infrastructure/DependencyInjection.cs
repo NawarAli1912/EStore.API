@@ -1,4 +1,6 @@
-﻿using Infrastructure.Authentication.Models;
+﻿using Application.Common.Authentication.Jwt;
+using Infrastructure.Authentication;
+using Infrastructure.Authentication.Models;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +16,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
 
@@ -25,6 +29,9 @@ public static class DependencyInjection
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
             options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireDigit = true;
             options.User.RequireUniqueEmail = true;
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()

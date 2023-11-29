@@ -2,5 +2,5 @@
 
 public interface IJwtTokenGenerator
 {
-    string Generate(string userId, string firstName, string lastName, string email);
+    string Generate(string userId, string userName, string email);
 }
