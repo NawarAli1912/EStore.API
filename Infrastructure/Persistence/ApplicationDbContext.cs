@@ -1,6 +1,6 @@
-﻿using Domain.Categories;
+﻿using Application.Common.Data;
+using Domain.Categories;
 using Domain.Customers;
-using Domain.Customers.Entities;
 using Domain.Orders;
 using Domain.Products;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
 {
     public DbSet<Product> Products { get; set; } = default!;
 
@@ -17,8 +17,6 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Order> Orders { get; set; } = default!;
 
     public DbSet<Customer> Customers { get; set; } = default!;
-
-    public DbSet<Cart> Carts { get; set; } = default!;
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

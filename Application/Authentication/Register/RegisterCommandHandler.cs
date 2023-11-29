@@ -1,28 +1,28 @@
 ﻿using Application.Common.Authentication.Jwt;
+using Application.Common.Data;
 using Domain.Customers;
 using Domain.Customers.ValueObjects;
 using Domain.Errors.Customers;
 using Domain.Kernal;
-using Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Application.Authentication.Commands;
+namespace Application.Authentication.Register;
 
 internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<string>>
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
-    private readonly ICustomersRepository _customersRepository;
+    private readonly IApplicationDbContext _context;
 
     public RegisterCommandHandler(
         UserManager<IdentityUser> userManager,
         IJwtTokenGenerator jwtTokenGenerator,
-        ICustomersRepository customersRepository)
+        IApplicationDbContext context)
     {
         _userManager = userManager;
         _jwtTokenGenerator = jwtTokenGenerator;
-        _customersRepository = customersRepository;
+        _context = context;
     }
 
     public async Task<Result<string>> Handle(
@@ -59,7 +59,10 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<
 
         var customer = Customer.Create(userId, address);
 
-        await _customersRepository.Create(customer);
+        await _context.Customers.AddAsync(customer, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
         return _jwtTokenGenerator.Generate(user.Id, user.UserName, user.Email);
     }
 }

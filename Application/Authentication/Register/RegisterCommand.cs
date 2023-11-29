@@ -1,7 +1,7 @@
 ﻿using Domain.Kernal;
 using MediatR;
 
-namespace Application.Authentication.Commands;
+namespace Application.Authentication.Register;
 
 public record RegisterCommand(
     string UserName,
