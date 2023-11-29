@@ -60,7 +60,7 @@ internal class RegisterCommandHandler(
         var token = _jwtTokenGenerator.Generate(user.Id, user.UserName, user.Email);
 
         return new AuthenticationResult(
-            userId,
+            userId.ToString(),
             user.UserName,
             user.Email,
             token);

@@ -6,6 +6,7 @@ using Presentation.Common.Http;
 namespace Presentation.Controllers.Base;
 
 [ApiController]
+[Route("api")]
 public class ApiController : ControllerBase
 {
     protected IActionResult Problem(List<Error> errors)
