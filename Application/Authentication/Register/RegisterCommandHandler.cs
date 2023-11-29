@@ -29,7 +29,7 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<
         RegisterCommand request,
         CancellationToken cancellationToken)
     {
-        if (_userManager.FindByEmailAsync(request.Email) is not null)
+        if (await _userManager.FindByEmailAsync(request.Email) is not null)
         {
             return Errors.Customers.DuplicateEmail;
         }
