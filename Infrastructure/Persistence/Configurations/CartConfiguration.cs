@@ -1,4 +1,4 @@
-﻿using Domain.Carts;
+﻿using Domain.Customers.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,6 +1,6 @@
 ﻿using Domain.Kernal.Models;
 
-namespace Domain.Carts.ValueObjects;
+namespace Domain.Customers.ValueObjects;
 
 public class CartItem : ValueObject
 {

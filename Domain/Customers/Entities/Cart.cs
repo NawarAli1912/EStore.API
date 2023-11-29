@@ -1,16 +1,15 @@
-﻿using Domain.Carts.ValueObjects;
-using Domain.Customers;
+﻿using Domain.Customers.ValueObjects;
 using Domain.Kernal.Models;
 
-namespace Domain.Carts;
+namespace Domain.Customers.Entities;
 
-public class Cart : AggregateRoot<Guid>
+public class Cart : Entity<Guid>
 {
     private readonly HashSet<CartItem> _cartItems = new();
 
     public Guid CustomerId { get; set; }
 
-    public IReadOnlyList<CartItem> CartItems => _cartItems.ToList();
+    public IReadOnlySet<CartItem> CartItems => _cartItems.ToHashSet();
 
     public static Cart Create(Customer customer)
     {

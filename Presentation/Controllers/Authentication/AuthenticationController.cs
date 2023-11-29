@@ -19,7 +19,15 @@ public class AuthenticationController : ApiController
     [HttpPost("register")]
     public async Task<IActionResult> Create(RegisterRequest request)
     {
-        var result = await _sender.Send(new RegisterCommand(request.UserName, request.Email, request.Password));
+        var result = await _sender.Send(new RegisterCommand(
+            request.UserName,
+            request.Email,
+            request.Password,
+            request.Street,
+            request.Building,
+            request.City,
+            request.County,
+            request.PostalCode));
 
         return result.Match(
             value => Ok(value),

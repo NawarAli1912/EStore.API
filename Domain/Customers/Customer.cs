@@ -1,14 +1,29 @@
-﻿using Domain.Kernal.Models;
+﻿using Domain.Customers.Entities;
+using Domain.Customers.ValueObjects;
+using Domain.Kernal.Models;
 
 namespace Domain.Customers;
 
-public class Customer : AggregateRoot<Guid>
+public sealed class Customer : AggregateRoot<Guid>
 {
-    public string Name { get; private set; } = string.Empty;
+    public Cart Cart { get; private set; } = default!;
 
-    public string Email { get; private set; } = string.Empty;
+    public Address? Address { get; private set; } = default!;
 
-    private Customer() : base(Guid.NewGuid())
+    private Customer(Guid id) : base(id)
     {
+    }
+
+    public static Customer Create(Guid id, Address? address = null)
+    {
+        var customer = new Customer(id)
+        {
+            Address = address
+        };
+
+        var cart = Cart.Create(customer);
+        customer.Cart = cart;
+
+        return customer;
     }
 }
