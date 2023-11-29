@@ -9,7 +9,7 @@ public class Cart : Entity<Guid>
 
     public Guid CustomerId { get; set; }
 
-    public IReadOnlyList<CartItem> CartItems => _cartItems.ToList();
+    public IReadOnlySet<CartItem> CartItems => _cartItems.ToHashSet();
 
     public static Cart Create(Customer customer)
     {

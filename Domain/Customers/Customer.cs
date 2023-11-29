@@ -8,13 +8,13 @@ public sealed class Customer : AggregateRoot<Guid>
 {
     public Cart Cart { get; private set; } = default!;
 
-    public Address Address { get; private set; } = default!;
+    public Address? Address { get; private set; } = default!;
 
     private Customer(Guid id) : base(id)
     {
     }
 
-    public static Customer Create(Guid id, Address address)
+    public static Customer Create(Guid id, Address? address = null)
     {
         var customer = new Customer(id)
         {

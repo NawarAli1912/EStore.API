@@ -1,7 +1,9 @@
 ﻿using Application.Common.Authentication.Jwt;
+using Domain.Repositories;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.Models;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +33,8 @@ public static class DependencyInjection
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = false;
             options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireDigit = true;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireDigit = false;
             options.User.RequireUniqueEmail = true;
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -56,6 +59,8 @@ public static class DependencyInjection
                     Encoding.UTF8.GetBytes(jwtSettings.Secret))
             };
         });
+
+        services.AddScoped<ICustomersRepository, CustomersRepository>();
 
         return services;
     }

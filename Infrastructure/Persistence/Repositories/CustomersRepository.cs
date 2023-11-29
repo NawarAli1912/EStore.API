@@ -17,6 +17,8 @@ internal class CustomersRepository : ICustomersRepository
         await _context
             .Customers
             .AddAsync(customer);
+
+        await _context.SaveChangesAsync();
     }
 
 

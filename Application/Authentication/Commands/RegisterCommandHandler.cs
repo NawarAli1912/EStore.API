@@ -1,4 +1,7 @@
 ﻿using Application.Common.Authentication.Jwt;
+using Domain.Customers;
+using Domain.Customers.ValueObjects;
+using Domain.Errors.Customers;
 using Domain.Kernal;
 using Domain.Repositories;
 using MediatR;
@@ -26,7 +29,12 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<
         RegisterCommand request,
         CancellationToken cancellationToken)
     {
+        if (_userManager.FindByEmailAsync(request.Email) is not null)
+        {
+            return Errors.Customers.DuplicateEmail;
+        }
         var userId = Guid.NewGuid();
+
         var user = new IdentityUser
         {
             Id = userId.ToString(),
@@ -34,8 +42,24 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<
             Email = request.Email,
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
 
+        var userCreatedResult = await _userManager.CreateAsync(user, request.Password);
+
+        if (!userCreatedResult.Succeeded)
+        {
+            return Error.Unexpected(code: userCreatedResult.Errors.First().Code);
+        }
+
+        var address = Address.Create(
+            request.City,
+            request.Country,
+            request.PostalCode,
+            request.Builing,
+            request.Street);
+
+        var customer = Customer.Create(userId, address);
+
+        await _customersRepository.Create(customer);
         return _jwtTokenGenerator.Generate(user.Id, user.UserName, user.Email);
     }
 }
