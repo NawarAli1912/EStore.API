@@ -3,7 +3,7 @@ using Application.Common.Authentication.Jwt;
 using Application.Common.Data;
 using Domain.Customers;
 using Domain.Customers.ValueObjects;
-using Domain.Errors.Customers;
+using Domain.DomainErrors.Customers;
 using Domain.Kernal;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

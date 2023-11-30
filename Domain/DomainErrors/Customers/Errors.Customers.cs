@@ -1,6 +1,7 @@
 ﻿using Domain.Kernal;
 
-namespace Domain.Errors.Customers;
+namespace Domain.DomainErrors.Customers;
+
 public static partial class Errors
 {
     public static class Customers

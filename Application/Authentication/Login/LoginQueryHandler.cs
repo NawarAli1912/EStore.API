@@ -1,6 +1,6 @@
 ﻿using Application.Authentication.Common;
 using Application.Common.Authentication.Jwt;
-using Domain.Errors.Authentication;
+using Domain.DomainErrors.Authentication;
 using Domain.Kernal;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

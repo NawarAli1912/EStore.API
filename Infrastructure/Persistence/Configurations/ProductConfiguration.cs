@@ -16,8 +16,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(p => p.Sku)
             .HasConversion(
-                sku => sku.Value,
-                value => Sku.Create(value)!);
+                sku => (sku == null) ? null : sku.Value,
+                value => Sku.Create(value).Value)
+            .IsRequired(false);
 
         builder.OwnsOne(p => p.Price, priceBuilder =>
         {
