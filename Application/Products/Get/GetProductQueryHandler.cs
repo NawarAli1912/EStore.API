@@ -18,12 +18,6 @@ internal sealed class GetProductQueryHandler(IApplicationDbContext context) : IR
         {
             return Errors.Product.NotFound;
         }
-
-        var categories = product
-            .Categories
-            .Select(c => new CategoryResult(c.Id.ToString(), c.Name))
-            .ToList();
-
         return product;
     }
 }

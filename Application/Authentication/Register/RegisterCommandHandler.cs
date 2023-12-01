@@ -1,4 +1,5 @@
 ﻿using Application.Authentication.Common;
+using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Data;
 using Domain.Customers;
@@ -27,22 +28,29 @@ internal class RegisterCommandHandler(
         {
             return Errors.Customers.DuplicateEmail;
         }
-        var userId = Guid.NewGuid();
 
+        var userId = Guid.NewGuid();
         var user = new IdentityUser
         {
             Id = userId.ToString(),
             UserName = request.UserName,
             Email = request.Email,
         };
-
-
         var userCreatedResult = await _userManager.CreateAsync(user, request.Password);
 
         if (!userCreatedResult.Succeeded)
         {
             return Error.Unexpected(code: userCreatedResult.Errors.First().Code);
         }
+
+        var roles = new List<string>
+        {
+            Roles.Customer
+        };
+
+        await _userManager.AddToRolesAsync(user, roles);
+
+        var token = _jwtTokenGenerator.Generate(user, roles);
 
         var address = Address.Create(
             request.City,
@@ -52,12 +60,8 @@ internal class RegisterCommandHandler(
             request.Street);
 
         var customer = Customer.Create(userId, address);
-
         await _context.Customers.AddAsync(customer, cancellationToken);
-
         await _context.SaveChangesAsync(cancellationToken);
-
-        var token = _jwtTokenGenerator.Generate(user.Id, user.UserName, user.Email);
 
         return new AuthenticationResult(
             userId.ToString(),

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,22 +19,26 @@ internal class JwtTokenGenerator : IJwtTokenGenerator
     }
 
     public string Generate(
-        string userId,
-        string userName,
-        string email)
+        IdentityUser user,
+        IList<string> roles)
     {
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
             SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.GivenName, userName),
-            new Claim(JwtRegisteredClaimNames.Email, email)
+            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.GivenName, user.UserName ?? string.Empty),
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new(ClaimTypes.Role, role));
+        }
 
         var securityToken = new JwtSecurityToken(
            issuer: _jwtSettings.Issuer,

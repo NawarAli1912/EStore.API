@@ -15,6 +15,8 @@ public sealed class Sku : ValueObject
 
     public string Value { get; init; }
 
+    public static explicit operator string(Sku? sku) => sku is null ? "" : sku.Value;
+
     public static Result<Sku?> Create(string? value)
     {
         if (string.IsNullOrEmpty(value))

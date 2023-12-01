@@ -1,8 +1,11 @@
-﻿using Application.Products.Create;
+﻿using Application.Common.Authentication;
+using Application.Products.Create;
 using Application.Products.Get;
+using Application.Products.List;
 using Contracts.Products;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Base;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
@@ -18,6 +21,7 @@ public class ProductsController(
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
         var result = await _sender.Send(_mapper.Map<CreateProductCommand>(request));
@@ -38,5 +42,29 @@ public class ProductsController(
         return product.Match(
             Ok,
             Problem);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> List(
+        string? searchTerm,
+        string? sortColumn,
+        string? sortOrder,
+        int page = 1,
+        int pageSize = 10)
+    {
+        var products = await _sender.Send(new ListProductsQuery(
+            searchTerm,
+            sortColumn,
+            sortOrder,
+            page,
+            pageSize));
+
+        if (User.IsInRole(Roles.Admin))
+        {
+            // extra info
+            return Ok(products);
+        }
+
+        return Ok(products);
     }
 }
