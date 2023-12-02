@@ -20,7 +20,16 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                 value => Sku.Create(value).Value)
             .IsRequired(false);
 
-        builder.OwnsOne(p => p.Price, priceBuilder =>
+        builder.ComplexProperty(p => p.CustomerPrice, priceBuilder =>
+        {
+            priceBuilder.Property(m => m.Currency)
+                        .HasMaxLength(3);
+
+            priceBuilder.Property(m => m.Value)
+                        .HasColumnType("decimal(12,2)");
+        });
+
+        builder.ComplexProperty(p => p.PurchasePrice, priceBuilder =>
         {
             priceBuilder.Property(m => m.Currency)
                         .HasMaxLength(3);

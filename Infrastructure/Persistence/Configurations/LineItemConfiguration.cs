@@ -18,7 +18,7 @@ internal class LineItemConfiguration : IEntityTypeConfiguration<LineItem>
             .HasForeignKey(
                 li => li.ProductId);
 
-        builder.OwnsOne(li => li.Price, priceConfiguration =>
+        builder.ComplexProperty(li => li.Price, priceConfiguration =>
         {
             priceConfiguration.Property(p => p.Currency)
                     .HasMaxLength(3);

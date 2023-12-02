@@ -1,4 +1,5 @@
 ﻿using Contracts.Products;
+using Domain.Categories;
 using Domain.Products;
 using Mapster;
 
@@ -9,8 +10,21 @@ public class ProductsMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<Product, CreateProductResponse>()
-            .Map(dest => dest.Price, src => src.Price.Value)
-            .Map(dest => dest.Currency, src => src.Price.Currency.ToString())
+            .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
+            .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString())
             .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
+
+
+        config.NewConfig<Product, ProductAdminResponse>()
+            .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
+            .Map(dest => dest.PurchasePrice, src => src.PurchasePrice.Value)
+            .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString())
+            .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
+
+        config.NewConfig<Product, ProductResponse>()
+            .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
+            .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString());
+
+        config.NewConfig<Category, CategoryResponse>();
     }
 }

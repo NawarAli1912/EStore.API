@@ -16,6 +16,8 @@ public class Money : ValueObject, IComparable, IComparable<Money>
 
     public Currency Currency { get; private set; }
 
+    public static explicit operator decimal?(Money money) { return money.Value; }
+
     public static Result<Money> Create(decimal value, string currency)
     {
         if (!Enum.TryParse<Currency>(currency.ToUpper(), out var parsedCurrency))

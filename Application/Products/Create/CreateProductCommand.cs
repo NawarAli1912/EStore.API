@@ -8,6 +8,7 @@ public record CreateProductCommand(
     string Name,
     string Description,
     int Quantity,
-    decimal Price,
+    decimal CustomerPrice,
+    decimal PurchasePrice,
     string Currency,
     string? Sku) : IRequest<Result<Product>>;

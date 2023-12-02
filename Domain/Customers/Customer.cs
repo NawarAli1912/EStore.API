@@ -8,7 +8,7 @@ public sealed class Customer : AggregateRoot<Guid>
 {
     public Cart Cart { get; private set; } = default!;
 
-    public Address? Address { get; private set; } = default!;
+    public Address Address { get; private set; } = default!;
 
     private Customer(Guid id) : base(id)
     {

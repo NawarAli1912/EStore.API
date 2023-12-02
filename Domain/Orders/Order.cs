@@ -26,7 +26,7 @@ public sealed class Order : AggregateRoot<Guid>
 
     public void Add(Product product)
     {
-        var lineItem = LineItem.Create(Guid.NewGuid(), product.Id, Id, product.Price);
+        var lineItem = LineItem.Create(Guid.NewGuid(), product.Id, Id, product.CustomerPrice);
 
         _lineItems.Add(lineItem);
     }

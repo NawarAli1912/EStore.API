@@ -1,5 +1,6 @@
 ﻿using Application.Common.Authentication;
 using Application.Products.Create;
+using Application.Products.Filters;
 using Application.Products.Get;
 using Application.Products.List;
 using Contracts.Products;
@@ -7,6 +8,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Common.Models.Paging;
 using Presentation.Controllers.Base;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -46,25 +48,40 @@ public class ProductsController(
 
     [HttpGet]
     public async Task<IActionResult> List(
-        string? searchTerm,
+        [FromQuery] ListProductFilter filter,
         string? sortColumn,
         string? sortOrder,
         int page = 1,
         int pageSize = 10)
     {
-        var products = await _sender.Send(new ListProductsQuery(
-            searchTerm,
+        var productResult = await _sender.Send(new ListProductsQuery(
+            filter,
             sortColumn,
             sortOrder,
             page,
             pageSize));
 
-        if (User.IsInRole(Roles.Admin))
+        if (productResult.IsError)
         {
-            // extra info
-            return Ok(products);
+            return Problem(productResult.Errors);
         }
 
-        return Ok(products);
+        var result = productResult.Value;
+
+        if (User.IsInRole(Roles.Admin))
+        {
+            return Ok(PagedList<ProductAdminResponse>.Create(
+                            _mapper.Map<List<ProductAdminResponse>>(result.Products),
+                            page,
+                            pageSize,
+                            result.TotalCount));
+        }
+
+
+        return Ok(PagedList<ProductResponse>.Create(
+                    _mapper.Map<List<ProductResponse>>(result.Products),
+                    page,
+                    pageSize,
+                    result.TotalCount));
     }
 }

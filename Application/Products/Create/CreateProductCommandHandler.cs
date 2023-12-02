@@ -16,7 +16,8 @@ public sealed class CreateProductCommandHandler(IApplicationDbContext context) :
             request.Name,
             request.Description,
             request.Quantity,
-            request.Price,
+            request.CustomerPrice,
+            request.PurchasePrice,
             request.Currency,
             request.Sku);
 

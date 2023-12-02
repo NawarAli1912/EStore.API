@@ -60,6 +60,7 @@ internal class RegisterCommandHandler(
             request.Street);
 
         var customer = Customer.Create(userId, address);
+
         await _context.Customers.AddAsync(customer, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 

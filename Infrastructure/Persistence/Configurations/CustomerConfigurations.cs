@@ -13,16 +13,7 @@ internal class CustomerConfigurations : IEntityTypeConfiguration<Customer>
         builder
             .HasKey(c => c.Id);
 
-        builder.OwnsOne(b => b.Address, addressBuilder =>
-        {
-            addressBuilder
-                .Property(a => a.City)
-                .IsRequired();
-
-            addressBuilder
-                .Property(a => a.County)
-                .IsRequired();
-        });
+        builder.OwnsOne(b => b.Address);
 
         builder.HasOne(c => c.Cart)
             .WithOne()

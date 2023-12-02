@@ -5,7 +5,7 @@ public record CreateProductResponse(
     string Name,
     string Description,
     int Quantity,
-    decimal Price,
+    decimal CustomerPrice,
     string Currency,
     string Sku);
 

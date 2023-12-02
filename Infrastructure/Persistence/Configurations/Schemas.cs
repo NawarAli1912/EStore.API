@@ -6,7 +6,7 @@ public static class Schemas
 
     public const string Categories = "Category";
 
-    public const string Products = "Porduct";
+    public const string Products = "Product";
 
     public const string Customers = "Customer";
 }

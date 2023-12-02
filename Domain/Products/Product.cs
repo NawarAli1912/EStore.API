@@ -16,7 +16,9 @@ public class Product : AggregateRoot<Guid>
 
     public int Quantity { get; private set; }
 
-    public Money Price { get; private set; } = default!;
+    public Money CustomerPrice { get; private set; } = default!;
+
+    public Money PurchasePrice { get; private set; } = default!;
 
     public Sku? Sku { get; private set; } = default;
 
@@ -30,15 +32,22 @@ public class Product : AggregateRoot<Guid>
         string name,
         string description,
         int quantity,
-        decimal price,
+        decimal customerPrice,
+        decimal purchasePrice,
         string currency,
         string? sku)
     {
         List<Error> errors = [];
-        var moneyResult = Money.Create(price, currency);
-        if (moneyResult.IsError)
+        var customerPriceResult = Money.Create(customerPrice, currency);
+        if (customerPriceResult.IsError)
         {
-            errors.AddRange(moneyResult.Errors);
+            errors.AddRange(customerPriceResult.Errors);
+        }
+
+        var purchasePriceResult = Money.Create(purchasePrice, currency);
+        if (purchasePriceResult.IsError)
+        {
+            errors.AddRange(purchasePriceResult.Errors);
         }
 
         var skuResult = Sku.Create(sku);
@@ -57,7 +66,8 @@ public class Product : AggregateRoot<Guid>
             Name = name,
             Description = description,
             Quantity = quantity,
-            Price = moneyResult.Value,
+            CustomerPrice = customerPriceResult.Value,
+            PurchasePrice = purchasePriceResult.Value,
             Sku = skuResult.Value
         };
 

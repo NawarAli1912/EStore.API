@@ -1,18 +1,9 @@
 @host = https://localhost:7253
 @contentType = application/json
 
-POST {{host}}/products
+GET {{host}}/products
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjMTFjMTRjMS1iMDQ1LTRjZWEtYmIzOS03OWVhNmUzYzIxZDMiLCJqdGkiOiIzY2ExMDliYS0wNTI3LTRmYWEtOTgwNy05N2MyODkyOTg0ZmYiLCJnaXZlbl9uYW1lIjoiTmF3YXIiLCJlbWFpbCI6Im5yLmFsaTE5MTJAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3MDEzODc0MjUsImlzcyI6IkVTdG9yZS5BUEkiLCJhdWQiOiJFU3RvcmUuQVBJIn0.M8hDc8_7erpSrtb0XZHrW2u6_XucBNi8-HiUQdEKGEc
-
-{
-  "name": "TestProduct",
-  "description": "TestProduct description",
-  "quantity": 5,
-  "price": 200,
-  "currency": "USD"
-}
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNmM4NTYwMS0xNmFkLTQ5NDAtYmJmOS05Mzk0ZDY5ZWU5YzciLCJqdGkiOiI3NDU4Mjc0NS1lNTIzLTQ5OWUtYTY3Ni1jN2YwYTVmYWQ0MzgiLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVzdG9yZS5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcwMTQ3ODc2OCwiaXNzIjoiRVN0b3JlLkFQSSIsImF1ZCI6IkVTdG9yZS5BUEkifQ.yA2PzVtdWOfhMPJecSUBk8TsA-oFzTHu7kjrZVlwgjY
 
 ###
 
