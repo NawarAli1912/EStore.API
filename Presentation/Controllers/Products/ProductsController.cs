@@ -24,6 +24,7 @@ public class ProductsController(
 
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
+    [Produces(typeof(CreateProductResponse))]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
         var result = await _sender.Send(_mapper.Map<CreateProductCommand>(request));
@@ -37,16 +38,27 @@ public class ProductsController(
     }
 
     [HttpGet("{id}", Name = "Get")]
+
     public async Task<IActionResult> Get(Guid id)
     {
-        var product = await _sender.Send(new GetProductQuery(id));
+        var productResult = await _sender.Send(new GetProductQuery(id));
 
-        return product.Match(
-            Ok,
-            Problem);
+        if (productResult.IsError)
+        {
+            return Problem(productResult.Errors);
+        }
+
+        if (User.IsInRole(Roles.Admin))
+        {
+            return Ok(_mapper.Map<ProductDetailedResponse>(productResult.Value));
+        }
+
+        return Ok(_mapper.Map<ProductResponse>(productResult.Value));
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(ProductDetailedResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromQuery] ListProductFilter filter,
         string? sortColumn,
@@ -70,8 +82,8 @@ public class ProductsController(
 
         if (User.IsInRole(Roles.Admin))
         {
-            return Ok(PagedList<ProductAdminResponse>.Create(
-                            _mapper.Map<List<ProductAdminResponse>>(result.Products),
+            return Ok(PagedList<ProductResponse>.Create(
+                            _mapper.Map<List<ProductResponse>>(result.Products),
                             page,
                             pageSize,
                             result.TotalCount));

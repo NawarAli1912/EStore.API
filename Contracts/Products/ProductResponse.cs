@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Products;
 
-public record ProductAdminResponse(
+public record ProductDetailedResponse(
     Guid Id,
     string Name,
     string Description,

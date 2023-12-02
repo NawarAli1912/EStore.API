@@ -15,7 +15,7 @@ public class ProductsMappingConfig : IRegister
             .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
 
 
-        config.NewConfig<Product, ProductAdminResponse>()
+        config.NewConfig<Product, ProductDetailedResponse>()
             .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
             .Map(dest => dest.PurchasePrice, src => src.PurchasePrice.Value)
             .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString())

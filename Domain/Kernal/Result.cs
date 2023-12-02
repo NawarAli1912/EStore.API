@@ -19,11 +19,11 @@ public readonly record struct Result<T> : IResult
         return errors;
     }
 
-    public List<Error> Errors => IsError ? _errors! : new List<Error> { NoErrors };
+    public List<Error> Errors => IsError ? _errors! : [NoErrors];
 
     private Result(Error error)
     {
-        _errors = new List<Error> { error };
+        _errors = [error];
         IsError = true;
     }
 
@@ -56,7 +56,7 @@ public readonly record struct Result<T> : IResult
 
     public static implicit operator Result<T>(Error[] errors)
     {
-        return new Result<T>(errors.ToList());
+        return new Result<T>([.. errors]);
     }
 
     public TResult Match<TResult>(Func<T, TResult> onValue, Func<List<Error>, TResult> onError)
