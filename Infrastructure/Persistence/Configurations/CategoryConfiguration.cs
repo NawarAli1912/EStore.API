@@ -11,5 +11,10 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.ToTable(TablesNames.Category, Schemas.Categories);
 
         builder.HasKey(c => c.Id);
+
+        builder.HasOne(c => c.ParentCategory)
+            .WithMany(c => c.SubCategories)
+            .HasForeignKey(c => c.ParentCategoryId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

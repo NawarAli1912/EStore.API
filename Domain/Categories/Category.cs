@@ -6,16 +6,23 @@ namespace Domain.Categories;
 public sealed class Category : AggregateRoot<Guid>
 {
     private readonly HashSet<Product> _products = [];
+    private readonly List<Category> _subCategories = [];
 
     public string Name { get; private set; } = string.Empty;
 
-    public IReadOnlyList<Product> Products => _products.ToList();
+    public Guid? ParentCategoryId { get; private set; }
 
-    public static Category Create(string name)
+    public Category ParentCategory { get; private set; }
+
+    public IReadOnlySet<Product> Products => _products.ToHashSet();
+    public IReadOnlyList<Category> SubCategories => _subCategories.ToList();
+
+    public static Category Create(string name, Guid? parentCategoryId = null)
     {
         return new Category
         {
-            Name = name
+            Name = name,
+            ParentCategoryId = parentCategoryId
         };
     }
 
