@@ -7,7 +7,8 @@ using System.Linq.Expressions;
 
 namespace Application.Products.List;
 
-internal sealed class ListProductsQueryHandler(IApplicationDbContext context) : IRequestHandler<ListProductsQuery, Result<ListProductResult>>
+internal sealed class ListProductsQueryHandler(IApplicationDbContext context)
+    : IRequestHandler<ListProductsQuery, Result<ListProductResult>>
 {
     private readonly IApplicationDbContext _context = context;
 

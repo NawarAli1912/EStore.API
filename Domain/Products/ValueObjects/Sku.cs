@@ -1,5 +1,4 @@
-﻿using Domain.DomainErrors.Products;
-using Domain.Kernal;
+﻿using Domain.Kernal;
 using Domain.Kernal.Models;
 
 namespace Domain.Products.ValueObjects;
@@ -19,15 +18,15 @@ public sealed class Sku : ValueObject
 
     public static Result<Sku?> Create(string? value)
     {
-        if (string.IsNullOrEmpty(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             return Result.From<Sku?>(null);
         }
-
-        if (value.Length != DefaultLength)
-        {
-            return Errors.Sku.InvalidLength;
-        }
+        /*
+                if (value.Length != DefaultLength)
+                {
+                    return Errors.Sku.InvalidLength;
+                }*/
 
         return new Sku(value);
     }

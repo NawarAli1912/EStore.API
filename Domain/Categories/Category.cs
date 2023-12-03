@@ -6,27 +6,58 @@ namespace Domain.Categories;
 public sealed class Category : AggregateRoot<Guid>
 {
     private readonly HashSet<Product> _products = [];
-    private readonly List<Category> _subCategories = [];
+    private readonly List<Category> _subCategories;
 
     public string Name { get; private set; } = string.Empty;
 
     public Guid? ParentCategoryId { get; private set; }
 
-    public Category ParentCategory { get; private set; }
+    public Category? ParentCategory { get; private set; }
 
     public IReadOnlySet<Product> Products => _products.ToHashSet();
     public IReadOnlyList<Category> SubCategories => _subCategories.ToList();
 
-    public static Category Create(string name, Guid? parentCategoryId = null)
+    public static Category Create(
+        Guid id,
+        string name,
+        List<Category>? subCategories = null,
+        Guid? parentCategoryId = null)
     {
-        return new Category
-        {
-            Name = name,
-            ParentCategoryId = parentCategoryId
-        };
+        return new Category(
+            id,
+            name,
+            subCategories ?? [],
+            parentCategoryId
+        );
+    }
+
+    public static List<Category> BuildCategoryTree(List<Category> categories, Guid? parentId = null)
+    {
+        var tree = categories
+            .Where(c => c.ParentCategoryId == parentId)
+            .Select(c => new Category(
+                c.Id,
+                c.Name,
+                BuildCategoryTree(categories, c.Id),
+                parentId))
+            .ToList();
+
+        return tree;
+    }
+
+    private Category(
+        Guid id,
+        string name,
+        List<Category> subCategories,
+        Guid? parentCategoryId = null) : base(id)
+    {
+        Name = name;
+        ParentCategoryId = parentCategoryId;
+        _subCategories = subCategories;
     }
 
     private Category() : base(Guid.NewGuid())
     {
+        _subCategories = [];
     }
 }

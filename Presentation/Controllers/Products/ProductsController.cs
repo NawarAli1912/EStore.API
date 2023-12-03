@@ -3,6 +3,7 @@ using Application.Products.Create;
 using Application.Products.Filters;
 using Application.Products.Get;
 using Application.Products.List;
+using Application.Products.ListByCategory;
 using Contracts.Products;
 using MapsterMapper;
 using MediatR;
@@ -38,7 +39,6 @@ public class ProductsController(
     }
 
     [HttpGet("{id}", Name = "Get")]
-
     public async Task<IActionResult> Get(Guid id)
     {
         var productResult = await _sender.Send(new GetProductQuery(id));
@@ -82,8 +82,8 @@ public class ProductsController(
 
         if (User.IsInRole(Roles.Admin))
         {
-            return Ok(PagedList<ProductResponse>.Create(
-                            _mapper.Map<List<ProductResponse>>(result.Products),
+            return Ok(PagedList<ProductDetailedResponse>.Create(
+                            _mapper.Map<List<ProductDetailedResponse>>(result.Products),
                             page,
                             pageSize,
                             result.TotalCount));
@@ -96,4 +96,16 @@ public class ProductsController(
                     pageSize,
                     result.TotalCount));
     }
+
+    [HttpGet("category/{categoryId}")]
+    public async Task<IActionResult> ListByCategory(Guid categoryId)
+    {
+        var productsResult =
+            await _sender.Send(new ListByCategoryQuery(categoryId));
+
+        return productsResult.Match(
+            value => Ok(value.Products),
+            errors => Problem(errors));
+    }
+
 }

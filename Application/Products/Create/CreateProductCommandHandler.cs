@@ -13,6 +13,7 @@ public sealed class CreateProductCommandHandler(IApplicationDbContext context) :
     public async Task<Result<Product>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
         var productResult = Product.Create(
+            Guid.NewGuid(),
             request.Name,
             request.Description,
             request.Quantity,

@@ -24,18 +24,18 @@ public class Product : AggregateRoot<Guid>
 
     public IReadOnlyList<Category> Categories => _cateogries.ToList();
 
-    private Product(Guid id) : base(id)
-    {
-    }
+    private Product(Guid id) : base(id) { }
 
     public static Result<Product> Create(
+        Guid id,
         string name,
         string description,
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
         string currency,
-        string? sku)
+        string? sku = default,
+        IEnumerable<Category>? categories = default)
     {
         List<Error> errors = [];
         var customerPriceResult = Money.Create(customerPrice, currency);
@@ -60,8 +60,7 @@ public class Product : AggregateRoot<Guid>
         {
             return errors;
         }
-
-        return new Product(Guid.NewGuid())
+        var product = new Product(id)
         {
             Name = name,
             Description = description,
@@ -71,5 +70,20 @@ public class Product : AggregateRoot<Guid>
             Sku = skuResult.Value
         };
 
+        foreach (var category in categories ?? Array.Empty<Category>())
+        {
+            product.AssignCategory(category);
+        }
+
+        return product;
+    }
+
+    public void AssignCategory(Category category)
+    {
+        _cateogries.Add(category);
+    }
+
+    private Product() : base(Guid.NewGuid())
+    {
     }
 }
