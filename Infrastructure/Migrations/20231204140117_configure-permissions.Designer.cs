@@ -13,8 +13,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231204102310_configure-permissions-table")]
-    partial class configurepermissionstable
+    [Migration("20231204140117_configure-permissions")]
+    partial class configurepermissions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,18 +55,45 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id");
+
                     b.ToTable("Permission");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = -1,
+                            Name = "None"
+                        },
+                        new
+                        {
+                            Id = -2,
                             Name = "ReadDetails"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = -3,
                             Name = "CreateProduct"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Name = "ConfigureAccessControl"
+                        },
+                        new
+                        {
+                            Id = -5,
+                            Name = "ViewRoles"
+                        },
+                        new
+                        {
+                            Id = -6,
+                            Name = "ManageRoles"
+                        },
+                        new
+                        {
+                            Id = -7,
+                            Name = "All"
                         });
                 });
 
@@ -99,13 +126,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ba6f8f11-763b-4d89-8a45-26f80a4c7db6",
-                            Name = "Admin"
+                            Id = "526d78ee-a36e-4f42-9a03-65d2ef7a12ef",
+                            ConcurrencyStamp = "06e4dcf7-8601-467c-a3aa-3af3070b0275",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "f18a0615-fc79-407b-a2bd-71b918c61b8e",
-                            Name = "Customer"
+                            Id = "ff036f19-a265-4432-85c2-e290d3c48396",
+                            ConcurrencyStamp = "2632e755-d72f-451e-a881-36dba2b8d0eb",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
                         });
                 });
 
@@ -467,40 +498,6 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ParentCategory");
-                });
-
-            modelBuilder.Entity("Domain.Customers.Customer", b =>
-                {
-                    b.OwnsOne("Domain.Customers.ValueObjects.Address", "Address", b1 =>
-                        {
-                            b1.Property<Guid>("CustomerId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Building")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("City")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("County")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("PostalCode")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Street")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("CustomerId");
-
-                            b1.ToTable("Customers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CustomerId");
-                        });
-
-                    b.Navigation("Address")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Customers.Entities.Cart", b =>

@@ -25,7 +25,6 @@ public class ProductsController(
 
     [HttpPost]
     [HasPermission(Permissions.CreateProduct)]
-    [Produces(typeof(CreateProductResponse))]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
         var result = await _sender.Send(_mapper.Map<CreateProductCommand>(request));
@@ -57,8 +56,7 @@ public class ProductsController(
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ProductDetailedResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    [HasPermission(Permissions.CreateProduct)]
     public async Task<IActionResult> List(
         [FromQuery] ListProductFilter filter,
         string? sortColumn,

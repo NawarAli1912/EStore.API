@@ -7,11 +7,36 @@
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class configurepermissionstable : Migration
+    public partial class configurepermissions : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Address_Building",
+                schema: "Customer",
+                table: "Customers");
+
+            migrationBuilder.DropColumn(
+                name: "Address_City",
+                schema: "Customer",
+                table: "Customers");
+
+            migrationBuilder.DropColumn(
+                name: "Address_County",
+                schema: "Customer",
+                table: "Customers");
+
+            migrationBuilder.DropColumn(
+                name: "Address_PostalCode",
+                schema: "Customer",
+                table: "Customers");
+
+            migrationBuilder.DropColumn(
+                name: "Address_Street",
+                schema: "Customer",
+                table: "Customers");
+
             migrationBuilder.RenameTable(
                 name: "Products",
                 schema: "Product",
@@ -89,8 +114,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "ba6f8f11-763b-4d89-8a45-26f80a4c7db6", null, "Admin", null },
-                    { "f18a0615-fc79-407b-a2bd-71b918c61b8e", null, "Customer", null }
+                    { "526d78ee-a36e-4f42-9a03-65d2ef7a12ef", "06e4dcf7-8601-467c-a3aa-3af3070b0275", "Admin", "ADMIN" },
+                    { "ff036f19-a265-4432-85c2-e290d3c48396", "2632e755-d72f-451e-a881-36dba2b8d0eb", "Customer", "CUSTOMER" }
                 });
 
             migrationBuilder.InsertData(
@@ -98,9 +123,19 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1, "ReadDetails" },
-                    { 2, "CreateProduct" }
+                    { -7, "All" },
+                    { -6, "ManageRoles" },
+                    { -5, "ViewRoles" },
+                    { -4, "ConfigureAccessControl" },
+                    { -3, "CreateProduct" },
+                    { -2, "ReadDetails" },
+                    { -1, "None" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Permission_Id",
+                table: "Permission",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PermissionRole_RoleId",
@@ -120,12 +155,12 @@ namespace Infrastructure.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "ba6f8f11-763b-4d89-8a45-26f80a4c7db6");
+                keyValue: "526d78ee-a36e-4f42-9a03-65d2ef7a12ef");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "f18a0615-fc79-407b-a2bd-71b918c61b8e");
+                keyValue: "ff036f19-a265-4432-85c2-e290d3c48396");
 
             migrationBuilder.EnsureSchema(
                 name: "Customer");
@@ -173,6 +208,41 @@ namespace Infrastructure.Migrations
                 name: "CartItems",
                 newName: "CartItems",
                 newSchema: "Customer");
+
+            migrationBuilder.AddColumn<string>(
+                name: "Address_Building",
+                schema: "Customer",
+                table: "Customers",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Address_City",
+                schema: "Customer",
+                table: "Customers",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Address_County",
+                schema: "Customer",
+                table: "Customers",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Address_PostalCode",
+                schema: "Customer",
+                table: "Customers",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Address_Street",
+                schema: "Customer",
+                table: "Customers",
+                type: "nvarchar(max)",
+                nullable: true);
         }
     }
 }

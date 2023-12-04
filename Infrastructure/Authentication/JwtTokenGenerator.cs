@@ -9,24 +9,15 @@ using System.Text;
 
 namespace Infrastructure.Authentication;
 
-internal class JwtTokenGenerator : IJwtTokenGenerator
+internal class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings, IPermissionService permissionService)
+    : IJwtTokenGenerator
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly IPermissionService _permissionService = permissionService;
 
-    public JwtTokenGenerator(IOptions<JwtSettings> jwtSettings)
+    public async Task<string> Generate(
+        IdentityUser user)
     {
-        _jwtSettings = jwtSettings.Value;
-    }
-
-    public string Generate(
-        IdentityUser user,
-        IList<string> roles)
-    {
-        var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
-            SecurityAlgorithms.HmacSha256);
-
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id),
@@ -35,10 +26,13 @@ internal class JwtTokenGenerator : IJwtTokenGenerator
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
         };
 
-        foreach (var role in roles)
-        {
-            claims.Add(new(ClaimTypes.Role, role));
-        }
+        var permission = await _permissionService.GetPermissions(user.Id);
+        claims.Add(new(CustomClaims.Permissions, permission.ToString()));
+
+        var signingCredentials = new SigningCredentials(
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
+            SecurityAlgorithms.HmacSha256);
 
         var securityToken = new JwtSecurityToken(
            issuer: _jwtSettings.Issuer,

@@ -13,6 +13,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.HasData(
                 Enum.GetValues<Roles>()
-                .Select(r => new Role(r.ToString())));
+                .Select(r => new Role(r.ToString())
+                {
+                    NormalizedName = r.ToString().ToUpperInvariant(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                }));
     }
 }

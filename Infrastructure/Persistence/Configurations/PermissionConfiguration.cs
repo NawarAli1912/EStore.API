@@ -9,13 +9,13 @@ internal class PermissionConfiguration : IEntityTypeConfiguration<Permission>
 {
     public void Configure(EntityTypeBuilder<Permission> builder)
     {
-        builder.HasKey(x => x.Id);
+        builder.HasIndex(x => x.Id);
 
         builder.HasData(
             Enum.GetValues<Permissions>()
-            .Select(p => new Permission
+            .Select((p, index) => new Permission
             {
-                Id = (int)p,
+                Id = -(index + 1),
                 Name = p.ToString()
             }));
     }
