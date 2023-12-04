@@ -1,6 +1,7 @@
 ﻿using Application.Common.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,11 +10,11 @@ using System.Text;
 
 namespace Infrastructure.Authentication;
 
-internal class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings, IPermissionService permissionService)
+internal class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings, IServiceProvider serviceProvider)
     : IJwtTokenGenerator
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
-    private readonly IPermissionService _permissionService = permissionService;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public async Task<string> Generate(
         IdentityUser user)
@@ -26,7 +27,9 @@ internal class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings, IPermissionS
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
         };
 
-        var permission = await _permissionService.GetPermissions(user.Id);
+        var permissionsService = _serviceProvider.GetRequiredService<IPermissionService>();
+
+        var permission = await permissionsService.GetPermissions(user.Id);
         claims.Add(new(CustomClaims.Permissions, permission.ToString()));
 
         var signingCredentials = new SigningCredentials(

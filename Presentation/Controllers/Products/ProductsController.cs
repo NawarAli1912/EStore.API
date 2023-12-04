@@ -56,7 +56,7 @@ public class ProductsController(
     }
 
     [HttpGet]
-    [HasPermission(Permissions.CreateProduct)]
+    [HasPermission(Permissions.ReadDetails)]
     public async Task<IActionResult> List(
         [FromQuery] ListProductFilter filter,
         string? sortColumn,

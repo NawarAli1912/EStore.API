@@ -41,27 +41,15 @@ public static class DependencyInjection
     {
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+        services.AddScoped<IApplicationDbContext>(sp =>
+            sp.GetRequiredService<ApplicationDbContext>());
+
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
 
-        services.AddAuthentication(options =>
+        services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-        }).AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                RequireExpirationTime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings!.Issuer,
-                ValidAudience = jwtSettings!.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(jwtSettings!.Secret))
-            };
+            options.UseSqlServer(configuration.GetConnectionString("Default"));
         });
 
         services.AddIdentity<IdentityUser, Role>(options =>
@@ -75,6 +63,26 @@ public static class DependencyInjection
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateActor = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                RequireExpirationTime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings!.Issuer,
+                ValidAudience = jwtSettings!.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtSettings!.Secret))
+            };
+        });
 
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
