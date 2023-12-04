@@ -1,13 +1,13 @@
-﻿using Application.Common.Authentication;
+﻿using Application.Common.Authentication.Models;
 using Application.Products.Create;
 using Application.Products.Filters;
 using Application.Products.Get;
 using Application.Products.List;
 using Application.Products.ListByCategory;
 using Contracts.Products;
+using Infrastructure.Authentication;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Common.Models.Paging;
 using Presentation.Controllers.Base;
@@ -24,8 +24,7 @@ public class ProductsController(
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
-    [Produces(typeof(CreateProductResponse))]
+    [HasPermission(Permissions.CreateProduct)]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
         var result = await _sender.Send(_mapper.Map<CreateProductCommand>(request));
@@ -38,7 +37,7 @@ public class ProductsController(
            Problem);
     }
 
-    [HttpGet("{id}", Name = "Get")]
+    [HttpGet("{id:guid}", Name = "Get")]
     public async Task<IActionResult> Get(Guid id)
     {
         var productResult = await _sender.Send(new GetProductQuery(id));
@@ -48,7 +47,7 @@ public class ProductsController(
             return Problem(productResult.Errors);
         }
 
-        if (User.IsInRole(Roles.Admin))
+        if (User.IsInRole(Roles.Admin.ToString()))
         {
             return Ok(_mapper.Map<ProductDetailedResponse>(productResult.Value));
         }
@@ -57,8 +56,7 @@ public class ProductsController(
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ProductDetailedResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    [HasPermission(Permissions.ReadDetails)]
     public async Task<IActionResult> List(
         [FromQuery] ListProductFilter filter,
         string? sortColumn,
@@ -80,7 +78,7 @@ public class ProductsController(
 
         var result = productResult.Value;
 
-        if (User.IsInRole(Roles.Admin))
+        if (User.IsInRole(Roles.Admin.ToString()))
         {
             return Ok(PagedList<ProductDetailedResponse>.Create(
                             _mapper.Map<List<ProductDetailedResponse>>(result.Products),
@@ -97,7 +95,7 @@ public class ProductsController(
                     result.TotalCount));
     }
 
-    [HttpGet("category/{categoryId}")]
+    [HttpGet("category/{categoryId:guid}")]
     public async Task<IActionResult> ListByCategory(Guid categoryId)
     {
         var productsResult =

@@ -1,9 +1,8 @@
 ﻿using Application.Authentication.Common;
-using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
+using Application.Common.Authentication.Models;
 using Application.Common.Data;
 using Domain.Customers;
-using Domain.Customers.ValueObjects;
 using Domain.DomainErrors.Customers;
 using Domain.Kernal;
 using MediatR;
@@ -36,30 +35,19 @@ internal class RegisterCommandHandler(
             UserName = request.UserName,
             Email = request.Email,
         };
+
         var userCreatedResult = await _userManager.CreateAsync(user, request.Password);
+
+        await _userManager.AddToRoleAsync(user, Roles.Customer.ToString());
 
         if (!userCreatedResult.Succeeded)
         {
             return Error.Unexpected(code: userCreatedResult.Errors.First().Code);
         }
 
-        var roles = new List<string>
-        {
-            Roles.Customer
-        };
+        var token = await _jwtTokenGenerator.Generate(user);
 
-        await _userManager.AddToRolesAsync(user, roles);
-
-        var token = _jwtTokenGenerator.Generate(user, roles);
-
-        var address = Address.Create(
-            request.City,
-            request.Country,
-            request.PostalCode,
-            request.Builing,
-            request.Street);
-
-        var customer = Customer.Create(userId, address);
+        var customer = Customer.Create(userId);
 
         await _context.Customers.AddAsync(customer, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);

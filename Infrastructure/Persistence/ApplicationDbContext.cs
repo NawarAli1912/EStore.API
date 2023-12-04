@@ -1,14 +1,17 @@
 ﻿using Application.Common.Data;
+using Domain.Authentication;
 using Domain.Categories;
 using Domain.Customers;
 using Domain.Orders;
 using Domain.Products;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options), IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
+    IdentityDbContext<IdentityUser, Role, string>(options), IApplicationDbContext
 {
     public DbSet<Product> Products { get; set; } = default!;
 

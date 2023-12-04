@@ -27,9 +27,7 @@ internal class LoginQueryHandler(
             return Errors.Authentication.InvalidCredentials;
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var token = _jwtTokenGenerator.Generate(user, roles);
+        var token = await _jwtTokenGenerator.Generate(user);
 
         return new AuthenticationResult(
             user.Id,

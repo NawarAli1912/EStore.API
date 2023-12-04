@@ -7,9 +7,4 @@ namespace Application.Authentication.Register;
 public record RegisterCommand(
     string UserName,
     string Email,
-    string Password,
-    string? Street,
-    string? Builing,
-    string? City,
-    string? Country,
-    string? PostalCode) : IRequest<Result<AuthenticationResult>>;
+    string Password) : IRequest<Result<AuthenticationResult>>;

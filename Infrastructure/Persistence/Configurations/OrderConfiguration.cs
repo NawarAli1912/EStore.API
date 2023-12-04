@@ -9,7 +9,7 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
     {
-        builder.ToTable(TablesNames.Order, Schemas.Orders);
+        builder.ToTable(TablesNames.Order);
 
         builder
             .HasKey(o => o.Id);

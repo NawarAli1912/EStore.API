@@ -9,7 +9,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable(TablesNames.Product, Schemas.Products);
+        builder.ToTable(TablesNames.Product);
 
         builder
             .HasKey(p => p.Id);
