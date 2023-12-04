@@ -32,11 +32,11 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                                     c.Name AS CategoryName,
                                     c.ParentCategoryId
                                 FROM 
-                                    Product.Products p 
+                                    Products p 
                                 JOIN 
                                     CategoryProduct cp ON p.Id = cp.ProductsId
                                 JOIN
-                                    Category.Categories c ON cp.CategoriesId = c.Id
+                                    Categories c ON cp.CategoriesId = c.Id
                                 WHERE 
                                     cp.CategoriesId IN @CategoryIds",
                                 (productSnap, categorySnap) =>
@@ -85,11 +85,11 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                                 @"SELECT
                                     COUNT(DISTINCT p.Id)
                                 FROM
-                                    Category.Categories c 
+                                    Categories c 
                                 LEFT JOIN 
                                     CategoryProduct cp ON c.Id = cp.CategoriesId
                                 LEFT JOIN 
-                                    Product.Products p ON cp.ProductsId = p.Id
+                                    Products p ON cp.ProductsId = p.Id
                                 WHERE 
                                     c.Id IN @CategoryIds",
                                 new { CategoryIds = categoriesIds.ToArray() });

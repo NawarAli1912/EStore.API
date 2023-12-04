@@ -1,4 +1,4 @@
-﻿using Application.Common.Authentication;
+﻿using Application.Common.Authentication.Models;
 using Application.Products.Create;
 using Application.Products.Filters;
 using Application.Products.Get;
@@ -6,7 +6,6 @@ using Application.Products.List;
 using Application.Products.ListByCategory;
 using Contracts.Products;
 using Infrastructure.Authentication;
-using Infrastructure.Authentication.Models;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ public class ProductsController(
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]
-    [HasPermission(Permission.CreateProduct)]
+    [HasPermission(Permissions.CreateProduct)]
     [Produces(typeof(CreateProductResponse))]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
@@ -49,7 +48,7 @@ public class ProductsController(
             return Problem(productResult.Errors);
         }
 
-        if (User.IsInRole(Roles.Admin))
+        if (User.IsInRole(Roles.Admin.ToString()))
         {
             return Ok(_mapper.Map<ProductDetailedResponse>(productResult.Value));
         }
@@ -81,7 +80,7 @@ public class ProductsController(
 
         var result = productResult.Value;
 
-        if (User.IsInRole(Roles.Admin))
+        if (User.IsInRole(Roles.Admin.ToString()))
         {
             return Ok(PagedList<ProductDetailedResponse>.Create(
                             _mapper.Map<List<ProductDetailedResponse>>(result.Products),

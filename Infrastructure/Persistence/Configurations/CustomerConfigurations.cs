@@ -9,7 +9,7 @@ internal class CustomerConfigurations : IEntityTypeConfiguration<Customer>
 {
     public void Configure(EntityTypeBuilder<Customer> builder)
     {
-        builder.ToTable(TablesNames.Customer, Schemas.Customers);
+        builder.ToTable(TablesNames.Customer);
         builder
             .HasKey(c => c.Id);
 

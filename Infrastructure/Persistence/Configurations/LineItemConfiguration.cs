@@ -9,7 +9,7 @@ internal class LineItemConfiguration : IEntityTypeConfiguration<LineItem>
 {
     public void Configure(EntityTypeBuilder<LineItem> builder)
     {
-        builder.ToTable(TablesNames.LineItem, Schemas.Orders);
+        builder.ToTable(TablesNames.LineItem);
 
         builder.HasKey(li => li.Id);
 

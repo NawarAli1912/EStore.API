@@ -1,6 +1,6 @@
 ﻿using Application.Authentication.Common;
-using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
+using Application.Common.Authentication.Models;
 using Application.Common.Data;
 using Domain.Customers;
 using Domain.Customers.ValueObjects;
@@ -45,7 +45,7 @@ internal class RegisterCommandHandler(
 
         var roles = new List<string>
         {
-            Roles.Customer
+            Roles.Customer.ToString()
         };
 
         await _userManager.AddToRolesAsync(user, roles);

@@ -1,6 +1,7 @@
 ﻿using Application.Common.Authentication.Jwt;
 using Application.Common.Data;
 using Application.Repository;
+using Domain.Authentication;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.Models;
 using Infrastructure.Persistence;
@@ -62,7 +63,7 @@ public static class DependencyInjection
             };
         });
 
-        services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        services.AddIdentity<IdentityUser, Role>(options =>
         {
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = false;
