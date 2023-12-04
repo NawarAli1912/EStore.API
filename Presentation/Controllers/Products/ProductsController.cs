@@ -5,9 +5,10 @@ using Application.Products.Get;
 using Application.Products.List;
 using Application.Products.ListByCategory;
 using Contracts.Products;
+using Infrastructure.Authentication;
+using Infrastructure.Authentication.Models;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Common.Models.Paging;
 using Presentation.Controllers.Base;
@@ -24,7 +25,7 @@ public class ProductsController(
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
+    [HasPermission(Permission.CreateProduct)]
     [Produces(typeof(CreateProductResponse))]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
@@ -38,7 +39,7 @@ public class ProductsController(
            Problem);
     }
 
-    [HttpGet("{id}", Name = "Get")]
+    [HttpGet("{id:guid}", Name = "Get")]
     public async Task<IActionResult> Get(Guid id)
     {
         var productResult = await _sender.Send(new GetProductQuery(id));
@@ -97,7 +98,7 @@ public class ProductsController(
                     result.TotalCount));
     }
 
-    [HttpGet("category/{categoryId}")]
+    [HttpGet("category/{categoryId:guid}")]
     public async Task<IActionResult> ListByCategory(Guid categoryId)
     {
         var productsResult =
