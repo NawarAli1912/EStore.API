@@ -17,4 +17,10 @@ public interface IApplicationDbContext
     DbSet<Customer> Customers { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    Task BeginTransactionAsync();
+
+    Task CommitTransactionAsync();
+
+    Task RollbackTransactionAsync();
 }

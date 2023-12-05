@@ -25,7 +25,7 @@ public class AuthenticationController(
 
         return result.Match(
             value => Ok(_mapper.Map<AuthenticationResponse>(value)),
-            errors => Problem(errors));
+            Problem);
     }
 
     [HttpPost("login")]
@@ -35,6 +35,6 @@ public class AuthenticationController(
 
         return result.Match(
             value => Ok(_mapper.Map<AuthenticationResponse>(value)),
-            errros => Problem(errros));
+            Problem);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Authentication.Models;
 using Domain.Authentication;
+using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Base;
@@ -8,17 +9,13 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 namespace Presentation.Controllers;
 
 
-[Route("roles")]
-public class RolesController : ApiController
+[Route("api/roles")]
+[HasPermission(Permissions.ConfigureAccessControl)]
+public class RolesController(RoleManager<Role> roleManager, UserManager<IdentityUser> userManager)
+    : ApiController
 {
-    private readonly RoleManager<Role> _roleManager;
-    private readonly UserManager<IdentityUser> _userManager;
-
-    public RolesController(RoleManager<Role> roleManager, UserManager<IdentityUser> userManager)
-    {
-        _roleManager = roleManager;
-        _userManager = userManager;
-    }
+    private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly UserManager<IdentityUser> _userManager = userManager;
 
     [HttpPost("create")]
     public async Task<IActionResult> AddRole(string roleName)
@@ -30,7 +27,7 @@ public class RolesController : ApiController
         return result.Succeeded ? Ok(result) : BadRequest(result.Errors);
     }
 
-    [HttpPost("add-user")]
+    [HttpPost("assign-user")]
     public async Task<IActionResult> AssignUserToRole(string userId, string roleName)
     {
         var user = await _userManager.FindByIdAsync(userId);
