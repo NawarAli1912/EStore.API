@@ -5,6 +5,7 @@ using Domain.Authentication;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.Models;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.ModelsSnapshots;
 using Infrastructure.Persistence.Repostiory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Nest;
 using System.Text;
 
 namespace Infrastructure;
@@ -22,6 +24,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuth(configuration);
+
+        services.AddElasticSearch(configuration);
 
         services.AddScoped<IApplicationDbContext>(sp =>
             sp.GetRequiredService<ApplicationDbContext>());
@@ -33,6 +37,20 @@ public static class DependencyInjection
 
         services.AddScoped<IProductsRepository, ProductsRepository>();
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddElasticSearch(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionSettings = new ConnectionSettings(new Uri("http://localhost:9200"))
+        .DefaultIndex("products");
+
+        var client = new ElasticClient(connectionSettings);
+
+        services.AddSingleton<IElasticClient>(client);
+
+        CreateIndex(client, "products");
 
         return services;
     }
@@ -90,4 +108,22 @@ public static class DependencyInjection
 
         return services;
     }
+
+    private static void CreateIndex(ElasticClient client, string indexName)
+    {
+        var existsResponse = client.Indices.Exists(indexName);
+        if (!existsResponse.Exists)
+        {
+            var createIndexResponse = client
+                .Indices
+                .Create(indexName, c => c
+                .Map<ProductRecord>(m => m.AutoMap()));
+
+            if (!createIndexResponse.IsValid)
+            {
+                throw new Exception("Unable to create the index.");
+            }
+        }
+    }
+
 }

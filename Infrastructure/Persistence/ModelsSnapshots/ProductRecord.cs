@@ -10,12 +10,14 @@ public class ProductRecord
 
     public int Quantity { get; set; }
 
+    [Nest.Ignore]
     public int PurchasePrice_Currency { get; set; }
 
     public decimal PurchasePrice_Value { get; set; }
 
     public string Sku { get; set; } = default!;
 
+    [Nest.Ignore]
     public int CustomerPrice_Currency { get; set; }
 
     public decimal CustomerPrice_Value { get; set; }
