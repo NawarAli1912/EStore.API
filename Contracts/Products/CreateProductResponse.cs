@@ -9,3 +9,6 @@ public record CreateProductResponse(
     string Currency,
     string Sku);
 
+public record CreateProductsResponse(
+    List<CreateProductResponse> Items);
+

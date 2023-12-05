@@ -1,4 +1,5 @@
 ﻿using Domain.Categories;
+using Domain.DomainEvents;
 using Domain.Kernal;
 using Domain.Kernal.Models;
 using Domain.Kernal.ValueObjects;
@@ -60,6 +61,7 @@ public class Product : AggregateRoot<Guid>
         {
             return errors;
         }
+
         var product = new Product(id)
         {
             Name = name,
@@ -74,6 +76,8 @@ public class Product : AggregateRoot<Guid>
         {
             product.AssignCategory(category);
         }
+
+        product.RaiseDomainEvent(new ProductCreatedDomainEvent(product));
 
         return product;
     }

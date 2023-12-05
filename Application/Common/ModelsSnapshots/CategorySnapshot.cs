@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Persistence.ModelsSnapshots;
+﻿namespace Application.Common.ModelsSnapshots;
 
-public class CategoryRecord
+public sealed class CategorySnapshot
 {
     public Guid CategoryId { get; set; }
 

@@ -1,5 +1,7 @@
-﻿namespace Domain.Kernal.Models;
+﻿using MediatR;
 
-public interface IDomainEvent
+namespace Domain.Kernal.Models;
+
+public interface IDomainEvent : INotification
 {
 }

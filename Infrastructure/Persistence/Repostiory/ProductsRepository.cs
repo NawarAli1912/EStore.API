@@ -1,10 +1,10 @@
 ﻿using Application.Common.Data;
+using Application.Common.ModelsSnapshots;
 using Application.Repository;
 using Dapper;
 using Domain.Categories;
 using Domain.Kernal;
 using Domain.Products;
-using Infrastructure.Persistence.ModelsSnapshots;
 
 namespace Infrastructure.Persistence.Repostiory;
 
@@ -17,7 +17,7 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
         var productDict = new Dictionary<Guid, Product>();
 
         await using var sqlConnection = _sqlConnectionFactory.Create();
-        var products = await sqlConnection.QueryAsync<ProductRecord, CategoryRecord, Product>(
+        var products = await sqlConnection.QueryAsync<ProductSnapshot, CategorySnapshot, Product>(
                                 @"SELECT 
                                     DISTINCT	                                                         
                                     p.Id,

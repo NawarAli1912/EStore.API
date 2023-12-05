@@ -117,11 +117,11 @@ public static class DependencyInjection
             var createIndexResponse = client
                 .Indices
                 .Create(indexName, c => c
-                .Map<ProductRecord>(m => m.AutoMap()));
+                .Map<ProductSnapshot>(m => m.AutoMap()));
 
             if (!createIndexResponse.IsValid)
             {
-                throw new Exception("Unable to create the index.");
+                //throw new Exception("Unable to create the index.");
             }
         }
     }

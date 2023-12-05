@@ -59,18 +59,14 @@ public class ProductsController(
 
     [HttpPost]
     [HasPermission(Permissions.CreateProduct)]
-    public async Task<IActionResult> Create(CreateProductRequest request)
+    public async Task<IActionResult> Create(CreateProductsRequest request)
     {
-        var result = await _sender.Send(_mapper.Map<CreateProductCommand>(request));
+        var result = await _sender.Send(_mapper.Map<CreateProductsCommand>(request));
 
         return result.Match(
-            value => CreatedAtAction(
-                nameof(GetDetails),
-                new { id = value.Id },
-                _mapper.Map<CreateProductResponse>(value)),
-           Problem);
+            value => Ok(_mapper.Map<CreateProductsResponse>(value)),
+            Problem);
     }
-
 
     [HttpGet("details")]
     [HasPermission(Permissions.ReadDetails)]
