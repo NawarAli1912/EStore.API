@@ -14,8 +14,8 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
         ListProductsQuery request,
         CancellationToken cancellationToken)
     {
-
-        var result = await _productsRepository.ListByFilter(request.Filter);
+        var result = await _productsRepository
+            .ListByFilter(request.Filter, request.Page, request.PageSize);
 
         result.Item1 = OrderResult(result.Item1);
 

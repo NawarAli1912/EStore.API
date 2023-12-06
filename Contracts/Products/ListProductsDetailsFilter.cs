@@ -1,6 +1,6 @@
 ﻿namespace Application.Products.Filters;
 
-public record ListProductFilter(
+public record ListProductsDetailsFilter(
     string? SearchTerm,
     decimal? MinPrice,
     decimal? MaxPrice,

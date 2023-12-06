@@ -36,14 +36,14 @@ public class ProductsController(
 
     [HttpGet]
     public async Task<IActionResult> List(
-        [FromQuery] ListProductFilter filter,
+        [FromQuery] ListProductsFilter filter,
         string? sortColumn,
         string? sortOrder,
         int page = 1,
         int pageSize = 10)
     {
         var result = await _sender.Send(new ListProductsQuery(
-            filter,
+            _mapper.Map<ProductsFilter>(filter),
             sortColumn,
             sortOrder,
             page,
@@ -73,14 +73,14 @@ public class ProductsController(
     [HttpGet("details")]
     [HasPermission(Permissions.ReadDetails)]
     public async Task<IActionResult> ListDetails(
-        [FromQuery] ListProductFilter filter,
+        [FromQuery] ListProductsDetailsFilter filter,
         string? sortColumn,
         string? sortOrder,
         int page = 1,
         int pageSize = 10)
     {
         var result = await _sender.Send(new ListProductsQuery(
-            filter,
+            _mapper.Map<ProductsFilter>(filter),
             sortColumn,
             sortOrder,
             page,

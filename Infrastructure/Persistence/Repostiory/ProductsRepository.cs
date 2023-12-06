@@ -1,6 +1,6 @@
 ﻿using Application.Common.Data;
 using Application.Common.Repository;
-using Application.Products.Filters;
+using Application.Products.List;
 using Dapper;
 using Domain.Categories;
 using Domain.Kernal;
@@ -98,7 +98,7 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                                 new { CategoryIds = categoriesIds.ToArray() });
     }
 
-    public async Task<(List<Product>, int)> ListByFilter(ListProductFilter filter, int pageIndex, int pageSize)
+    public async Task<(List<Product>, int)> ListByFilter(ProductsFilter filter, int pageIndex, int pageSize)
     {
         var products = await _elasticClient
             .SearchAsync<ProductSnapshot>(s => s
@@ -151,6 +151,6 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                 hit.Source.Sku).Value);
         }
 
-        return (result, products.Hits.Count());
+        return (result, (int)products.Total);
     }
 }
