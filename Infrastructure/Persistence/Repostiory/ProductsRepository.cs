@@ -1,18 +1,21 @@
 ﻿using Application.Common.Data;
-using Application.Repository;
+using Application.Common.Repository;
+using Application.Products.Filters;
 using Dapper;
 using Domain.Categories;
 using Domain.Kernal;
 using Domain.ModelsSnapshots;
 using Domain.Products;
+using Nest;
 
 namespace Infrastructure.Persistence.Repostiory;
 
-public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactory) : IProductsRepository
+public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactory, IElasticClient elasticClient) : IProductsRepository
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory = sqlConnectionFactory;
+    private readonly IElasticClient _elasticClient = elasticClient;
 
-    public async Task<List<Product>> GetByCategories(IEnumerable<Guid> categoryIds)
+    public async Task<List<Product>> ListByCategories(IEnumerable<Guid> categoryIds)
     {
         var productDict = new Dictionary<Guid, Product>();
 
@@ -93,5 +96,61 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                                 WHERE 
                                     c.Id IN @CategoryIds",
                                 new { CategoryIds = categoriesIds.ToArray() });
+    }
+
+    public async Task<(List<Product>, int)> ListByFilter(ListProductFilter filter, int pageIndex, int pageSize)
+    {
+        var products = await _elasticClient
+            .SearchAsync<ProductSnapshot>(s => s
+            .Query(q =>
+                q.Bool(b => b
+                    .Must(must =>
+                        !string.IsNullOrEmpty(filter.SearchTerm)
+                            ? must.MultiMatch(m => m
+                                .Query(filter.SearchTerm)
+                                .Fuzziness(Fuzziness.Auto)
+                                .Fields(f => f
+                                    .Field(ff => ff.Name, boost: 2)
+                                    .Field(ff => ff.Description)
+                                )
+                            )
+                            : null
+                    )
+                    .Filter(f =>
+                        f.Range(r => r
+                                .Field(f => f.CustomerPrice_Value)
+                                .GreaterThanOrEquals((double?)filter.MinPrice ?? double.MinValue)
+                            )
+                        && f.Range(r => r
+                                .Field(f => f.CustomerPrice_Value)
+                                .LessThanOrEquals((double?)filter.MaxPrice ?? double.MaxValue)
+                            )
+                        && f.Range(r => r
+                                .Field(f => f.Quantity)
+                                .GreaterThanOrEquals(filter.MinQuantity ?? int.MinValue)
+                            )
+                        &&
+                           f.Range(r => r
+                                .Field(f => f.Quantity)
+                                .LessThanOrEquals(filter.MaxQuantity ?? int.MaxValue)
+                            ))))
+            .From((pageIndex - 1) * pageSize)
+            .Size(pageSize));
+
+        List<Product> result = [];
+        foreach (var hit in products.Hits)
+        {
+            result.Add(Product.Create(
+                hit.Source.Id,
+                hit.Source.Name,
+                hit.Source.Description,
+                hit.Source.Quantity,
+                hit.Source.CustomerPrice_Value,
+                hit.Source.PurchasePrice_Value,
+                "USD",
+                hit.Source.Sku).Value);
+        }
+
+        return (result, products.Hits.Count());
     }
 }

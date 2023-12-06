@@ -2,5 +2,7 @@
 using Domain.ModelsSnapshots;
 
 namespace Domain.DomainEvents;
-public sealed record ProductCreatedDomainEvent(ProductSnapshot Product)
-    : IDomainEvent;
+
+public record ProductUpdatedDomainEvent(
+    ProductSnapshot Product) : IDomainEvent;
+

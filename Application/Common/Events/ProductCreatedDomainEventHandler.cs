@@ -1,10 +1,10 @@
-﻿using Application.ElasticSearch;
+﻿using Application.Common.ElasticSearch;
 using Domain.DomainEvents;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Nest;
 
-namespace Application.Events;
+namespace Application.Common.Events;
 
 public sealed class ProductCreatedDomainEventHandler(IElasticClient elasticClient, ILogger<ProductCreatedDomainEventHandler> logger)
     : INotificationHandler<ProductCreatedDomainEvent>

@@ -1,6 +1,6 @@
 ﻿using Application.Common.Data;
+using Application.Common.Repository;
 using Application.Products.List;
-using Application.Repository;
 using Domain.Kernal;
 using MediatR;
 
@@ -24,7 +24,7 @@ public sealed class ListByCategoryQueryHandler(IProductsRepository productsRepos
             .Where(p => categoryIds.Intersect(p.Categories.Select(c => c.Id)).Any())
             .ToListAsync();*/
 
-        var products = await _productsRepository.GetByCategories(categoryIds);
+        var products = await _productsRepository.ListByCategories(categoryIds);
 
         var totalCount = await _productsRepository.GetProductCountByCategory(categoryIds);
 

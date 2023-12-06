@@ -1,6 +1,6 @@
 ﻿using Application.Common.Authentication.Jwt;
 using Application.Common.Data;
-using Application.Repository;
+using Application.Common.Repository;
 using Domain.Authentication;
 using Domain.ModelsSnapshots;
 using Infrastructure.Authentication;
@@ -146,7 +146,7 @@ public static class DependencyInjection
 
             if (!createIndexResponse.IsValid)
             {
-                throw new Exception("Failed to create the ElasticSearch index.");
+                //throw new Exception("Failed to create the ElasticSearch index.");
             }
         }
     }

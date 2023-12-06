@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231204140117_configure-permissions")]
+    [Migration("20231206132329_configure-permissions")]
     partial class configurepermissions
     {
         /// <inheritdoc />
@@ -73,26 +73,41 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = -3,
-                            Name = "CreateProduct"
+                            Name = "ManageProducts"
                         },
                         new
                         {
                             Id = -4,
-                            Name = "ConfigureAccessControl"
+                            Name = "ManageCategories"
                         },
                         new
                         {
                             Id = -5,
-                            Name = "ViewRoles"
+                            Name = "ManageCarts"
                         },
                         new
                         {
                             Id = -6,
-                            Name = "ManageRoles"
+                            Name = "ManageOrders"
                         },
                         new
                         {
                             Id = -7,
+                            Name = "ManageCustomers"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            Name = "ManageRoles"
+                        },
+                        new
+                        {
+                            Id = -9,
+                            Name = "ConfigureAccessControl"
+                        },
+                        new
+                        {
+                            Id = -10,
                             Name = "All"
                         });
                 });
@@ -126,15 +141,15 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "526d78ee-a36e-4f42-9a03-65d2ef7a12ef",
-                            ConcurrencyStamp = "06e4dcf7-8601-467c-a3aa-3af3070b0275",
+                            Id = "c086ce56-fab0-4d51-8f25-96b66f4c0ac8",
+                            ConcurrencyStamp = "4055f3cb-76a5-44f1-b528-7ef74f7eefff",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "ff036f19-a265-4432-85c2-e290d3c48396",
-                            ConcurrencyStamp = "2632e755-d72f-451e-a881-36dba2b8d0eb",
+                            Id = "ac40d7bd-5e9e-488d-9396-6e5fce4a47a2",
+                            ConcurrencyStamp = "efa2fb27-fff8-43b0-8f50-b14a4e92633d",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -287,6 +302,34 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("Infrastructure.Persistence.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxMessages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

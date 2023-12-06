@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -73,6 +74,22 @@ namespace Infrastructure.Migrations
                 newName: "CartItems");
 
             migrationBuilder.CreateTable(
+                name: "OutboxMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OccurredOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Error = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Permission",
                 columns: table => new
                 {
@@ -114,8 +131,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "526d78ee-a36e-4f42-9a03-65d2ef7a12ef", "06e4dcf7-8601-467c-a3aa-3af3070b0275", "Admin", "ADMIN" },
-                    { "ff036f19-a265-4432-85c2-e290d3c48396", "2632e755-d72f-451e-a881-36dba2b8d0eb", "Customer", "CUSTOMER" }
+                    { "ac40d7bd-5e9e-488d-9396-6e5fce4a47a2", "efa2fb27-fff8-43b0-8f50-b14a4e92633d", "Customer", "CUSTOMER" },
+                    { "c086ce56-fab0-4d51-8f25-96b66f4c0ac8", "4055f3cb-76a5-44f1-b528-7ef74f7eefff", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
@@ -123,11 +140,14 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { -7, "All" },
-                    { -6, "ManageRoles" },
-                    { -5, "ViewRoles" },
-                    { -4, "ConfigureAccessControl" },
-                    { -3, "CreateProduct" },
+                    { -10, "All" },
+                    { -9, "ConfigureAccessControl" },
+                    { -8, "ManageRoles" },
+                    { -7, "ManageCustomers" },
+                    { -6, "ManageOrders" },
+                    { -5, "ManageCarts" },
+                    { -4, "ManageCategories" },
+                    { -3, "ManageProducts" },
                     { -2, "ReadDetails" },
                     { -1, "None" }
                 });
@@ -147,6 +167,9 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "OutboxMessages");
+
+            migrationBuilder.DropTable(
                 name: "PermissionRole");
 
             migrationBuilder.DropTable(
@@ -155,12 +178,12 @@ namespace Infrastructure.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "526d78ee-a36e-4f42-9a03-65d2ef7a12ef");
+                keyValue: "ac40d7bd-5e9e-488d-9396-6e5fce4a47a2");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "ff036f19-a265-4432-85c2-e290d3c48396");
+                keyValue: "c086ce56-fab0-4d51-8f25-96b66f4c0ac8");
 
             migrationBuilder.EnsureSchema(
                 name: "Customer");

@@ -70,26 +70,41 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = -3,
-                            Name = "CreateProduct"
+                            Name = "ManageProducts"
                         },
                         new
                         {
                             Id = -4,
-                            Name = "ConfigureAccessControl"
+                            Name = "ManageCategories"
                         },
                         new
                         {
                             Id = -5,
-                            Name = "ViewRoles"
+                            Name = "ManageCarts"
                         },
                         new
                         {
                             Id = -6,
-                            Name = "ManageRoles"
+                            Name = "ManageOrders"
                         },
                         new
                         {
                             Id = -7,
+                            Name = "ManageCustomers"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            Name = "ManageRoles"
+                        },
+                        new
+                        {
+                            Id = -9,
+                            Name = "ConfigureAccessControl"
+                        },
+                        new
+                        {
+                            Id = -10,
                             Name = "All"
                         });
                 });
@@ -123,15 +138,15 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4e4903a2-43e7-4a93-b96a-7a64b700a361",
-                            ConcurrencyStamp = "085afce5-5202-41d9-962c-5f3044adaeec",
+                            Id = "c086ce56-fab0-4d51-8f25-96b66f4c0ac8",
+                            ConcurrencyStamp = "4055f3cb-76a5-44f1-b528-7ef74f7eefff",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "65a57821-cdfb-40ad-9686-cdbb1968b395",
-                            ConcurrencyStamp = "c2437515-26cc-4c87-8cf9-73fd836d062f",
+                            Id = "ac40d7bd-5e9e-488d-9396-6e5fce4a47a2",
+                            ConcurrencyStamp = "efa2fb27-fff8-43b0-8f50-b14a4e92633d",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });

@@ -1,8 +1,10 @@
 ﻿using Application.Common.Authentication.Models;
 using Application.Products.Create;
+using Application.Products.Delete;
 using Application.Products.Filters;
 using Application.Products.Get;
 using Application.Products.List;
+using Application.Products.UpdateBasicInfor;
 using Contracts.Products;
 using Infrastructure.Authentication;
 using MapsterMapper;
@@ -58,6 +60,7 @@ public class ProductsController(
 
 
     [HttpPost]
+    [HasPermission(Permissions.ManageProducts)]
     public async Task<IActionResult> Create(CreateProductsRequest request)
     {
         var result = await _sender.Send(_mapper.Map<CreateProductsCommand>(request));
@@ -100,6 +103,28 @@ public class ProductsController(
 
         return result.Match(
             value => Ok(_mapper.Map<ProductDetailedResponse>(value)),
+            Problem);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.ManageProducts)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var result = await _sender.Send(new DeleteProductCommand(id));
+
+        return result.Match(
+            value => Ok(),
+            Problem);
+    }
+
+    [HttpPatch("{id:guid}")]
+    [HasPermission(Permissions.ManageProducts)]
+    public async Task<IActionResult> Update(Guid id, UpdateProductBasicInfoRequest request)
+    {
+        var result = await _sender.Send(_mapper.Map<UpdateProductBasicInfoCommand>((id, request)));
+
+        return result.Match(
+            value => Ok(value),
             Problem);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Application.Common.Data;
-using Application.Repository;
+using Application.Common.Repository;
 using Dapper;
 
 namespace Infrastructure.Persistence.Repostiory;

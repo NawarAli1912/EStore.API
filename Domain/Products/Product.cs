@@ -89,6 +89,15 @@ public class Product : AggregateRoot<Guid>
         _cateogries.Add(category);
     }
 
+    public void UpdateBasicInfo(string? name, string? description)
+    {
+        Name = name ?? Name;
+        Description = description ?? Description;
+
+        RaiseDomainEvent(new ProductUpdatedDomainEvent(
+            ProductSnapshot.Snapshot(this)));
+    }
+
     private Product() : base(Guid.NewGuid())
     {
     }

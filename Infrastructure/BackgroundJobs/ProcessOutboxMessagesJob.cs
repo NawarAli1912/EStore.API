@@ -22,6 +22,7 @@ public sealed class ProcessOutboxMessagesJob(ApplicationDbContext context, IPubl
                         .Set<OutboxMessage>()
                         .Where(m => m.ProcessedOnUtc == null)
                         .Take(20)
+                        .OrderBy(m => m.Id)
                         .ToListAsync(context.CancellationToken);
 
         foreach (var message in messages)
@@ -41,7 +42,7 @@ public sealed class ProcessOutboxMessagesJob(ApplicationDbContext context, IPubl
                 await _publisher.Publish(domainEvent, context.CancellationToken);
                 message.ProcessedOnUtc = DateTime.UtcNow;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.LogError($"Failed to process domain event {message.Type}");
                 /*message.RetryCount++;

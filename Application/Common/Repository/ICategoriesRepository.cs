@@ -1,4 +1,4 @@
-﻿namespace Application.Repository;
+﻿namespace Application.Common.Repository;
 
 public interface ICategoriesRepository
 {

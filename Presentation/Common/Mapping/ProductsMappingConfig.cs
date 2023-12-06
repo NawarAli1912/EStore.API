@@ -1,4 +1,5 @@
-﻿using Contracts.Products;
+﻿using Application.Products.UpdateBasicInfor;
+using Contracts.Products;
 using Domain.Categories;
 using Domain.Products;
 using Mapster;
@@ -26,5 +27,9 @@ public class ProductsMappingConfig : IRegister
             .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString());
 
         config.NewConfig<Category, CategoryResponse>();
+
+        config.NewConfig<(Guid, UpdateProductBasicInfoRequest), UpdateProductBasicInfoCommand>()
+            .Map(dest => dest.Id, src => src.Item1)
+            .Map(dest => dest, src => src.Item2);
     }
 }
