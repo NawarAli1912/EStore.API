@@ -1,4 +1,5 @@
 ﻿using Application.Common.Authentication.Models;
+using Application.Products.AssignCategories;
 using Application.Products.Create;
 using Application.Products.Delete;
 using Application.Products.Filters;
@@ -125,6 +126,17 @@ public class ProductsController(
 
         return result.Match(
             value => Ok(value),
+            Problem);
+    }
+
+    [HttpPost("{id:guid}/categories")]
+    [HasPermission(Permissions.ManageProducts | Permissions.ManageCategories)]
+    public async Task<IActionResult> AssignCategories(Guid id, AssignCategoriesRequest request)
+    {
+        var result = await _sender.Send(_mapper.Map<AssignCategoriesCommand>((id, request)));
+
+        return result.Match(
+            _ => Ok(),
             Problem);
     }
 }
