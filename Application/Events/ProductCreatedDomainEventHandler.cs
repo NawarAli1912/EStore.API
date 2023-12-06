@@ -1,4 +1,4 @@
-﻿using Application.Common.ModelsSnapshots;
+﻿using Application.ElasticSearch;
 using Domain.DomainEvents;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -14,9 +14,10 @@ public sealed class ProductCreatedDomainEventHandler(IElasticClient elasticClien
 
     public async Task Handle(ProductCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var product = ProductSnapshot.Snapshot(notification.Product);
+        var productSnapshot = notification.Product;
 
-        var result = await _elasticClient.IndexAsync(product, i => i.Index("product"), cancellationToken);
+        var result = await _elasticClient.IndexAsync(productSnapshot,
+            i => i.Index(ElasticSearchSettings.DefaultIndex), cancellationToken);
 
         if (!result.IsValid)
         {

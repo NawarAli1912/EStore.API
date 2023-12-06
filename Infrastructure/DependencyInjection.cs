@@ -2,10 +2,12 @@
 using Application.Common.Data;
 using Application.Repository;
 using Domain.Authentication;
+using Domain.ModelsSnapshots;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.Models;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.ModelsSnapshots;
+using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repostiory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nest;
+using Quartz;
 using System.Text;
 
 namespace Infrastructure;
@@ -27,30 +30,57 @@ public static class DependencyInjection
 
         services.AddElasticSearch(configuration);
 
+        services.AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>();
+
+        services.AddDbContext<ApplicationDbContext>(
+            (sp, options) =>
+            {
+                var interceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
+
+                options.UseSqlServer(configuration.GetConnectionString("Default"))
+                    .AddInterceptors(interceptor);
+            });
+
         services.AddScoped<IApplicationDbContext>(sp =>
             sp.GetRequiredService<ApplicationDbContext>());
-        services.AddDbContext<ApplicationDbContext>(options =>
-        {
-            options.UseSqlServer(configuration.GetConnectionString("Default"));
-        });
+
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
 
         services.AddScoped<IProductsRepository, ProductsRepository>();
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+
+        services.AddQuartz(configure =>
+        {
+            var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+            configure.AddJob<ProcessOutboxMessagesJob>(jobKey)
+            .AddTrigger(
+                trigger =>
+                trigger.ForJob(jobKey)
+                    .WithSimpleSchedule(
+                        schedule =>
+                        schedule.WithIntervalInSeconds(10)
+                        .RepeatForever()));
+        });
+
+        services.AddQuartzHostedService();
 
         return services;
     }
 
     private static IServiceCollection AddElasticSearch(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionSettings = new ConnectionSettings(new Uri("http://localhost:9200"))
-        .DefaultIndex("products");
+        services.Configure<ElasticSearchSettings>(configuration.GetSection(JwtSettings.SectionName));
+        var elasticSearchSettings = configuration.GetSection(ElasticSearchSettings.SectionName)
+                        .Get<ElasticSearchSettings>();
+
+        var connectionSettings = new ConnectionSettings(new Uri(elasticSearchSettings!.BaseUrl))
+                            .DefaultIndex(elasticSearchSettings!.DefaultIndex);
 
         var client = new ElasticClient(connectionSettings);
 
         services.AddSingleton<IElasticClient>(client);
 
-        CreateIndex(client, "products");
+        CreateIndex(client, elasticSearchSettings.DefaultIndex);
 
         return services;
     }
@@ -64,11 +94,6 @@ public static class DependencyInjection
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
-
-        services.AddDbContext<ApplicationDbContext>(options =>
-        {
-            options.UseSqlServer(configuration.GetConnectionString("Default"));
-        });
 
         services.AddIdentity<IdentityUser, Role>(options =>
         {
@@ -121,7 +146,7 @@ public static class DependencyInjection
 
             if (!createIndexResponse.IsValid)
             {
-                //throw new Exception("Unable to create the index.");
+                throw new Exception("Failed to create the ElasticSearch index.");
             }
         }
     }

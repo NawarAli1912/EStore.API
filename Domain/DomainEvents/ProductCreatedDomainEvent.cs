@@ -1,5 +1,5 @@
 ﻿using Domain.Kernal.Models;
-using Domain.Products;
+using Domain.ModelsSnapshots;
 
 namespace Domain.DomainEvents;
-public sealed record ProductCreatedDomainEvent(Product Product) : IDomainEvent;
+public sealed record ProductCreatedDomainEvent(ProductSnapshot Product) : IDomainEvent;

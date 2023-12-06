@@ -1,6 +1,6 @@
 ﻿using Domain.Products;
 
-namespace Application.Common.ModelsSnapshots;
+namespace Domain.ModelsSnapshots;
 
 public sealed class ProductSnapshot
 {
@@ -12,22 +12,24 @@ public sealed class ProductSnapshot
 
     public int Quantity { get; set; }
 
-    [Nest.Ignore]
-    public int PurchasePrice_Currency { get; set; }
-
     public decimal PurchasePrice_Value { get; set; }
+
+    public decimal CustomerPrice_Value { get; set; }
 
     public string Sku { get; set; } = default!;
 
     [Nest.Ignore]
+    public int PurchasePrice_Currency { get; set; }
+
+    [Nest.Ignore]
     public int CustomerPrice_Currency { get; set; }
 
-    public decimal CustomerPrice_Value { get; set; }
 
     public static ProductSnapshot Snapshot(Product product)
     {
-        return new ProductSnapshot
+        var item = new ProductSnapshot
         {
+            Id = product.Id,
             Name = product.Name,
             Description = product.Description,
             Quantity = product.Quantity,
@@ -37,5 +39,7 @@ public sealed class ProductSnapshot
             CustomerPrice_Currency = (int)product.CustomerPrice.Currency,
             CustomerPrice_Value = product.CustomerPrice.Value
         };
+
+        return item;
     }
 }

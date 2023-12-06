@@ -3,6 +3,7 @@ using Domain.DomainEvents;
 using Domain.Kernal;
 using Domain.Kernal.Models;
 using Domain.Kernal.ValueObjects;
+using Domain.ModelsSnapshots;
 using Domain.Products.ValueObjects;
 
 namespace Domain.Products;
@@ -62,8 +63,9 @@ public class Product : AggregateRoot<Guid>
             return errors;
         }
 
-        var product = new Product(id)
+        var product = new Product
         {
+            Id = id,
             Name = name,
             Description = description,
             Quantity = quantity,
@@ -77,7 +79,7 @@ public class Product : AggregateRoot<Guid>
             product.AssignCategory(category);
         }
 
-        product.RaiseDomainEvent(new ProductCreatedDomainEvent(product));
+        product.RaiseDomainEvent(new ProductCreatedDomainEvent(ProductSnapshot.Snapshot(product)));
 
         return product;
     }

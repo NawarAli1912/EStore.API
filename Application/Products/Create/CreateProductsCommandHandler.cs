@@ -39,7 +39,11 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
             return errors;
         }
 
-        await _context.Products.AddRangeAsync(products, cancellationToken);
+        foreach (var product in products)
+        {
+            await _context.Products.AddAsync(product);
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return new CreateProductsResult(products);

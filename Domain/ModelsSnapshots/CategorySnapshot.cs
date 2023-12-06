@@ -1,4 +1,4 @@
-﻿namespace Application.Common.ModelsSnapshots;
+﻿namespace Domain.ModelsSnapshots;
 
 public sealed class CategorySnapshot
 {

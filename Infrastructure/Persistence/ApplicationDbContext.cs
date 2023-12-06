@@ -4,6 +4,7 @@ using Domain.Categories;
 using Domain.Customers;
 using Domain.Orders;
 using Domain.Products;
+using Infrastructure.Persistence.Outbox;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Order> Orders { get; set; } = default!;
 
     public DbSet<Customer> Customers { get; set; } = default!;
+
+    public DbSet<OutboxMessage> OutboxMessages { get; set; } = default!;
 
     public async Task BeginTransactionAsync()
     {

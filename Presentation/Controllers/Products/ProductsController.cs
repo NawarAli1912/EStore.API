@@ -58,7 +58,6 @@ public class ProductsController(
 
 
     [HttpPost]
-    [HasPermission(Permissions.CreateProduct)]
     public async Task<IActionResult> Create(CreateProductsRequest request)
     {
         var result = await _sender.Send(_mapper.Map<CreateProductsCommand>(request));

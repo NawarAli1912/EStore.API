@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Application.Common.ModelsSnapshots;
 using Application.Repository;
 using Dapper;
 using Domain.Categories;
 using Domain.Kernal;
+using Domain.ModelsSnapshots;
 using Domain.Products;
 
 namespace Infrastructure.Persistence.Repostiory;
