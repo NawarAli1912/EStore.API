@@ -14,8 +14,9 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 - **Quartz:** Implements Quartz for job scheduling, enhancing the project with timely tasks.
 - **Domain-Driven Design (DDD) Principles:** Incorporates DDD principles, including domain models and domain events, to create a robust and maintainable codebase.
 - **Authentication:** Implements JWT Bearer authentication for secure access to the API.
-- **Authorization:** Implements permission-based access control, ensuring that users have the necessary permissions to perform specific actions.
+- **Authorization:** Implements permission-based access control from scratch, ensuring that users have the necessary permissions to perform specific actions.
 - **Outbox Pattern:** Implements the Outbox pattern to store domain events, ensuring reliable event processing.
+- **Global Error Handling:** new way for global error handling following RFC specification and reimplement dotnet ProblemDetailsFactory.
 
 ## Getting Started
 
