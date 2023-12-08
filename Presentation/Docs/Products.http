@@ -1,15 +1,71 @@
-@host = https://localhost:7253
+@base = https://localhost:7253/api/products
 @contentType = application/json
+@productId = a3e429e9-c814-492d-b4fd-13a6c8c726e
+@jwtToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNmM4NTYwMS0xNmFkLTQ5NDAtYmJmOS05Mzk0ZDY5ZWU5YzciLCJqdGkiOiJhMGZhZmNlNi04ODI4LTQzMzItODY0Ny04M2Q1OWFmZDlkOTEiLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVzdG9yZS5jb20iLCJwZXJtaXNzaW9ucyI6IjAiLCJleHAiOjE3MDE3MDEzNjksImlzcyI6IkVTdG9yZS5BUEkiLCJhdWQiOiJFU3RvcmUuQVBJIn0.u-Sm0_5fx0Lsp1M-NikjbRfLwZUJOOjWmDnCB-rVbXc
 
-GET {{host}}/products?page=1&pageSize=10
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNmM4NTYwMS0xNmFkLTQ5NDAtYmJmOS05Mzk0ZDY5ZWU5YzciLCJqdGkiOiJhMGZhZmNlNi04ODI4LTQzMzItODY0Ny04M2Q1OWFmZDlkOTEiLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVzdG9yZS5jb20iLCJwZXJtaXNzaW9ucyI6IjAiLCJleHAiOjE3MDE3MDEzNjksImlzcyI6IkVTdG9yZS5BUEkiLCJhdWQiOiJFU3RvcmUuQVBJIn0.u-Sm0_5fx0Lsp1M-NikjbRfLwZUJOOjWmDnCB-rVbXc
+### Get 
+GET {{base}}/{{productId}}
 
-###
+### List
+# filters: all filters are optional, had default value 
+# and are passed with the query
+# SearchTerm, 
+# MinPrice 
+# MaxPrice
+# sortColumn = { name, price }
+# sortOrder = { asc, desc }
+# page
+# pageSize
+GET {{base}}?page=1&pageSize=10
 
-POST {{host}}/api/login
+### Create
+# the user must have a permission to manage the products
+POST {{base}}
+Authorization: {{jwtToken}}
 Content-Type: {{contentType}}
 
 {
-  "email": "nr.ali1912@gmail.com",
-  "password": "nawarali1912"
+  "items": [
+    {
+      "name": "string",
+      "description": "string",
+      "quantity": 0,
+      "purchasePrice": 0,
+      "customerPrice": 0,
+      "currency": "string",
+      "sku": "string"
+    }
+  ]
 }
+
+### Delete
+# the user must have a permission to manage the products
+DELETE {{base}}/{{productId}}
+Authorization: {{jwtToken}}
+
+### Get details
+# the user must have a permission to view details
+GET {{base}}/details/{{productId}}
+
+
+### List details
+# the user must have a permission to view details
+# filters: all filters are optional, had default value, and are passed with the query
+# SearchTerm, 
+# MinPrice 
+# MaxPrice
+# MaxQuantity
+# MaxQuantity
+# sortColumn = {name, price, quantity }
+# sortOrder = {asc, desc}
+# page
+# pageSize
+
+GET {{base}}/details?page=1&pageSize=10
+
+
+
+
+
+
+

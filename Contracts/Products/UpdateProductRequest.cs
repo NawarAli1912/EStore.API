@@ -1,5 +1,10 @@
 ﻿namespace Contracts.Products;
-public record UpdateProductBasicInfoRequest(
+public record UpdateProductRequest(
     string? Name,
-    string? Description
+    string? Description,
+    int? Quantity,
+    decimal? PurchasePrice,
+    decimal? CustomerPrice,
+    string? Sku,
+    bool NullSku = false
     );

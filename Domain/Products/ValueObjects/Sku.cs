@@ -23,10 +23,10 @@ public sealed class Sku : ValueObject
             return Result.From<Sku?>(null);
         }
         /*
-                if (value.Length != DefaultLength)
-                {
-                    return Errors.Sku.InvalidLength;
-                }*/
+        if (value.Length != DefaultLength)
+        {
+            return Errors.Sku.InvalidLength;
+        }*/
 
         return new Sku(value);
     }

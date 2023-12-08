@@ -1,6 +1,6 @@
 ﻿using Application.Products.Filters;
 using Application.Products.List;
-using Application.Products.UpdateBasicInfor;
+using Application.Products.Update;
 using Contracts.Products;
 using Domain.Categories;
 using Domain.Products;
@@ -30,7 +30,7 @@ public class ProductsMappingConfig : IRegister
 
         config.NewConfig<Category, CategoryResponse>();
 
-        config.NewConfig<(Guid, UpdateProductBasicInfoRequest), UpdateProductBasicInfoCommand>()
+        config.NewConfig<(Guid, UpdateProductRequest), UpdateProductCommand>()
             .Map(dest => dest.Id, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
 

@@ -1,0 +1,11 @@
+
+@host = https://localhost:7253
+@contentType = application/json
+
+### List Categories Hierarchy
+GET {{host}}/api/categories/hierarchy/all
+
+### List Hierarchy Downward
+GET {{host}}/api/categories/hierarchy/a3e429e9-c814-492d-b4fd-13a6c8c726e7
+
+

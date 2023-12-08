@@ -25,7 +25,7 @@ public sealed class GetHierarchyDownwardQueryHandler(
                         Name,
                         ParentCategoryId
                     FROM
-                        Category.Categories
+                        Categories
                     WHERE
                         Id = @RootCategoryId
                     UNION ALL
@@ -34,7 +34,7 @@ public sealed class GetHierarchyDownwardQueryHandler(
                         c.Name,
                         c.ParentCategoryId
                     FROM
-                        Category.Categories c
+                        Categories c
                     INNER JOIN
                         RecursiveCategoryCTE r ON c.ParentCategoryId = r.Id
                 )

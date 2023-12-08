@@ -18,11 +18,22 @@ public class Money : ValueObject, IComparable, IComparable<Money>
 
     public static explicit operator decimal?(Money money) { return money.Value; }
 
-    public static Result<Money> Create(decimal value, string currency)
+    public static Result<Money> Create(decimal value, string currency = "USD")
     {
+        List<Error> errors = [];
         if (!Enum.TryParse<Currency>(currency.ToUpper(), out var parsedCurrency))
         {
-            return Errors.Money.InvalidCurrency;
+            errors.Add(Errors.Money.InvalidCurrency);
+        }
+
+        if (value <= 0M)
+        {
+            errors.Add(Errors.Money.InvalidAmount);
+        }
+
+        if (errors.Count > 0)
+        {
+            return errors;
         }
 
         return new Money(value, parsedCurrency);

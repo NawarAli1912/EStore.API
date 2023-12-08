@@ -5,7 +5,8 @@ using Application.Products.Delete;
 using Application.Products.Filters;
 using Application.Products.Get;
 using Application.Products.List;
-using Application.Products.UpdateBasicInfor;
+using Application.Products.ListByCategory;
+using Application.Products.Update;
 using Contracts.Products;
 using Infrastructure.Authentication;
 using MapsterMapper;
@@ -120,9 +121,12 @@ public class ProductsController(
 
     [HttpPatch("{id:guid}")]
     [HasPermission(Permissions.ManageProducts)]
-    public async Task<IActionResult> Update(Guid id, UpdateProductBasicInfoRequest request)
+    public async Task<IActionResult> Update(
+        Guid id,
+        UpdateProductRequest request)
     {
-        var result = await _sender.Send(_mapper.Map<UpdateProductBasicInfoCommand>((id, request)));
+        var result = await _sender
+            .Send(_mapper.Map<UpdateProductCommand>((id, request)));
 
         return result.Match(
             value => Ok(value),
@@ -136,7 +140,22 @@ public class ProductsController(
         var result = await _sender.Send(_mapper.Map<AssignCategoriesCommand>((id, request)));
 
         return result.Match(
-            _ => Ok(),
+            _ => Created(),
+            Problem);
+    }
+
+
+    [HttpGet("categories/{categoryId:guid}")]
+    public async Task<IActionResult> ListByCategory(
+        Guid categoryId,
+        int page = 1,
+        int pageSize = 10)
+    {
+        var result = await _sender
+            .Send(new ListByCategoryQuery(categoryId, page, pageSize));
+
+        return result.Match(
+            Ok,
             Problem);
     }
 }

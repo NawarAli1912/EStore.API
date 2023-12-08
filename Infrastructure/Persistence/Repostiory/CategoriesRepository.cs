@@ -16,7 +16,7 @@ public sealed class CategoriesRepository(ISqlConnectionFactory sqlConnectionFact
                            SELECT 
                               Id 
                            FROM 
-                              Category.Categories 
+                              Categories 
                            WHERE 
                               Id = @CategoryId
 
@@ -25,7 +25,7 @@ public sealed class CategoriesRepository(ISqlConnectionFactory sqlConnectionFact
                            SELECT 
                               c.Id
                            FROM 
-                              Category.Categories c 
+                              Categories c 
                            INNER JOIN 
                               RecursiveCategoryCTE r ON c.ParentCategoryId = r.Id
                           )

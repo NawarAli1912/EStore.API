@@ -15,7 +15,7 @@ public sealed class GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnec
     {
         await using SqlConnection sqlConnection = _sqlConnectionFactory.Create();
 
-        var sql = @"SELECT * FROM Category.Categories";
+        var sql = @"SELECT * FROM Categories";
 
         var queryResult = (await sqlConnection.QueryAsync<Category>(sql)).ToList();
 

@@ -26,8 +26,6 @@ public class Product : AggregateRoot<Guid>
 
     public IReadOnlyList<Category> Categories => _cateogries.ToList();
 
-    private Product(Guid id) : base(id) { }
-
     public static Result<Product> Create(
         Guid id,
         string name,
@@ -86,19 +84,67 @@ public class Product : AggregateRoot<Guid>
 
     public void AssignCategory(Category category)
     {
+        if (_cateogries.Contains(category))
+        {
+            return;
+        }
+
         _cateogries.Add(category);
     }
 
-    public void UpdateBasicInfo(string? name, string? description)
+    public void UnassignCategory(Category category)
     {
+        if (!_cateogries.Contains(category))
+        {
+            return;
+        }
+
+        _cateogries.Remove(category);
+    }
+
+    public Result<Product> Update(
+        string? name,
+        string? description,
+        int? quantity,
+        decimal? customerPrice,
+        decimal? purchasePrice,
+        string? sku,
+        bool nullSku = false)
+    {
+        List<Error> errors = [];
+        var customerPriceResult = Money.Create(customerPrice ?? CustomerPrice.Value);
+        var purchasePriceResult = Money.Create(purchasePrice ?? PurchasePrice.Value);
+        Sku = null;
+        if (!nullSku)
+        {
+            var skuResult = Sku.Create(sku ?? Sku?.Value);
+            errors.AddRange(skuResult.Errors);
+            if (!skuResult.IsError)
+            {
+                Sku = skuResult.Value;
+            }
+        }
+
+        errors.AddRange(customerPriceResult.Errors);
+        errors.AddRange(purchasePriceResult.Errors);
+
+        if (errors.Count > 0)
+        {
+            return errors;
+        }
+
         Name = name ?? Name;
         Description = description ?? Description;
+        Quantity = quantity ?? Quantity;
+        CustomerPrice = customerPriceResult.Value;
+        PurchasePrice = purchasePriceResult.Value;
 
-        RaiseDomainEvent(new ProductUpdatedDomainEvent(
-            ProductSnapshot.Snapshot(this)));
+        return this;
     }
 
     private Product() : base(Guid.NewGuid())
     {
     }
+
+    private Product(Guid id) : base(id) { }
 }

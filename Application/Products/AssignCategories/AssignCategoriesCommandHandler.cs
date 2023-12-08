@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.AssignCategories;
+
 internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
         : IRequestHandler<AssignCategoriesCommand, Result<bool>>
 {
@@ -14,7 +15,8 @@ internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
     {
         var product = await _context
             .Products
-            .FirstOrDefaultAsync(p => p.Id == request.Id);
+            .Include(p => p.Categories)
+            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (product is null)
         {
@@ -24,7 +26,7 @@ internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
         var categoriesDict = await _context
             .Categories
             .Where(c => request.CategoriesIds.Contains(c.Id))
-            .ToDictionaryAsync(i => i.Id, i => i, cancellationToken: cancellationToken);
+            .ToDictionaryAsync(i => i.Id, i => i, cancellationToken);
 
         foreach (var categoryId in request.CategoriesIds)
         {
