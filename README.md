@@ -1,4 +1,4 @@
-# EStore.API Name
+# EStore.API
 
 ## Overview
 
@@ -47,7 +47,7 @@ The project uses a background service with Quartz to handle domain events in the
 
 ### eStore API
 
-This API serves as an eStore, providing endpoints to manage products, orders, and more. It seamlessly integrates Elasticsearch for efficient product searching.
+This API serves as an eStore, providing endpoints to manage products, orders, categories and more. It seamlessly integrates Elasticsearch for efficient product searching.
 
 ## Contributing
 
@@ -56,4 +56,8 @@ We welcome contributions! Feel free to submit issues, feature requests, or pull 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Notes
+
+This project is still under development.
 
