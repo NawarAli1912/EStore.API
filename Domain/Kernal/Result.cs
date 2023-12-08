@@ -104,10 +104,22 @@ public readonly record struct Result<T> : IResult
 }
 
 // Utilities Class
-public class Result
+public static class Result
 {
     public static Result<TValue> From<TValue>(TValue value)
     {
         return value;
     }
+
+    public static Deleted Created => default;
+    public static Deleted Success => default;
+    public static Deleted Deleted => default;
+    public static Deleted Updated => default;
+
+
 }
+
+public readonly record struct Success;
+public readonly record struct Created;
+public readonly record struct Deleted;
+public readonly record struct Updated;

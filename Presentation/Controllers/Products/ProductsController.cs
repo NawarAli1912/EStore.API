@@ -60,7 +60,6 @@ public class ProductsController(
                             Problem);
     }
 
-
     [HttpPost]
     [HasPermission(Permissions.ManageProducts)]
     public async Task<IActionResult> Create(CreateProductsRequest request)
@@ -115,7 +114,7 @@ public class ProductsController(
         var result = await _sender.Send(new DeleteProductCommand(id));
 
         return result.Match(
-            value => Ok(),
+            _ => Ok(),
             Problem);
     }
 

@@ -16,7 +16,8 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 - **Authentication:** Implements JWT Bearer authentication for secure access to the API.
 - **Authorization:** Implements permission-based access control from scratch, ensuring that users have the necessary permissions to perform specific actions.
 - **Outbox Pattern:** Implements the Outbox pattern to store domain events, ensuring reliable event processing.
-- **Global Error Handling:** new way for global error handling following RFC specification and reimplement dotnet ProblemDetailsFactory.
+- **Global Error Handling:** New way for global error handling following RFC specification and reimplement dotnet ProblemDetailsFactory.
+- **Reuslt Pattern:** Generic result type which work with domain errors to avoid throwing exceptions and return explicit errors.
 
 ## Getting Started
 

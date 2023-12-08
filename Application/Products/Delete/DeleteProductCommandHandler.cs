@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.Delete;
 internal class DeleteProductCommandHandler(IApplicationDbContext context)
-        : IRequestHandler<DeleteProductCommand, Result<bool>>
+        : IRequestHandler<DeleteProductCommand, Result<Deleted>>
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result<bool>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Deleted>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
         var result = await _context
             .Products
@@ -25,6 +25,6 @@ internal class DeleteProductCommandHandler(IApplicationDbContext context)
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return Result.Deleted;
     }
 }
