@@ -1,4 +1,5 @@
-﻿using Application.Products.Filters;
+﻿using Application.Products.AssignCategories;
+using Application.Products.Filters;
 using Application.Products.List;
 using Application.Products.Update;
 using Contracts.Products;
@@ -33,6 +34,10 @@ public class ProductsMappingConfig : IRegister
         config.NewConfig<(Guid, UpdateProductRequest), UpdateProductCommand>()
             .Map(dest => dest.Id, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
+
+        config.NewConfig<(Guid, AssignCategoriesRequest), AssignCategoriesCommand>()
+            .Map(dest => dest.Id, src => src.Item1)
+            .Map(dest => dest.CategoriesIds, src => src.Item2.CategoryIds);
 
         config.NewConfig<ListProductsFilter, ProductsFilter>();
 

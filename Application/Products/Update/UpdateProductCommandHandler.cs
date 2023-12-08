@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.Update;
 
-internal class UpdateProductBasicInfoCommandHandler(IApplicationDbContext context)
+internal class UpdateProductCommandHandler(IApplicationDbContext context)
         : IRequestHandler<UpdateProductCommand, Result<Product>>
 {
     private readonly IApplicationDbContext _context = context;

@@ -7,7 +7,7 @@ public interface IProductsRepository
 {
     Task<(List<Product>, int)> ListByFilter(ProductsFilter filter, int pageIndex, int pageSize);
 
-    Task<List<Product>> ListByCategories(IEnumerable<Guid> categoryIds);
+    Task<List<Product>> ListByCategories(IEnumerable<Guid> categoryIds, int pageIndex, int pageSize);
 
     Task<int> GetProductCountByCategory(IEnumerable<Guid> categoriesIds);
 }

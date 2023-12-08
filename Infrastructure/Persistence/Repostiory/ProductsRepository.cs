@@ -15,14 +15,18 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
     private readonly ISqlConnectionFactory _sqlConnectionFactory = sqlConnectionFactory;
     private readonly IElasticClient _elasticClient = elasticClient;
 
-    public async Task<List<Product>> ListByCategories(IEnumerable<Guid> categoryIds)
+    public async Task<List<Product>> ListByCategories(
+        IEnumerable<Guid> categoryIds,
+        int page,
+        int pageSize)
     {
         var productDict = new Dictionary<Guid, Product>();
+        int rowsToSkip = (page - 1) * pageSize;
 
         await using var sqlConnection = _sqlConnectionFactory.Create();
         var products = await sqlConnection.QueryAsync<ProductSnapshot, CategorySnapshot, Product>(
-                                @"SELECT 
-                                    DISTINCT	                                                         
+                                $@"WITH ProductsWithRowNum AS (
+                                SELECT 
                                     p.Id,
                                     p.Name, 
                                     p.Description, 
@@ -33,7 +37,8 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                                     p.Sku,
                                     c.Id AS CategoryId,
                                     c.Name AS CategoryName,
-                                    c.ParentCategoryId
+                                    c.ParentCategoryId,
+	                                DENSE_RANK() OVER (ORDER BY p.Id) AS ProductRank
                                 FROM 
                                     Products p 
                                 JOIN 
@@ -41,7 +46,21 @@ public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactor
                                 JOIN
                                     Categories c ON cp.CategoriesId = c.Id
                                 WHERE 
-                                    cp.CategoriesId IN @CategoryIds",
+                                    cp.CategoriesId IN @CategoryIds)
+                                SELECT 
+                                    Id,
+                                    Name,
+                                    Description,
+                                    Quantity,
+                                    PurchasePrice_Value,
+                                    PurchasePrice_Currency,
+                                    CustomerPrice_Value,
+                                    Sku,
+                                    CategoryId,
+                                    CategoryName,
+                                    ParentCategoryId
+                                FROM ProductsWithRowNum
+                                WHERE ProductRank > {rowsToSkip} AND ProductRank <= {rowsToSkip + pageSize}",
                                 (productSnap, categorySnap) =>
                                 {
                                     var category =

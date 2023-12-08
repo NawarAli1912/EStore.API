@@ -135,12 +135,14 @@ public class ProductsController(
 
     [HttpPost("{id:guid}/categories")]
     [HasPermission(Permissions.ManageProducts | Permissions.ManageCategories)]
-    public async Task<IActionResult> AssignCategories(Guid id, AssignCategoriesRequest request)
+    public async Task<IActionResult> AssignCategories(
+        Guid id,
+        AssignCategoriesRequest request)
     {
         var result = await _sender.Send(_mapper.Map<AssignCategoriesCommand>((id, request)));
 
         return result.Match(
-            _ => Created(),
+            _ => Ok(),
             Problem);
     }
 
