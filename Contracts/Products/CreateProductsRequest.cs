@@ -9,4 +9,5 @@ public sealed record CreateProductRequest(
     decimal PurchasePrice,
     decimal CustomerPrice,
     string Currency,
-    string? Sku);
+    string? Sku,
+    List<Guid>? Categories);

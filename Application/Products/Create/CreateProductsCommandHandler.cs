@@ -2,6 +2,7 @@
 using Domain.Kernal;
 using Domain.Products;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.Create;
 
@@ -10,10 +11,22 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result<CreateProductsResult>> Handle(CreateProductsCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateProductsResult>> Handle(
+        CreateProductsCommand request,
+        CancellationToken cancellationToken)
     {
         List<Error> errors = [];
         List<Product> products = [];
+        HashSet<Guid> categoriesIds = request
+            .Items
+            .SelectMany(item => item.Categories)
+            .ToHashSet();
+
+        var categoriesDict = await _context
+            .Categories
+            .Where(c => categoriesIds.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id, c => c, cancellationToken);
+
         foreach (var item in request.Items)
         {
             var productResult = Product.Create(
@@ -31,7 +44,17 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
                 errors.AddRange(productResult.Errors);
                 continue;
             }
-            products.Add(productResult.Value);
+
+            var currentProduct = productResult.Value;
+            foreach (var categoryId in item.Categories)
+            {
+                if (categoriesDict.TryGetValue(categoryId, out var category))
+                {
+                    currentProduct.AssignCategory(category);
+                }
+            }
+            products.Add(currentProduct);
+
         }
 
         if (errors.Count > 0)
@@ -41,7 +64,9 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
 
         foreach (var product in products)
         {
-            await _context.Products.AddAsync(product);
+            await _context.Products.AddAsync(
+                product,
+                cancellationToken);
         }
 
         await _context.SaveChangesAsync(cancellationToken);
