@@ -14,8 +14,8 @@ public sealed class Category : AggregateRoot<Guid>
 
     public Category? ParentCategory { get; private set; }
 
-    public IReadOnlySet<Product> Products => _products.ToHashSet();
-    public IReadOnlyList<Category> SubCategories => _subCategories.ToList();
+    public IReadOnlySet<Product> Products => _products;
+    public IReadOnlyList<Category> SubCategories => _subCategories;
 
     public static Category Create(
         Guid id,

@@ -14,7 +14,7 @@ public sealed class Order : AggregateRoot<Guid>
 
     public OrderStatus Status { get; private set; }
 
-    public IReadOnlySet<LineItem> LineItems => _lineItems.ToHashSet();
+    public IReadOnlySet<LineItem> LineItems => _lineItems;
 
     public static Order Create(Customer customer)
     {

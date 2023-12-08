@@ -3,6 +3,7 @@ using Domain.DomainErrors.Products;
 using Domain.Kernal;
 using Domain.Products;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.Get;
 
@@ -12,7 +13,12 @@ internal sealed class GetProductQueryHandler(IApplicationDbContext context) : IR
 
     public async Task<Result<Product>> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
-        var product = await _context.Products.FindAsync(request.ProductId);
+
+        var product = await _context
+            .Products
+            .Include(p => p.Categories)
+            .ThenInclude(c => c.SubCategories)
+            .FirstOrDefaultAsync(p => p.Id == request.ProductId, cancellationToken);
 
         if (product is null)
         {

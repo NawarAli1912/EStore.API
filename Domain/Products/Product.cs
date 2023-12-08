@@ -24,7 +24,7 @@ public class Product : AggregateRoot<Guid>
 
     public Sku? Sku { get; private set; } = default;
 
-    public IReadOnlyList<Category> Categories => _cateogries.ToList();
+    public IReadOnlyCollection<Category> Categories => _cateogries;
 
     public static Result<Product> Create(
         Guid id,

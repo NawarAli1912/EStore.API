@@ -10,10 +10,15 @@ using Nest;
 
 namespace Infrastructure.Persistence.Repostiory;
 
-public sealed class ProductsRepository(ISqlConnectionFactory sqlConnectionFactory, IElasticClient elasticClient) : IProductsRepository
+public sealed class ProductsRepository(
+        ISqlConnectionFactory sqlConnectionFactory,
+        IElasticClient elasticClient,
+        ApplicationDbContext context)
+    : IProductsRepository
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory = sqlConnectionFactory;
     private readonly IElasticClient _elasticClient = elasticClient;
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<List<Product>> ListByCategories(
         IEnumerable<Guid> categoryIds,

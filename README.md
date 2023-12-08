@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a .NET 8 Web API built following the principles of Clean Architecture. It leverages various technologies and design patterns to provide a robust and scalable solution.
+This project is a .NET 8 Web API built following the principles of Clean Architecture. It leverages various technologies and design patterns from DDD to provide a robust and scalable solution.
 
 ## Features
 

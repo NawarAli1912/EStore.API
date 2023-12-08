@@ -1,7 +1,8 @@
 @base = https://localhost:7253/api/products
 @contentType = application/json
-@productId = a3e429e9-c814-492d-b4fd-13a6c8c726e
-@jwtToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNmM4NTYwMS0xNmFkLTQ5NDAtYmJmOS05Mzk0ZDY5ZWU5YzciLCJqdGkiOiJhMGZhZmNlNi04ODI4LTQzMzItODY0Ny04M2Q1OWFmZDlkOTEiLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVzdG9yZS5jb20iLCJwZXJtaXNzaW9ucyI6IjAiLCJleHAiOjE3MDE3MDEzNjksImlzcyI6IkVTdG9yZS5BUEkiLCJhdWQiOiJFU3RvcmUuQVBJIn0.u-Sm0_5fx0Lsp1M-NikjbRfLwZUJOOjWmDnCB-rVbXc
+@productId = 686851c4-c9cc-4344-82d2-39760d71d7e5
+@categoryId = a3e429e9-c814-492d-b4fd-13a6c8c726e
+@jwtToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNmM4NTYwMS0xNmFkLTQ5NDAtYmJmOS05Mzk0ZDY5ZWU5YzciLCJqdGkiOiI0ZTViNzk1MS05NzRjLTRhZjUtYmVlYy1jNWEyZGE2MTE3OTkiLCJnaXZlbl9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGVzdG9yZS5jb20iLCJwZXJtaXNzaW9ucyI6Ii0xIiwiZXhwIjoxNzAyMDUwMzQxLCJpc3MiOiJFU3RvcmUuQVBJIiwiYXVkIjoiRVN0b3JlLkFQSSJ9.VF-sxLO_tYU7rwa_f-9o10lzd8qIM8QzktY54x-KD90
 
 ### Get 
 GET {{base}}/{{productId}}
@@ -62,6 +63,22 @@ GET {{base}}/details/{{productId}}
 # pageSize
 
 GET {{base}}/details?page=1&pageSize=10
+
+### List by category
+# this endpoint return all the products in the provided category or any sub-category
+GET {{base}}/categories/{{categoryId}}
+
+###
+POST {{base}}/{{productId}}/categories
+Authorization: {{jwtToken}}
+Content-Type: {{contentType}}
+
+{
+  "categoryIds": [
+    "53d0da35-5be5-42d0-ae3c-d5908f08a491"
+  ]
+}
+
 
 
 
