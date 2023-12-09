@@ -4,6 +4,7 @@ using Domain.ModelsSnapshots;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Nest;
+using Serilog;
 
 namespace Application.Common.Events;
 public sealed class ProductUpdatedDomainEventHandler(
@@ -15,15 +16,16 @@ public sealed class ProductUpdatedDomainEventHandler(
     private readonly ILogger<ProductUpdatedDomainEventHandler> _logger = logger;
     public async Task Handle(ProductUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var result = await _elasticClient.UpdateAsync<ProductSnapshot>(
-            notification.Product.Id,
-            u => u.Index(ElasticSearchSettings.DefaultIndex)
-            .Doc(notification.Product)
-            .Refresh(Elasticsearch.Net.Refresh.True));
-
-        if (!result.IsValid)
+        try
         {
-            _logger.LogError("Error updating the product.");
+            await _elasticClient.UpdateAsync<ProductSnapshot>(notification.Product.Id, u => u.Index(ElasticSearchSettings.DefaultIndex)
+                .Doc(notification.Product)
+                .Refresh(Elasticsearch.Net.Refresh.True), cancellationToken);
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"{nameof(ProductUpdatedDomainEventHandler)} failed with error {ex.Message}.");
         }
     }
 }

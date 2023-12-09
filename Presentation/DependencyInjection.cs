@@ -2,6 +2,7 @@
 using Microsoft.OpenApi.Models;
 using Presentation.Common.Errors;
 using Presentation.Common.Mapping;
+using Serilog;
 
 namespace Presentation;
 
@@ -13,6 +14,11 @@ public static class DependencyInjection
         services.AddControllers();
         services.AddSingleton<ProblemDetailsFactory, EStoreProblemDetailsFactory>();
         services.AddMapping();
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .CreateLogger();
 
 
 

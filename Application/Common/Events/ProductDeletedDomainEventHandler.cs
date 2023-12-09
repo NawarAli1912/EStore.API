@@ -3,6 +3,7 @@ using Domain.ModelsSnapshots;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Nest;
+using Serilog;
 
 namespace Application.Common.Events;
 
@@ -14,13 +15,15 @@ public class ProductDeletedDomainEventHandler(IElasticClient elasticClient, ILog
 
     public async Task Handle(ProductDeletedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var result = await _elasticClient.DeleteAsync<ProductSnapshot>
+        try
+        {
+            await _elasticClient.DeleteAsync<ProductSnapshot>
             (notification.Id,
             ct: cancellationToken);
-
-        if (!result.IsValid)
+        }
+        catch (Exception ex)
         {
-            _logger.LogError("Error deleting the product.");
+            Log.Error($"{nameof(ProductDeletedDomainEventHandler)} failed with error {ex.Message}.");
         }
     }
 }

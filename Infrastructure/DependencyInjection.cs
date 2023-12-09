@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nest;
 using Quartz;
+using Serilog;
 using System.Text;
 
 namespace Infrastructure;
@@ -74,7 +75,8 @@ public static class DependencyInjection
                         .Get<ElasticSearchSettings>();
 
         var connectionSettings = new ConnectionSettings(new Uri(elasticSearchSettings!.BaseUrl))
-                            .DefaultIndex(elasticSearchSettings!.DefaultIndex);
+                            .DefaultIndex(elasticSearchSettings!.DefaultIndex)
+                            .ThrowExceptions();
 
         var client = new ElasticClient(connectionSettings);
 
@@ -136,19 +138,22 @@ public static class DependencyInjection
 
     private static void CreateIndex(ElasticClient client, string indexName)
     {
-        var existsResponse = client.Indices.Exists(indexName);
-        if (!existsResponse.Exists)
+        try
         {
-            var createIndexResponse = client
-                .Indices
-                .Create(indexName, c => c
-                .Map<ProductSnapshot>(m => m.AutoMap()));
-
-            if (!createIndexResponse.IsValid)
+            var existsResponse = client.Indices.Exists(indexName);
+            if (!existsResponse.Exists)
             {
-                //throw new Exception("Failed to create the ElasticSearch index.");
+
+                var createIndexResponse = client
+                    .Indices
+                    .Create(indexName, c => c
+                    .Map<ProductSnapshot>(m => m.AutoMap()));
             }
         }
+        catch (Exception ex)
+        {
+            Log.Error($"{nameof(DependencyInjection)} failed with error {ex.Message}.");
+            // throw;
+        }
     }
-
 }
