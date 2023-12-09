@@ -1,6 +1,6 @@
 ﻿using Domain.Kernal;
 
-namespace Domain.DomainErrors.Products;
+namespace Domain.DomainErrors;
 
 public static partial class Errors
 {

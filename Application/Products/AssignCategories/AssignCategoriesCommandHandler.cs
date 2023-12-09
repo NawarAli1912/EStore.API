@@ -1,5 +1,5 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors.Products;
+using Domain.DomainErrors;
 using Domain.Kernal;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -20,12 +20,14 @@ public sealed class Category : AggregateRoot<Guid>
     public static Category Create(
         Guid id,
         string name,
+        Category parentCategory,
         List<Category>? subCategories = null,
         Guid? parentCategoryId = null)
     {
         return new Category(
             id,
             name,
+            parentCategory,
             subCategories ?? [],
             parentCategoryId
         );
@@ -38,6 +40,7 @@ public sealed class Category : AggregateRoot<Guid>
             .Select(c => new Category(
                 c.Id,
                 c.Name,
+                null!,
                 BuildCategoryTree(categories, c.Id),
                 parentId))
             .ToList();
@@ -45,13 +48,23 @@ public sealed class Category : AggregateRoot<Guid>
         return tree;
     }
 
+    public void AssignProducts(IEnumerable<Product> products)
+    {
+        foreach (var product in products)
+        {
+            _products.Add(product);
+        }
+    }
+
     private Category(
         Guid id,
         string name,
+        Category parentCategory,
         List<Category> subCategories,
         Guid? parentCategoryId = null) : base(id)
     {
         Name = name;
+        ParentCategory = parentCategory;
         ParentCategoryId = parentCategoryId;
         _subCategories = subCategories;
     }

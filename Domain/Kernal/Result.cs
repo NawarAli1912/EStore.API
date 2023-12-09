@@ -111,12 +111,10 @@ public static class Result
         return value;
     }
 
-    public static Deleted Created => default;
-    public static Deleted Success => default;
+    public static Created Created => default;
+    public static Success Success => default;
     public static Deleted Deleted => default;
-    public static Deleted Updated => default;
-
-
+    public static Updated Updated => default;
 }
 
 public readonly record struct Success;

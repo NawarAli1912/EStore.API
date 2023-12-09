@@ -19,12 +19,14 @@ public sealed class GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnec
 
         var queryResult = (await sqlConnection.QueryAsync<Category>(sql)).ToList();
 
-        var rootCategories = queryResult.Where(c => c.ParentCategoryId is null).ToList();
+        var rootCategories = queryResult
+                .Where(c => c.ParentCategoryId is null).ToList();
 
         var result = rootCategories
             .Select(root => Category.Create(
                 root.Id,
                 root.Name,
+                null!,
                 Category.BuildCategoryTree(queryResult, root.Id),
                 root.ParentCategoryId))
             .ToList();

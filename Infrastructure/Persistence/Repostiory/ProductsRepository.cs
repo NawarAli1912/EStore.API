@@ -72,6 +72,7 @@ public sealed class ProductsRepository(
                                             Category.Create(
                                             categorySnap.CategoryId,
                                             categorySnap.CategoryName,
+                                            null!,
                                             parentCategoryId: categorySnap.ParentCategoryId);
 
                                     if (productDict.TryGetValue(productSnap.Id, out Product? product))

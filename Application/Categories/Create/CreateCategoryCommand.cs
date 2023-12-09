@@ -1,5 +1,9 @@
-﻿namespace Application.Categories.Create;
+﻿using Domain.Kernal;
+using MediatR;
 
-internal class CreateCategoryCommand
-{
-}
+namespace Application.Categories.Create;
+
+public record CreateCategoryCommand(
+    string Name,
+    Guid? ParentCategoryId,
+    List<Guid> Products) : IRequest<Result<Created>>;

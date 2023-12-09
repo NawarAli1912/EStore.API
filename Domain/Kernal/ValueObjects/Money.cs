@@ -1,5 +1,5 @@
 ﻿
-using Domain.DomainErrors.Common;
+using Domain.DomainErrors;
 using Domain.Kernal.Models;
 
 namespace Domain.Kernal.ValueObjects;
