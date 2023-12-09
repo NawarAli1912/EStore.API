@@ -56,6 +56,17 @@ public sealed class Category : AggregateRoot<Guid>
         }
     }
 
+    public void Update(string? name, Guid? parentId, bool nullParent)
+    {
+        Name = name ?? Name;
+
+        ParentCategoryId = parentId;
+        if (nullParent)
+        {
+            ParentCategoryId = null;
+        }
+    }
+
     private Category(
         Guid id,
         string name,
