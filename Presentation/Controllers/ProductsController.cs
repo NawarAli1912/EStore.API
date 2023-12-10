@@ -16,7 +16,7 @@ using Presentation.Common.Models.Paging;
 using Presentation.Controllers.Base;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
-namespace Presentation.Controllers.Products;
+namespace Presentation.Controllers;
 
 [Route("api/products")]
 public class ProductsController(

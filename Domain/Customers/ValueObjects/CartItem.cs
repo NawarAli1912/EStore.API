@@ -1,16 +1,11 @@
-﻿using Domain.Kernal.Models;
+﻿using Domain.DomainErrors;
+using Domain.Kernal;
+using Domain.Kernal.Models;
 
 namespace Domain.Customers.ValueObjects;
 
 public sealed class CartItem : ValueObject
 {
-    private CartItem(Guid cartId, Guid productId, int quantity)
-    {
-        CartId = cartId;
-        ProductId = productId;
-        Quantity = quantity;
-    }
-
     public Guid CartId { get; init; }
 
     public Guid ProductId { get; init; }
@@ -19,13 +14,24 @@ public sealed class CartItem : ValueObject
 
     public override IEnumerable<object> GetEqualityComponents()
     {
-        yield return CartId;
         yield return ProductId;
-        yield return Quantity;
     }
 
-    public static CartItem Create(Guid cartId, Guid productId, int quantity)
+    public static Result<CartItem> Create(
+        Guid cartId,
+        Guid productId,
+        int quantity)
     {
-        return new(cartId, productId, quantity);
+        if (quantity < 0)
+        {
+            return Errors.CartItem.NegativeQuantity;
+        }
+
+        return new CartItem
+        {
+            CartId = cartId,
+            ProductId = productId,
+            Quantity = quantity
+        };
     }
 }

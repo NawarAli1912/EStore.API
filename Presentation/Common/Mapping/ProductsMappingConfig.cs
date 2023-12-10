@@ -37,7 +37,7 @@ public class ProductsMappingConfig : IRegister
 
         config.NewConfig<(Guid, AssignCategoriesRequest), AssignCategoriesCommand>()
             .Map(dest => dest.Id, src => src.Item1)
-            .Map(dest => dest.CategoriesIds, src => src.Item2.CategoryIds);
+            .Map(dest => dest, src => src.Item2);
 
         config.NewConfig<ListProductsFilter, ProductsFilter>();
 

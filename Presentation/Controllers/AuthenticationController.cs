@@ -8,8 +8,7 @@ using Presentation.Controllers.Base;
 using LoginRequest = Contracts.Authentication.LoginRequest;
 using RegisterRequest = Contracts.Authentication.RegisterRequest;
 
-namespace Presentation.Controllers.Authentication;
-
+namespace Presentation.Controllers;
 
 public class AuthenticationController(
     ISender sender,

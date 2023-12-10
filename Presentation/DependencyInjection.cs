@@ -20,8 +20,6 @@ public static class DependencyInjection
             .WriteTo.Console()
             .CreateLogger();
 
-
-
         return services;
     }
 

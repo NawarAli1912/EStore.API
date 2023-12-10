@@ -10,7 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Base;
 
-namespace Presentation.Controllers.Categories;
+namespace Presentation.Controllers;
 
 [Route("api/categories")]
 public class CategoriesController(ISender sender, IMapper mapper) : ApiController

@@ -10,7 +10,8 @@ public static class DependencyInjection
     {
         var config = TypeAdapterConfig.GlobalSettings;
 
-        TypeAdapterConfig.GlobalSettings.Default.AddDestinationTransform(DestinationTransform.EmptyCollectionIfNull);
+        TypeAdapterConfig.GlobalSettings.Default
+            .AddDestinationTransform(DestinationTransform.EmptyCollectionIfNull);
 
         config.Scan(Assembly.GetExecutingAssembly());
 

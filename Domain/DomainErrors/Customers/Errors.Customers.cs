@@ -9,5 +9,9 @@ public static partial class Errors
         public static Error DuplicateEmail = Error.Conflict(
             "Cusotmer.DuplicateEmail",
             "Email already exists.");
+
+        public static Error NotFound = Error.NotFound(
+            "Customer.NotFound",
+            "Customer doesn't exists.");
     }
 }
