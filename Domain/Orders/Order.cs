@@ -1,4 +1,6 @@
 ﻿using Domain.Customers;
+using Domain.Kernal;
+using Domain.Kernal.Enums;
 using Domain.Kernal.Models;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
@@ -14,21 +16,58 @@ public sealed class Order : AggregateRoot<Guid>
 
     public OrderStatus Status { get; private set; }
 
+    public ShippingInfo ShippingInfo { get; private set; }
+
+    public DateTime CreatedAt { get; private set; }
+
+    public DateTime ModifiedAt { get; private set; }
+
+    public decimal TotalPrice { get; private set; }
+
     public IReadOnlySet<LineItem> LineItems => _lineItems;
 
-    public static Order Create(Customer customer)
+    public static Result<Order> Create(
+        Customer customer,
+        ShippingCompany ShippingCompany,
+        string ShippingComapnyLocation,
+        string PhoneNumber)
     {
-        return new Order
+
+        var order = new Order
         {
-            CustomerId = customer.Id
+            Id = Guid.NewGuid(),
+            CustomerId = customer.Id,
+            Status = OrderStatus.Pending,
+            CreatedAt = DateTime.UtcNow,
+            ModifiedAt = DateTime.UtcNow
         };
+
+        var shippingInfoResult = ShippingInfo
+            .Create(order.Id, ShippingCompany, ShippingComapnyLocation, PhoneNumber);
+
+        if (shippingInfoResult.IsError)
+        {
+            return shippingInfoResult.Errors;
+        }
+
+        order.ShippingInfo = shippingInfoResult.Value;
+
+        return order;
+
     }
 
-    public void Add(Product product)
+    public void AddItem(Product product)
     {
-        var lineItem = LineItem.Create(Guid.NewGuid(), product.Id, Id, product.CustomerPrice);
+        var lineItem = LineItem
+            .Create(
+            Guid.NewGuid(),
+            product.Id,
+            Id,
+            product.CustomerPrice);
 
         _lineItems.Add(lineItem);
+
+        TotalPrice += product.CustomerPrice.Value;
     }
 
     private Order() : base(Guid.NewGuid())

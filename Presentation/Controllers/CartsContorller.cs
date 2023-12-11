@@ -1,4 +1,5 @@
 ﻿using Application.Carts.AddCartItem;
+using Application.Carts.Checkout;
 using Application.Carts.Clear;
 using Application.Carts.Get;
 using Application.Carts.RemoveCartItem;
@@ -75,5 +76,17 @@ public class CartsContorller(ISender sender, IMapper mapper) : ApiController
         return result.Match(
             _ => Ok(),
             Problem);
+    }
+
+    [HttpPost("checkout")]
+    public async Task<IActionResult> Checkout(CheckoutRequest request)
+    {
+        string customerId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var result = await _sender
+            .Send(_mapper.Map<CheckoutCommand>((Guid.Parse(customerId), request)));
+
+        return result.Match(
+            value => Ok(value),
+            errors => Problem(errors));
     }
 }

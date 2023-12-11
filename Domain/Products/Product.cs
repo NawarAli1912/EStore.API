@@ -142,6 +142,21 @@ public class Product : AggregateRoot<Guid>
         return this;
     }
 
+    public Result<Updated> DecreaseQuantity(int value)
+    {
+        Quantity -= value;
+        if (Quantity < 0)
+        {
+            Quantity += value;
+            return Error.Custom(
+                (int)ErrorType.Conflict,
+                "Product.InvalidQuantity",
+                "Product quantity can't be decreased to negative value.");
+        }
+
+        return Result.Updated;
+    }
+
     private Product() : base(Guid.NewGuid())
     {
     }
