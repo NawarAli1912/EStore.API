@@ -67,7 +67,7 @@ public sealed class Order : AggregateRoot<Guid>
 
         _lineItems.Add(lineItem);
 
-        TotalPrice += product.CustomerPrice.Value;
+        TotalPrice += product.CustomerPrice;
     }
 
     private Order() : base(Guid.NewGuid())

@@ -30,8 +30,8 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
         {
             "name" => sortOrder == "desc" ? [.. products.OrderByDescending(p => p.Name)] :
                         [.. products.OrderBy(p => p.Name)],
-            "price" => sortOrder == "desc" ? [.. products.OrderByDescending(p => p.CustomerPrice.Value)] :
-                        [.. products.OrderBy(p => p.CustomerPrice.Value)],
+            "price" => sortOrder == "desc" ? [.. products.OrderByDescending(p => p.CustomerPrice)] :
+                        [.. products.OrderBy(p => p.CustomerPrice)],
             "quantity" => sortOrder == "desc" ? [.. products.OrderByDescending(p => p.Quantity)] :
                         [.. products.OrderBy(p => p.Quantity)],
             _ => products

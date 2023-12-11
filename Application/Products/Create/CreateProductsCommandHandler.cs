@@ -36,7 +36,6 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
                 item.Quantity,
                 item.CustomerPrice,
                 item.PurchasePrice,
-                item.Currency,
                 item.Sku);
 
             if (productResult.IsError)

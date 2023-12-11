@@ -14,20 +14,13 @@ public class ProductsMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<Product, CreateProductResponse>()
-            .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
-            .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString())
             .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
 
 
         config.NewConfig<Product, ProductDetailedResponse>()
-            .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
-            .Map(dest => dest.PurchasePrice, src => src.PurchasePrice.Value)
-            .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString())
             .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
 
-        config.NewConfig<Product, ProductResponse>()
-            .Map(dest => dest.CustomerPrice, src => src.CustomerPrice.Value)
-            .Map(dest => dest.Currency, src => src.CustomerPrice.Currency.ToString());
+        config.NewConfig<Product, ProductResponse>();
 
         config.NewConfig<Category, CategoryResponse>();
 

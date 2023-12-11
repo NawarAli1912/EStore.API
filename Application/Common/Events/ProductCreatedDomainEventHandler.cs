@@ -24,7 +24,6 @@ public sealed class ProductCreatedDomainEventHandler(IElasticClient elasticClien
         {
             Log.Error($"{nameof(ProductCreatedDomainEventHandler)} failed with error {ex.Message}.");
         }
-
-
     }
 }
+

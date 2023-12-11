@@ -40,7 +40,7 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
             customer,
             productsDict,
             request.ShippingCompany,
-            request.ShippingComapnyLocation,
+            request.ShippingCompanyLocation,
             request.PhoneNumber);
 
         if (orderResult.IsError)

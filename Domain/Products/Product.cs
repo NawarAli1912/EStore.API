@@ -2,7 +2,6 @@
 using Domain.DomainEvents;
 using Domain.Kernal;
 using Domain.Kernal.Models;
-using Domain.Kernal.ValueObjects;
 using Domain.ModelsSnapshots;
 using Domain.Products.ValueObjects;
 
@@ -18,9 +17,9 @@ public class Product : AggregateRoot<Guid>
 
     public int Quantity { get; private set; }
 
-    public Money CustomerPrice { get; private set; } = default!;
+    public decimal CustomerPrice { get; private set; } = default!;
 
-    public Money PurchasePrice { get; private set; } = default!;
+    public decimal PurchasePrice { get; private set; } = default!;
 
     public Sku? Sku { get; private set; } = default;
 
@@ -33,22 +32,10 @@ public class Product : AggregateRoot<Guid>
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
-        string currency,
         string? sku = default,
         IEnumerable<Category>? categories = default)
     {
         List<Error> errors = [];
-        var customerPriceResult = Money.Create(customerPrice, currency);
-        if (customerPriceResult.IsError)
-        {
-            errors.AddRange(customerPriceResult.Errors);
-        }
-
-        var purchasePriceResult = Money.Create(purchasePrice, currency);
-        if (purchasePriceResult.IsError)
-        {
-            errors.AddRange(purchasePriceResult.Errors);
-        }
 
         var skuResult = Sku.Create(sku);
         if (skuResult.IsError)
@@ -67,8 +54,8 @@ public class Product : AggregateRoot<Guid>
             Name = name,
             Description = description,
             Quantity = quantity,
-            CustomerPrice = customerPriceResult.Value,
-            PurchasePrice = purchasePriceResult.Value,
+            CustomerPrice = customerPrice,
+            PurchasePrice = purchasePrice,
             Sku = skuResult.Value
         };
 
@@ -112,8 +99,8 @@ public class Product : AggregateRoot<Guid>
         bool nullSku = false)
     {
         List<Error> errors = [];
-        var customerPriceResult = Money.Create(customerPrice ?? CustomerPrice.Value);
-        var purchasePriceResult = Money.Create(purchasePrice ?? PurchasePrice.Value);
+        var newCustomerPrice = customerPrice ?? CustomerPrice;
+        var newPurchasePrice = purchasePrice ?? PurchasePrice;
         Sku = null;
         if (!nullSku)
         {
@@ -125,19 +112,11 @@ public class Product : AggregateRoot<Guid>
             }
         }
 
-        errors.AddRange(customerPriceResult.Errors);
-        errors.AddRange(purchasePriceResult.Errors);
-
-        if (errors.Count > 0)
-        {
-            return errors;
-        }
-
         Name = name ?? Name;
         Description = description ?? Description;
         Quantity = quantity ?? Quantity;
-        CustomerPrice = customerPriceResult.Value;
-        PurchasePrice = purchasePriceResult.Value;
+        CustomerPrice = newCustomerPrice;
+        PurchasePrice = newPurchasePrice;
 
         return this;
     }

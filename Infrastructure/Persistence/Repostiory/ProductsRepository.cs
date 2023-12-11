@@ -3,7 +3,6 @@ using Application.Common.Repository;
 using Application.Products.List;
 using Dapper;
 using Domain.Categories;
-using Domain.Kernal;
 using Domain.ModelsSnapshots;
 using Domain.Products;
 using Nest;
@@ -36,9 +35,8 @@ public sealed class ProductsRepository(
                                     p.Name, 
                                     p.Description, 
                                     p.Quantity,
-                                    p.PurchasePrice_Value,
-                                    p.PurchasePrice_Currency,
-                                    p.CustomerPrice_Value,
+                                    p.PurchasePrice,
+                                    p.CustomerPrice,
                                     p.Sku,
                                     c.Id AS CategoryId,
                                     c.Name AS CategoryName,
@@ -57,9 +55,8 @@ public sealed class ProductsRepository(
                                     Name,
                                     Description,
                                     Quantity,
-                                    PurchasePrice_Value,
-                                    PurchasePrice_Currency,
-                                    CustomerPrice_Value,
+                                    PurchasePrice,
+                                    CustomerPrice,
                                     Sku,
                                     CategoryId,
                                     CategoryName,
@@ -87,9 +84,8 @@ public sealed class ProductsRepository(
                                         productSnap.Name,
                                         productSnap.Description,
                                         productSnap.Quantity,
-                                        productSnap.CustomerPrice_Value,
-                                        productSnap.PurchasePrice_Value,
-                                        Enum.GetName(typeof(Currency), productSnap.CustomerPrice_Currency)!,
+                                        productSnap.CustomerPrice,
+                                        productSnap.PurchasePrice,
                                         productSnap.Sku).Value;
 
                                     product.AssignCategory(category);
@@ -143,11 +139,11 @@ public sealed class ProductsRepository(
                     )
                     .Filter(f =>
                         f.Range(r => r
-                                .Field(f => f.CustomerPrice_Value)
+                                .Field(f => f.CustomerPrice)
                                 .GreaterThanOrEquals((double?)filter.MinPrice ?? double.MinValue)
                             )
                         && f.Range(r => r
-                                .Field(f => f.CustomerPrice_Value)
+                                .Field(f => f.CustomerPrice)
                                 .LessThanOrEquals((double?)filter.MaxPrice ?? double.MaxValue)
                             )
                         && f.Range(r => r
@@ -170,9 +166,8 @@ public sealed class ProductsRepository(
                 hit.Source.Name,
                 hit.Source.Description,
                 hit.Source.Quantity,
-                hit.Source.CustomerPrice_Value,
-                hit.Source.PurchasePrice_Value,
-                "USD",
+                hit.Source.CustomerPrice,
+                hit.Source.PurchasePrice,
                 hit.Source.Sku).Value);
         }
 

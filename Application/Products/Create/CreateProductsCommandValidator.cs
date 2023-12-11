@@ -33,10 +33,6 @@ public class CreateProductItemsValidator : AbstractValidator<CreateProductItems>
             .GreaterThan(0).WithMessage("Purchase price must be greater than 0.")
             .LessThan(item => item.CustomerPrice)
                 .WithMessage("Purchase price must be less than the customer price."); ;
-
-        RuleFor(item => item.Currency)
-            .NotEmpty().WithMessage("Currency is required.")
-            .Must(BeAValidCurrency).WithMessage("Currency must be either USD or SYP.");
     }
 
     private bool BeAValidCurrency(string currency)

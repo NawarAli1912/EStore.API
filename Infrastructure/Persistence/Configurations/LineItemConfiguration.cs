@@ -18,13 +18,7 @@ internal class LineItemConfiguration : IEntityTypeConfiguration<LineItem>
             .HasForeignKey(
                 li => li.ProductId);
 
-        builder.ComplexProperty(li => li.Price, priceConfiguration =>
-        {
-            priceConfiguration.Property(p => p.Currency)
-                    .HasMaxLength(3);
-
-            priceConfiguration.Property(p => p.Value)
-                    .HasColumnType("decimal(12, 2)");
-        });
+        builder.Property(li => li.Price)
+            .HasColumnType("decimal(12, 2)");
     }
 }

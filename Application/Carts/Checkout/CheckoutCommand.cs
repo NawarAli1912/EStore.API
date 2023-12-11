@@ -7,6 +7,6 @@ namespace Application.Carts.Checkout;
 public record CheckoutCommand(
     Guid CustomerId,
     ShippingCompany ShippingCompany,
-    string ShippingComapnyLocation,
+    string ShippingCompanyLocation,
     string PhoneNumber
     ) : IRequest<Result<Created>>;

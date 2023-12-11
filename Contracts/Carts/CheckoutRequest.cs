@@ -4,6 +4,6 @@ namespace Contracts.Carts;
 
 public record CheckoutRequest(
     ShippingCompany ShippingCompany,
-    string ShippingComapnyLocation,
+    string ShippingCompanyLocation,
     string PhoneNumber
     );

@@ -20,23 +20,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                 value => Sku.Create(value).Value)
             .IsRequired(false);
 
-        builder.ComplexProperty(p => p.CustomerPrice, priceBuilder =>
-        {
-            priceBuilder.Property(m => m.Currency)
-                        .HasMaxLength(3);
+        builder.Property(p => p.CustomerPrice)
+            .HasColumnType("decimal(12,2)");
 
-            priceBuilder.Property(m => m.Value)
-                        .HasColumnType("decimal(12,2)");
-        });
-
-        builder.ComplexProperty(p => p.PurchasePrice, priceBuilder =>
-        {
-            priceBuilder.Property(m => m.Currency)
-                        .HasMaxLength(3);
-
-            priceBuilder.Property(m => m.Value)
-                        .HasColumnType("decimal(12,2)");
-        });
+        builder.Property(p => p.PurchasePrice)
+            .HasColumnType("decimal(12,2)");
 
         builder.HasMany(p => p.Categories)
             .WithMany(c => c.Products);
