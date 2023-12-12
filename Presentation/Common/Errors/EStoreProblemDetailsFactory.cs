@@ -93,7 +93,9 @@ public class EStoreProblemDetailsFactory : ProblemDetailsFactory
         List<Error>? errors = httpContext?.Items[HttpContextItemKeys.Errors] as List<Error>;
         if (errors is not null)
         {
-            problemDetails.Extensions.Add("errors", errors.Select(e => e.Code));
+            problemDetails.Extensions.Add(
+                "errors",
+                errors.ToDictionary(e => e.Code, e => e.Description));
         }
     }
 }

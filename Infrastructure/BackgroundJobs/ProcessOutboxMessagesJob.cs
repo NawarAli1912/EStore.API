@@ -10,7 +10,10 @@ using Quartz;
 namespace Infrastructure.BackgroundJobs;
 
 [DisallowConcurrentExecution]
-public sealed class ProcessOutboxMessagesJob(ApplicationDbContext context, IPublisher publisher, ILogger<ProcessOutboxMessagesJob> logger) : IJob
+public sealed class ProcessOutboxMessagesJob(
+    ApplicationDbContext context,
+    IPublisher publisher,
+    ILogger<ProcessOutboxMessagesJob> logger) : IJob
 {
     private readonly ApplicationDbContext _context = context;
     private readonly IPublisher _publisher = publisher;

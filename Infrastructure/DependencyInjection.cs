@@ -61,6 +61,16 @@ public static class DependencyInjection
                         schedule =>
                         schedule.WithIntervalInSeconds(10)
                         .RepeatForever()));
+
+            var elasticSearchJobKey = new JobKey(nameof(ElasticSearchSync));
+            configure.AddJob<ElasticSearchSync>(elasticSearchJobKey)
+            .AddTrigger(
+                trigger =>
+                trigger.ForJob(elasticSearchJobKey)
+                    .WithSimpleSchedule(
+                        schedule =>
+                        schedule.WithIntervalInHours(24)
+                        .RepeatForever()));
         });
 
         services.AddQuartzHostedService();

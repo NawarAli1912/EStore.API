@@ -27,14 +27,11 @@ public class CartsMappingConfig : IRegister
             .Map(dest => dest, src => src.Item2);
     }
 
-    private static Domain.Kernal.Enums.ShippingCompany MapToDomainShippingCompany(ShippingCompany src)
+    private static Domain.Kernal.Enums.ShippingCompany MapToDomainShippingCompany(ShippingCompany src) => src switch
     {
-        return src switch
-        {
-            ShippingCompany.Alkadmous => Domain.Kernal.Enums.ShippingCompany.Alkadmous,
-            ShippingCompany.Alfouad => Domain.Kernal.Enums.ShippingCompany.Alfouad,
-            ShippingCompany.RahawanCargo => Domain.Kernal.Enums.ShippingCompany.RahawanCargo,
-            _ => Domain.Kernal.Enums.ShippingCompany.Alkadmous,
-        };
-    }
+        ShippingCompany.Alkadmous => Domain.Kernal.Enums.ShippingCompany.Alkadmous,
+        ShippingCompany.Alfouad => Domain.Kernal.Enums.ShippingCompany.Alfouad,
+        ShippingCompany.RahawanCargo => Domain.Kernal.Enums.ShippingCompany.RahawanCargo,
+        _ => throw new ArgumentException(nameof(src)),
+    };
 }

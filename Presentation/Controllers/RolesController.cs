@@ -23,7 +23,11 @@ public class RolesController(RoleManager<Role> roleManager, UserManager<Identity
         if (await _roleManager.FindByNameAsync(roleName) is not null)
             throw new ArgumentException();
 
-        var result = await _roleManager.CreateAsync(new Role(roleName));
+        var result = await _roleManager.CreateAsync(new Role(roleName)
+        {
+            NormalizedName = roleName.ToUpper(),
+            ConcurrencyStamp = Guid.NewGuid().ToString()
+        });
         return result.Succeeded ? Ok(result) : BadRequest(result.Errors);
     }
 

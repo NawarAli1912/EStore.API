@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using Presentation.Common.Errors;
 using Presentation.Common.Mapping;
 using Serilog;
+using System.Text.Json.Serialization;
 
 namespace Presentation;
 
@@ -11,7 +12,9 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
         services.AddSwaggerConfig();
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
         services.AddSingleton<ProblemDetailsFactory, EStoreProblemDetailsFactory>();
         services.AddMapping();
 
@@ -28,7 +31,6 @@ public static class DependencyInjection
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "EStoreAPI", Version = "v1" });
-
 
             c.AddSecurityDefinition("JWT",
             new OpenApiSecurityScheme
@@ -60,3 +62,4 @@ public static class DependencyInjection
         return services;
     }
 }
+

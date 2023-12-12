@@ -33,7 +33,7 @@ public sealed class CartOperationService
             return result.Errors;
         }
 
-        return product.CustomerPrice;
+        return product.CustomerPrice * requestedQuantity;
     }
 
     public static Result<decimal> RemoveCartItem(
@@ -58,6 +58,6 @@ public sealed class CartOperationService
             return result.Errors;
         }
 
-        return -product.CustomerPrice;
+        return -product.CustomerPrice * requestedQuantity;
     }
 }

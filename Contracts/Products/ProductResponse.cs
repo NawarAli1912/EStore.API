@@ -13,6 +13,7 @@ public record ProductDetailedResponse(
 
 public record ProductResponse(
     Guid Id,
+    int Quantity,
     string Name,
     string Description,
     decimal CustomerPrice);

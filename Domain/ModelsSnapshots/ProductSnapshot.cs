@@ -33,4 +33,15 @@ public sealed class ProductSnapshot
 
         return item;
     }
+
+    public static bool Equals(ProductSnapshot lhs, ProductSnapshot rhs)
+    {
+        return lhs.Id == rhs.Id
+            && lhs.Name == rhs.Name
+            && lhs.Description == rhs.Description
+            && lhs.Quantity == rhs.Quantity
+            && lhs.PurchasePrice.Equals(rhs.PurchasePrice)
+            && lhs.CustomerPrice.Equals(rhs.CustomerPrice)
+            && lhs.Sku.Equals(rhs.Sku);
+    }
 }

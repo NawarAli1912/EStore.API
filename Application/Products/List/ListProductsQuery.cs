@@ -7,5 +7,5 @@ public record ListProductsQuery(
     ProductsFilter Filter,
     string? SortColumn,
     string? SortOrder,
-    int Page = 0,
+    int Page = 1,
     int PageSize = 10) : IRequest<Result<ListProductResult>>;

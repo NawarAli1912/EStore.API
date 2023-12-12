@@ -11,6 +11,7 @@ internal class GetCartQueryHandler(IApplicationDbContext context) : IRequestHand
 
     public async Task<Result<CartResult>> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
+        List<Error> errors = [];
         var customer = await _context
             .Customers
             .Include(c => c.Cart)
@@ -37,7 +38,7 @@ internal class GetCartQueryHandler(IApplicationDbContext context) : IRequestHand
         foreach (var item in customer.Cart.CartItems)
         {
             var itemPrice =
-                (decimal)productPriceDict[item.ProductId]! * item.Quantity;
+                productPriceDict[item.ProductId]! * item.Quantity;
 
             items.Add(new CartItemResult(
                     item.ProductId,

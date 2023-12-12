@@ -87,6 +87,6 @@ public class CartsContorller(ISender sender, IMapper mapper) : ApiController
 
         return result.Match(
             value => Ok(value),
-            errors => Problem(errors));
+            Problem);
     }
 }

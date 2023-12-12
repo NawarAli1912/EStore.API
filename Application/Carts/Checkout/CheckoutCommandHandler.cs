@@ -19,12 +19,18 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
             .Customers
             .Include(c => c.Cart)
             .ThenInclude(c => c.CartItems)
-            .FirstOrDefaultAsync(c => c.Id == request.CustomerId, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == request.CustomerId, cancellationToken);
 
         if (customer is null)
         {
             return Errors.Customers.NotFound;
         }
+
+        if (customer.Cart.CartItems.Count == 0)
+        {
+            return Errors.Cart.EmptyCart;
+        }
+
         var productsIds = customer
             .Cart
             .CartItems

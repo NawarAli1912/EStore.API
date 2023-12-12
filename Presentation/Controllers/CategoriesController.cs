@@ -54,7 +54,7 @@ public class CategoriesController(ISender sender, IMapper mapper) : ApiControlle
             _mapper.Map<UpdateCategoryCommand>((id, request)));
 
         return result.Match(
-            value => Ok(value),
+            Ok,
             Problem);
     }
 }
