@@ -86,7 +86,7 @@ public class CartsContorller(ISender sender, IMapper mapper) : ApiController
             .Send(_mapper.Map<CheckoutCommand>((Guid.Parse(customerId), request)));
 
         return result.Match(
-            value => Ok(value),
+            _ => Created(),
             Problem);
     }
 }

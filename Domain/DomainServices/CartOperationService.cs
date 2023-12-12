@@ -2,6 +2,7 @@
 using Domain.DomainErrors;
 using Domain.Kernal;
 using Domain.Products;
+using Domain.Products.Enums;
 
 namespace Domain.DomainServices;
 public sealed class CartOperationService
@@ -19,6 +20,11 @@ public sealed class CartOperationService
         if (product is null)
         {
             return Errors.Product.NotFound;
+        }
+
+        if (product.Status != ProductStatus.Active)
+        {
+            return Errors.Product.Inactive(product.Name);
         }
 
         if (product.Quantity < requestedQuantity)

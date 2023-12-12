@@ -5,5 +5,6 @@ public record ListProductsDetailsFilter(
     decimal? MinPrice,
     decimal? MaxPrice,
     int? MinQuantity,
-    int? MaxQuantity
+    int? MaxQuantity,
+    IEnumerable<ProductStatus>? Status
     );

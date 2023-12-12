@@ -1,6 +1,8 @@
 ﻿using Application.Common.Data;
 using Dapper;
 using Domain.Categories;
+using Domain.DomainErrors;
+using Domain.Kernal;
 using MediatR;
 using Microsoft.Data.SqlClient;
 
@@ -8,11 +10,11 @@ namespace Application.Categories.GetHierarchyDownward;
 
 public sealed class GetHierarchyDownwardQueryHandler(
             ISqlConnectionFactory sqlConnectionFactory) :
-        IRequestHandler<GetHierarchyDownwardQuery, Category>
+        IRequestHandler<GetHierarchyDownwardQuery, Result<Category>>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory = sqlConnectionFactory;
 
-    public async Task<Category> Handle(
+    public async Task<Result<Category>> Handle(
         GetHierarchyDownwardQuery request,
         CancellationToken cancellationToken)
     {
@@ -48,6 +50,11 @@ public sealed class GetHierarchyDownwardQueryHandler(
 
         var queryResult = await sqlConnection
                 .QueryAsync<Category>(sql, new { RootCategoryId = request.Id });
+
+        if (queryResult is null || queryResult.Count() == 0)
+        {
+            return Errors.Category.NotFound;
+        }
 
         return Category.BuildCategoryTree(
             queryResult.ToList(),

@@ -4,6 +4,7 @@ using Domain.Kernal;
 using Domain.Kernal.Enums;
 using Domain.Orders;
 using Domain.Products;
+using Domain.Products.Enums;
 
 namespace Domain.DomainServices;
 public class OrderOrchestratorService
@@ -28,6 +29,7 @@ public class OrderOrchestratorService
             return orderResult.Errors;
         }
 
+
         List<Error> errors = [];
         var order = orderResult.Value;
         var cartItems = customer.Cart.CartItems.ToList();
@@ -36,6 +38,12 @@ public class OrderOrchestratorService
             if (!productDict.TryGetValue(item.ProductId, out var product))
             {
                 errors.Add(Errors.Product.NotFound);
+                continue;
+            }
+
+            if (product.Status != ProductStatus.Active)
+            {
+                errors.Add(Errors.Product.Inactive(product.Name));
                 continue;
             }
 

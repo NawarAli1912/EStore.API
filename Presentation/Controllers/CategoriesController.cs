@@ -23,7 +23,10 @@ public class CategoriesController(ISender sender, IMapper mapper) : ApiControlle
     {
         var result = await _sender.Send(new GetFullHierarchyQuery());
 
-        return Ok(result);
+        return result.Match(
+            value => Ok(_mapper.Map<List<CategoryResponse>>(value)),
+            Problem
+            );
     }
 
     [HttpGet("hierarchy/{id}")]
@@ -31,7 +34,9 @@ public class CategoriesController(ISender sender, IMapper mapper) : ApiControlle
     {
         var result = await _sender.Send(new GetHierarchyDownwardQuery(id));
 
-        return Ok(result);
+        return result.Match(
+            value => Ok(_mapper.Map<CategoryResponse>(value)),
+            Problem);
     }
 
     [HttpPost]
@@ -54,7 +59,7 @@ public class CategoriesController(ISender sender, IMapper mapper) : ApiControlle
             _mapper.Map<UpdateCategoryCommand>((id, request)));
 
         return result.Match(
-            Ok,
+            value => Ok(_mapper.Map<CategoryResponse>(value)),
             Problem);
     }
 }

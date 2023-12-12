@@ -1,4 +1,5 @@
 ﻿using Domain.Products;
+using Domain.Products.Enums;
 using Domain.Products.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -28,5 +29,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasMany(p => p.Categories)
             .WithMany(c => c.Products);
+
+        builder.Property(p => p.Status)
+            .HasDefaultValue(ProductStatus.Active);
     }
 }

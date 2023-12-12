@@ -1,7 +1,7 @@
 ﻿using Application.Common.Data;
 using Domain.DomainErrors;
-using Domain.DomainEvents;
 using Domain.Kernal;
+using Domain.Orders.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,13 +15,22 @@ internal class DeleteProductCommandHandler(IApplicationDbContext context)
     {
         var result = await _context
             .Products
-            .FirstOrDefaultAsync(p => p.Id == request.Id);
+            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (result is null)
             return Errors.Product.NotFound;
 
-        result.RaiseDomainEvent(new ProductDeletedDomainEvent(result.Id));
-        _context.Products.Remove(result);
+        var productsInOrder = await _context
+            .Orders
+            .Where(o => o.Status == OrderStatus.Pending)
+            .AnyAsync(o => o.LineItems.Any(li => li.ProductId == request.Id), cancellationToken);
+
+        if (productsInOrder)
+        {
+            return Errors.Product.InOrder;
+        }
+
+        result.MarkAsDeleted();
 
         await _context.SaveChangesAsync(cancellationToken);
 

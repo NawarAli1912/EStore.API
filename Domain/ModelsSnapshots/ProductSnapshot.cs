@@ -1,4 +1,5 @@
 ﻿using Domain.Products;
+using Domain.Products.Enums;
 
 namespace Domain.ModelsSnapshots;
 
@@ -18,6 +19,8 @@ public sealed class ProductSnapshot
 
     public string Sku { get; set; } = default!;
 
+    public ProductStatus Status { get; set; }
+
     public static ProductSnapshot Snapshot(Product product)
     {
         var item = new ProductSnapshot
@@ -29,6 +32,7 @@ public sealed class ProductSnapshot
             PurchasePrice = product.PurchasePrice,
             CustomerPrice = product.CustomerPrice,
             Sku = product.Sku is null ? string.Empty : product.Sku.Value,
+            Status = product.Status
         };
 
         return item;

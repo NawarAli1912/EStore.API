@@ -5,6 +5,7 @@ using Dapper;
 using Domain.Categories;
 using Domain.ModelsSnapshots;
 using Domain.Products;
+using Microsoft.EntityFrameworkCore;
 using Nest;
 
 namespace Infrastructure.Persistence.Repostiory;
@@ -121,6 +122,7 @@ public sealed class ProductsRepository(
 
     public async Task<(List<Product>, int)> ListByFilter(ProductsFilter filter, int pageIndex, int pageSize)
     {
+        #region elastic query
         var products = await _elasticClient
             .SearchAsync<ProductSnapshot>(s => s
             .Query(q =>
@@ -154,9 +156,31 @@ public sealed class ProductsRepository(
                            f.Range(r => r
                                 .Field(f => f.Quantity)
                                 .LessThanOrEquals(filter.MaxQuantity ?? int.MaxValue)
-                            ))))
+                            )
+                        && f.Terms(t => t
+                            .Field(ff => ff.Status)
+                            .Terms(filter.ProductStatus)))))
             .From((pageIndex - 1) * pageSize)
             .Size(pageSize));
+
+        #endregion
+
+
+        var productsIds = products.Hits
+            .Select(hit => hit.Source.Id)
+            .ToHashSet();
+
+        var categoriesDict = await _context
+                        .Products
+                        .Include(p => p.Categories)
+                        .Where(p => productsIds.Contains(p.Id))
+                        .Select(p => new
+                        {
+                            Id = p.Id,
+                            Categories = p.Categories.ToList()
+                        })
+                        .ToDictionaryAsync(item => item.Id, item => item.Categories);
+
 
         List<Product> result = [];
         foreach (var hit in products.Hits)
@@ -168,7 +192,8 @@ public sealed class ProductsRepository(
                 hit.Source.Quantity,
                 hit.Source.CustomerPrice,
                 hit.Source.PurchasePrice,
-                hit.Source.Sku).Value);
+                hit.Source.Sku,
+                categoriesDict[hit.Source.Id]).Value);
         }
 
         return (result, (int)products.Total);

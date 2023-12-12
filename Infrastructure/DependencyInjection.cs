@@ -59,7 +59,7 @@ public static class DependencyInjection
                 trigger.ForJob(jobKey)
                     .WithSimpleSchedule(
                         schedule =>
-                        schedule.WithIntervalInSeconds(10)
+                        schedule.WithIntervalInSeconds(60)
                         .RepeatForever()));
 
             var elasticSearchJobKey = new JobKey(nameof(ElasticSearchSync));

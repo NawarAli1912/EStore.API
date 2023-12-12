@@ -17,6 +17,8 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
         var result = await _productsRepository
             .ListByFilter(request.Filter, request.Page, request.PageSize);
 
+
+
         result.Item1 = OrderResult(result.Item1);
 
         return new ListProductResult(

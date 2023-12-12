@@ -3,6 +3,7 @@ using Domain.DomainEvents;
 using Domain.Kernal;
 using Domain.Kernal.Models;
 using Domain.ModelsSnapshots;
+using Domain.Products.Enums;
 using Domain.Products.ValueObjects;
 
 namespace Domain.Products;
@@ -22,6 +23,8 @@ public class Product : AggregateRoot<Guid>
     public decimal PurchasePrice { get; private set; } = default!;
 
     public Sku? Sku { get; private set; } = default;
+
+    public ProductStatus Status { get; private set; }
 
     public IReadOnlyCollection<Category> Categories => _cateogries;
 
@@ -62,6 +65,12 @@ public class Product : AggregateRoot<Guid>
         foreach (var category in categories ?? Array.Empty<Category>())
         {
             product.AssignCategory(category);
+        }
+
+        product.Status = ProductStatus.Active;
+        if (product.Quantity == 0)
+        {
+            product.Status = ProductStatus.OutOfStock;
         }
 
         product.RaiseDomainEvent(new ProductCreatedDomainEvent(ProductSnapshot.Snapshot(product)));
@@ -133,7 +142,18 @@ public class Product : AggregateRoot<Guid>
                 "Product quantity can't be decreased to negative value.");
         }
 
-        return Result.Updated;
+        if (Quantity == 0)
+        {
+            Status = ProductStatus.OutOfStock;
+        }
+
+        return Kernal.Result.Updated;
+    }
+
+    public void MarkAsDeleted()
+    {
+        Status = ProductStatus.Deleted;
+        RaiseDomainEvent(new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
     }
 
     private Product() : base(Guid.NewGuid())

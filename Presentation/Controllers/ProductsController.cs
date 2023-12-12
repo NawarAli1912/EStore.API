@@ -156,7 +156,11 @@ public class ProductsController(
             .Send(new ListByCategoryQuery(categoryId, page, pageSize));
 
         return result.Match(
-            Ok,
+            value => Ok(PagedList<ProductResponse>.Create(
+                                    _mapper.Map<List<ProductResponse>>(value.Products),
+                                    page,
+                                    pageSize,
+                                    value.TotalCount)),
             Problem);
     }
 }

@@ -1,9 +1,12 @@
-﻿namespace Application.Products.List;
+﻿using Domain.Products.Enums;
+
+namespace Application.Products.List;
 
 public record ProductsFilter(
     string? SearchTerm,
     decimal? MinPrice,
     decimal? MaxPrice,
     int? MinQuantity,
-    int? MaxQuantity
+    int? MaxQuantity,
+    List<ProductStatus> ProductStatus
     );
