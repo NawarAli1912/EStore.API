@@ -147,7 +147,12 @@ public class Product : AggregateRoot<Guid>
             Status = ProductStatus.OutOfStock;
         }
 
-        return Kernal.Result.Updated;
+        return Result.Updated;
+    }
+
+    public void IncreaseQuantity(int value)
+    {
+        Quantity += value;
     }
 
     public void MarkAsDeleted()

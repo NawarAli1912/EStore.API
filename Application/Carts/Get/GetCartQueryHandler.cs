@@ -31,6 +31,11 @@ internal class GetCartQueryHandler(IApplicationDbContext context) : IRequestHand
         var productPriceDict = await _context
             .Products
             .Where(p => productsIds.Contains(p.Id))
+            .Select(p => new
+            {
+                Id = p.Id,
+                CustomerPrice = p.CustomerPrice
+            })
             .ToDictionaryAsync(p => p.Id, p => p.CustomerPrice);
 
         List<CartItemResult> items = [];

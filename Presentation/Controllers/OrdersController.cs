@@ -1,5 +1,7 @@
 ﻿using Application.Common.Authentication.Models;
+using Application.Orders.Approve;
 using Application.Orders.List;
+using Application.Orders.Reject;
 using Contracts.Orders;
 using Infrastructure.Authentication;
 using MapsterMapper;
@@ -32,4 +34,27 @@ public class OrdersController(ISender sender, IMapper mapper) : ApiController
             Ok,
             Problem);
     }
+
+    [HttpPatch("{id:guid}/approve")]
+    [HasPermission(Permissions.ManageOrders)]
+    public async Task<IActionResult> Approve(Guid id)
+    {
+        var result = await _sender.Send(new ApproveOrderCommand(id));
+
+        return result.Match(
+            _ => Ok(),
+            Problem);
+    }
+
+    [HttpPatch("{id:guid}/reject")]
+    [HasPermission(Permissions.ManageOrders)]
+    public async Task<IActionResult> Reject(Guid id)
+    {
+        var result = await _sender.Send(new RejectOrderCommand(id));
+
+        return result.Match(
+            _ => Ok(),
+            Problem);
+    }
+
 }

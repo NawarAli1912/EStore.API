@@ -70,6 +70,16 @@ public sealed class Order : AggregateRoot<Guid>
         TotalPrice += product.CustomerPrice;
     }
 
+    public void Approve()
+    {
+        Status = OrderStatus.Approved;
+    }
+
+    public void Reject()
+    {
+        Status = OrderStatus.Rejected;
+    }
+
     private Order() : base(Guid.NewGuid())
     {
     }
