@@ -6,24 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders.List;
 internal class ListOrdersQueryHandler(IApplicationDbContext context)
-    : IRequestHandler<ListOrdersQuery, Result<List<Order>>>
+    : IRequestHandler<ListOrdersQuery, Result<ListOrderResult>>
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result<List<Order>>> Handle(ListOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ListOrderResult>> Handle(ListOrdersQuery request, CancellationToken cancellationToken)
     {
-        var orders = await _context
+        IQueryable<Order> ordersQuery = _context
             .Orders
             .Include(o => o.ShippingInfo)
             .Include(o => o.LineItems)
             .Where(o => request.Filter.Status.Contains(o.Status))
             .Where(o => o.ModifiedAt >= request.Filter.ModifiedFrom)
-            .Where(o => o.ModifiedAt < request.Filter.ModifiedTo)
+            .Where(o => o.ModifiedAt <= request.Filter.ModifiedTo)
             .OrderBy(o => o.ModifiedAt)
             .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .ToListAsync(cancellationToken);
+            .Take(request.PageSize);
 
-        return orders;
+        var orders = await ordersQuery.ToListAsync(cancellationToken);
+        var totalCount = await ordersQuery.CountAsync(cancellationToken);
+
+        return new ListOrderResult(orders, totalCount);
     }
 }

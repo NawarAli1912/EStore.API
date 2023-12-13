@@ -12,5 +12,6 @@ public enum Permissions
     ManageCustomers = 32,
     ManageRoles = 64,
     ConfigureAccessControl = 128,
+    ManageOrdersLite = 256,
     All = ~None
 }

@@ -1,6 +1,10 @@
 ﻿using Application.Orders.List;
+using Application.Orders.Update;
 using Contracts.Orders;
+using Domain.Orders;
+using Domain.Orders.Entities;
 using Mapster;
+using Microsoft.CodeAnalysis;
 
 namespace Presentation.Common.Mapping;
 
@@ -14,6 +18,34 @@ public class OrdersMappingConfig : IRegister
 
         config.NewConfig<ListOrdersFilter, OrdersFilter>()
             .MapWith(src => MapListOrdersFilterToOrdersFilter(src));
+
+        config.NewConfig<ShippingInfo, ShippingInfoResponse>();
+
+        config.NewConfig<Order, OrderResponse>()
+            .Map(dest => dest.LineItems, src => MapLineItemsToLineItemsResponse(src.LineItems.ToList()));
+
+        config.NewConfig<ShippingInfoRequest, UpdateShippingInfo>();
+
+        config.NewConfig<(Guid, UpdateOrderRequest), UpdateOrderCommand>()
+            .Map(dest => dest.Id, src => src.Item1)
+            .Map(dest => dest, src => src.Item2);
+    }
+
+    private List<LineItemResponse> MapLineItemsToLineItemsResponse(List<LineItem> src)
+    {
+        List<LineItemResponse> result = [];
+
+        var groups = src.GroupBy(item => item.ProductId);
+        foreach (var group in groups)
+        {
+            result.Add(new LineItemResponse(
+                group.Key,
+                group.Count(),
+                group.Select(item => item.Price).Sum()));
+        }
+
+        return result;
+
     }
 
     private static OrdersFilter MapListOrdersFilterToOrdersFilter(ListOrdersFilter src)

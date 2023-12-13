@@ -14,7 +14,7 @@ public sealed class Cart : Entity<Guid>
 
     public IReadOnlySet<CartItem> CartItems => _cartItems;
 
-    public static Cart Create(Customer customer)
+    internal static Cart Create(Customer customer)
     {
         return new Cart
         {

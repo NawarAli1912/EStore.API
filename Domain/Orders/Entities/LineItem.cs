@@ -21,7 +21,11 @@ public sealed class LineItem : Entity<Guid>
 
     public decimal Price { get; private set; } = default!;
 
-    public static LineItem Create(Guid id, Guid productId, Guid orderId, decimal price)
+    internal static LineItem Create(
+        Guid id,
+        Guid productId,
+        Guid orderId,
+        decimal price)
     {
         return new LineItem(id, productId, orderId, price);
     }

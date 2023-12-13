@@ -17,7 +17,7 @@ public sealed class CartItem : ValueObject
         yield return ProductId;
     }
 
-    public static Result<CartItem> Create(
+    internal static Result<CartItem> Create(
         Guid cartId,
         Guid productId,
         int quantity)

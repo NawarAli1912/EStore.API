@@ -1,4 +1,5 @@
 ﻿using Domain.Categories;
+using Domain.DomainErrors;
 using Domain.DomainEvents;
 using Domain.Kernal;
 using Domain.Kernal.Models;
@@ -136,10 +137,7 @@ public class Product : AggregateRoot<Guid>
         if (Quantity < 0)
         {
             Quantity += value;
-            return Error.Custom(
-                (int)ErrorType.Conflict,
-                "Product.InvalidQuantity",
-                "Product quantity can't be decreased to negative value.");
+            return Errors.Product.StockError(Name);
         }
 
         if (Quantity == 0)

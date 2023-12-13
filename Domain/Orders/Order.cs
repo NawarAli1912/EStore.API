@@ -1,5 +1,4 @@
 ﻿using Domain.Customers;
-using Domain.Kernal;
 using Domain.Kernal.Enums;
 using Domain.Kernal.Models;
 using Domain.Orders.Entities;
@@ -26,11 +25,12 @@ public sealed class Order : AggregateRoot<Guid>
 
     public IReadOnlySet<LineItem> LineItems => _lineItems;
 
-    public static Result<Order> Create(
+    public static Order Create(
         Customer customer,
-        ShippingCompany ShippingCompany,
-        string ShippingComapnyLocation,
-        string PhoneNumber)
+        ShippingCompany shippingCompany,
+        string shippingCompanyAddress,
+        string phoneNumber
+        )
     {
 
         var order = new Order
@@ -42,21 +42,17 @@ public sealed class Order : AggregateRoot<Guid>
             ModifiedAt = DateTime.UtcNow
         };
 
-        var shippingInfoResult = ShippingInfo
-            .Create(order.Id, ShippingCompany, ShippingComapnyLocation, PhoneNumber);
-
-        if (shippingInfoResult.IsError)
-        {
-            return shippingInfoResult.Errors;
-        }
-
-        order.ShippingInfo = shippingInfoResult.Value;
+        order.ShippingInfo = ShippingInfo.Create(
+            order.Id,
+            shippingCompany,
+            shippingCompanyAddress,
+            phoneNumber);
 
         return order;
 
     }
 
-    public void AddItem(Product product)
+    public void AddItems(Product product, int Quantity)
     {
         var lineItem = LineItem
             .Create(
@@ -65,9 +61,42 @@ public sealed class Order : AggregateRoot<Guid>
             Id,
             product.CustomerPrice);
 
-        _lineItems.Add(lineItem);
+        for (int i = 0; i < Quantity; ++i)
+        {
+            _lineItems.Add(lineItem);
+        }
 
-        TotalPrice += product.CustomerPrice;
+        TotalPrice += product.CustomerPrice * Quantity;
+    }
+
+    public void RemoveItems(Product product, int Quantity)
+    {
+        for (int i = 0; i < Quantity; ++i)
+        {
+            var lineItem = _lineItems
+                .Where(item => item.ProductId == product.Id)
+                .FirstOrDefault();
+
+            if (lineItem is null)
+            {
+                return;
+            }
+
+            _lineItems.Remove(lineItem);
+
+            TotalPrice -= lineItem.Price;
+        }
+    }
+
+    public void UpdateShippingInfo(
+        ShippingCompany? shippingCompany,
+        string? shippingCompanyAddress,
+        string? phoneNumber)
+    {
+        ShippingInfo.Update(
+            shippingCompany,
+            shippingCompanyAddress,
+            phoneNumber);
     }
 
     public void Approve()
@@ -80,7 +109,9 @@ public sealed class Order : AggregateRoot<Guid>
         Status = OrderStatus.Rejected;
     }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private Order() : base(Guid.NewGuid())
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 }

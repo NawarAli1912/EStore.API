@@ -34,7 +34,7 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
         var productsDict = await _context
             .Products
             .Where(p => productsIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, p => p);
+            .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
 
         var result = OrderOrchestratorService.Approve(order, productsDict);
 

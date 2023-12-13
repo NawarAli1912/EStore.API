@@ -14,25 +14,17 @@ public class OrderOrchestratorService
         Customer customer,
         Dictionary<Guid, Product> productDict,
         ShippingCompany shippingCompany,
-        string shippingComapnyLocation,
+        string shippingComapnyAddress,
         string phoneNumber
         )
     {
-        var orderResult = Order.Create(
+        var order = Order.Create(
             customer,
             shippingCompany,
-            shippingComapnyLocation,
-            phoneNumber
-            );
-
-        if (orderResult.IsError)
-        {
-            return orderResult.Errors;
-        }
-
+            shippingComapnyAddress,
+            phoneNumber);
 
         List<Error> errors = [];
-        var order = orderResult.Value;
         var cartItems = customer.Cart.CartItems.ToList();
         foreach (var item in cartItems)
         {
@@ -48,17 +40,14 @@ public class OrderOrchestratorService
                 continue;
             }
 
-            if (item.Quantity > product.Quantity)
+            var decreaseQuantityResult = product.DecreaseQuantity(item.Quantity);
+            if (decreaseQuantityResult.IsError)
             {
-                errors.Add(Errors.Product.StockError);
+                errors.AddRange(decreaseQuantityResult.Errors);
                 continue;
             }
 
-            product.DecreaseQuantity(item.Quantity);
-            for (int i = 0; i < item.Quantity; i++)
-            {
-                order.AddItem(product);
-            }
+            order.AddItems(product, item.Quantity);
         }
 
         if (errors.Count > 0)
@@ -98,8 +87,8 @@ public class OrderOrchestratorService
         if (order.Status == OrderStatus.Rejected)
         {
             var lineItemsGroups = order
-            .LineItems
-            .GroupBy(li => li.ProductId);
+                .LineItems
+                .GroupBy(li => li.ProductId);
 
             foreach (var group in lineItemsGroups)
             {
@@ -127,6 +116,72 @@ public class OrderOrchestratorService
         }
 
         order.Approve();
+
+        return Result.Updated;
+    }
+
+    /// <summary>
+    /// Updates the items in the order based on the provided dictionaries.
+    /// </summary>
+    /// <param name="order">
+    ///     The order to be updated.
+    /// </param>
+    /// <param name="productIdToProduct">
+    ///     A dictionary containing product information (mapping product ID to product).
+    /// </param>
+    /// <param name="itemsToAddQuantities">
+    ///     A dictionary specifying the quantities of items to add (mapping product ID to quantity to be added).
+    /// </param>
+    /// <param name="itemsToDeleteQuantities">
+    ///     A dictionary specifying the quantities of items to delete (mapping product ID to quantity to be deleted).
+    /// </param>
+    /// <returns>
+    ///     A result indicating whether the update was successful (Result.Updated) or any errors that occurred during the update.
+    ///     If errors occur, the result will contain a list of error details.
+    /// </returns>
+    public static Result<Updated> UpdateItems(
+        Order order,
+        Dictionary<Guid, Product> productIdToProduct,
+        Dictionary<Guid, int> itemsToAddQuantities,
+        Dictionary<Guid, int> itemsToDeleteQuantities)
+    {
+        List<Error> errors = [];
+        foreach (var productId in itemsToAddQuantities.Keys)
+        {
+            if (!productIdToProduct.TryGetValue(productId, out var product)
+                || product is null)
+            {
+                errors.Add(Errors.Product.NotFound);
+                continue;
+            }
+
+            var decreaseResult = product.DecreaseQuantity(itemsToAddQuantities[productId]);
+            if (decreaseResult.IsError)
+            {
+                errors.Add(Errors.Product.StockError(product.Name));
+                continue;
+            }
+
+            order.AddItems(product, itemsToAddQuantities[productId]);
+        }
+
+        foreach (var productId in itemsToDeleteQuantities.Keys)
+        {
+            if (!productIdToProduct.TryGetValue(productId, out var product)
+                || product is null)
+            {
+                errors.Add(Errors.Product.NotFound);
+                continue;
+            }
+
+            product.IncreaseQuantity(itemsToDeleteQuantities[productId]);
+            order.RemoveItems(product, itemsToDeleteQuantities[productId]);
+        }
+
+        if (errors.Count > 0)
+        {
+            return errors;
+        }
 
         return Result.Updated;
     }

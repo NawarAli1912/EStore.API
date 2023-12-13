@@ -1,5 +1,4 @@
-﻿using Domain.Kernal;
-using Domain.Kernal.Enums;
+﻿using Domain.Kernal.Enums;
 using Domain.Kernal.Models;
 
 namespace Domain.Orders.Entities;
@@ -22,7 +21,7 @@ public class ShippingInfo : Entity<Guid>
     {
     }
 
-    internal static Result<ShippingInfo> Create(
+    internal static ShippingInfo Create(
         Guid orderId,
         ShippingCompany shippingCompany,
         string shippingComapnyLocation,
@@ -35,5 +34,15 @@ public class ShippingInfo : Entity<Guid>
             ShippingComapnyLocation = shippingComapnyLocation,
             PhoneNumber = phoneNumber
         };
+    }
+
+    internal void Update(
+        ShippingCompany? shippingCompany,
+        string? shippingCompanyLocation,
+        string? phoneNumber)
+    {
+        ShippingCompany = shippingCompany ?? ShippingCompany;
+        ShippingComapnyLocation = shippingCompanyLocation ?? ShippingComapnyLocation;
+        PhoneNumber = phoneNumber ?? PhoneNumber;
     }
 }

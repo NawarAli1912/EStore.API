@@ -29,7 +29,7 @@ public sealed class CartOperationService
 
         if (product.Quantity < requestedQuantity)
         {
-            return Errors.Product.StockError;
+            return Errors.Product.StockError(product.Name);
         }
 
         var result = customer.AddCartItem(product.Id, requestedQuantity);
