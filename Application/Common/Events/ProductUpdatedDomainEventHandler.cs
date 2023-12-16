@@ -1,6 +1,6 @@
 ﻿using Application.Common.ElasticSearch;
-using Domain.DomainEvents;
 using Domain.ModelsSnapshots;
+using Domain.Products.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Nest;

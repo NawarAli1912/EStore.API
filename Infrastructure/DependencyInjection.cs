@@ -1,14 +1,17 @@
-﻿using Application.Common.Authentication.Jwt;
+﻿using Application.Common.Authentication;
+using Application.Common.Authentication.Jwt;
 using Application.Common.Data;
 using Application.Common.Repository;
 using Domain.Authentication;
 using Domain.ModelsSnapshots;
 using Infrastructure.Authentication;
+using Infrastructure.Authentication.Authorization;
+using Infrastructure.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Interceptors;
-using Infrastructure.Persistence.Repostiory;
+using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -100,6 +103,8 @@ public static class DependencyInjection
     private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        services.AddScoped<IUserIdentifierProvider, UserIdentifierProvider>();
 
         services.AddScoped<IApplicationDbContext>(sp =>
             sp.GetRequiredService<ApplicationDbContext>());

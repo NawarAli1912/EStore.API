@@ -1,10 +1,10 @@
 ﻿using Application.Common.Data;
 using Dapper;
 using Domain.Categories;
-using Domain.DomainErrors;
-using Domain.Kernal;
+using Domain.Categories.Errors;
 using MediatR;
 using Microsoft.Data.SqlClient;
+using SharedKernel;
 
 namespace Application.Categories.GetHierarchyDownward;
 
@@ -51,15 +51,17 @@ public sealed class GetHierarchyDownwardQueryHandler(
         var queryResult = await sqlConnection
                 .QueryAsync<Category>(sql, new { RootCategoryId = request.Id });
 
-        if (queryResult is null || queryResult.Count() == 0)
+        var categories = queryResult.ToList();
+        if (categories.Count == 0)
         {
-            return Errors.Category.NotFound;
+            return DomainError.Category.NotFound;
         }
 
         return Category.BuildCategoryTree(
-            queryResult.ToList(),
-            queryResult.First(c => c.Id == request.Id).ParentCategoryId)
-            .First();
+            categories,
+            categories
+                .First(c => c.Id == request.Id).ParentCategoryId)
+                .First();
 
 
     }

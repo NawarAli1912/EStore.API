@@ -1,6 +1,6 @@
-﻿using Domain.DomainErrors;
-using Domain.Kernal;
-using Domain.Kernal.Models;
+﻿using Domain.Customers.Errors;
+using SharedKernel;
+using SharedKernel.Models;
 
 namespace Domain.Customers.ValueObjects;
 
@@ -24,7 +24,7 @@ public sealed class CartItem : ValueObject
     {
         if (quantity < 0)
         {
-            return Errors.CartItem.NegativeQuantity;
+            return DomainError.CartItem.NegativeQuantity;
         }
 
         return new CartItem

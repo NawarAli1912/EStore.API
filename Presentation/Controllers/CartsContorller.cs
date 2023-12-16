@@ -5,7 +5,7 @@ using Application.Carts.Get;
 using Application.Carts.RemoveCartItem;
 using Application.Common.Authentication.Models;
 using Contracts.Carts;
-using Infrastructure.Authentication;
+using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

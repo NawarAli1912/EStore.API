@@ -1,5 +1,5 @@
 ﻿using Application.Common.ElasticSearch;
-using Domain.DomainEvents;
+using Domain.Products.Events;
 using MediatR;
 using Nest;
 using Serilog;

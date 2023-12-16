@@ -1,4 +1,4 @@
-﻿using Domain.Kernal.Models;
+﻿using SharedKernel.Models;
 
 namespace Domain.Orders.Entities;
 

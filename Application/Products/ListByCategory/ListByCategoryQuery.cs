@@ -1,6 +1,6 @@
 ﻿using Application.Products.List;
-using Domain.Kernal;
 using MediatR;
+using SharedKernel;
 
 namespace Application.Products.ListByCategory;
 

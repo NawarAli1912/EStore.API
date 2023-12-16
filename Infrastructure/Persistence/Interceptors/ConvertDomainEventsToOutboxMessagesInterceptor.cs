@@ -1,20 +1,19 @@
-﻿using Domain.Kernal.Models;
-using Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
+using SharedKernel.Models;
 
 namespace Infrastructure.Persistence.Interceptors;
 
 public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
     : SaveChangesInterceptor
 {
-    public async override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        DbContext? context = eventData.Context;
+        var context = eventData.Context;
         if (context is null)
         {
             return await base.SavingChangesAsync(eventData, result, cancellationToken);

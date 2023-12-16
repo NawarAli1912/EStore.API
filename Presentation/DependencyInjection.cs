@@ -11,11 +11,16 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
+
         services.AddSwaggerConfig();
+
         services.AddControllers()
             .AddJsonOptions(options =>
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
         services.AddSingleton<ProblemDetailsFactory, EStoreProblemDetailsFactory>();
+
         services.AddMapping();
 
         Log.Logger = new LoggerConfiguration()

@@ -1,5 +1,4 @@
 ﻿using Application.Products.AssignCategories;
-using Application.Products.Filters;
 using Application.Products.List;
 using Application.Products.Update;
 using Contracts.Products;

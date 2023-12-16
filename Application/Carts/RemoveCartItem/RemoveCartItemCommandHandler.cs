@@ -1,9 +1,9 @@
 ﻿using Application.Carts.Common;
 using Application.Common.Data;
-using Domain.DomainServices;
-using Domain.Kernal;
+using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Carts.RemoveCartItem;
 

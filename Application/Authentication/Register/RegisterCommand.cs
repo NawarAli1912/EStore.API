@@ -1,6 +1,6 @@
 ﻿using Application.Authentication.Common;
-using Domain.Kernal;
 using MediatR;
+using SharedKernel;
 
 namespace Application.Authentication.Register;
 

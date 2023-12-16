@@ -1,6 +1,5 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
-using Domain.Orders.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,8 +24,7 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(li => li.OrderId)
             .IsRequired();
 
-        builder.HasOne(o => o.ShippingInfo)
-            .WithOne()
-            .HasForeignKey<ShippingInfo>(si => si.OrderId);
+        builder
+            .OwnsOne(o => o.ShippingInfo);
     }
 }

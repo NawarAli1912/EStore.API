@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
 using Domain.Products;
+using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Products.Update;
 
@@ -17,11 +17,11 @@ internal class UpdateProductCommandHandler(IApplicationDbContext context)
         List<Error> errors = [];
         var product = await _context
             .Products
-            .FirstOrDefaultAsync(p => p.Id == request.Id);
+            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (product is null)
         {
-            return Errors.Product.NotFound;
+            return DomainError.Product.NotFound;
         }
 
         var updateProductResult = product.Update(

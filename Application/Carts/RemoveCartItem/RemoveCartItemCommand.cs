@@ -1,6 +1,6 @@
 ﻿using Application.Carts.Common;
-using Domain.Kernal;
 using MediatR;
+using SharedKernel;
 
 namespace Application.Carts.RemoveCartItem;
 

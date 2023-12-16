@@ -1,5 +1,5 @@
-﻿using Domain.Kernal.Models;
-using Domain.Products;
+﻿using Domain.Products;
+using SharedKernel.Models;
 
 namespace Domain.Categories;
 

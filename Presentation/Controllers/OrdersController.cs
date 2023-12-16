@@ -6,7 +6,7 @@ using Application.Orders.List;
 using Application.Orders.Reject;
 using Application.Orders.Update;
 using Contracts.Orders;
-using Infrastructure.Authentication;
+using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

@@ -1,8 +1,8 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
+using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Products.AssignCategories;
 
@@ -20,7 +20,7 @@ internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
 
         if (product is null)
         {
-            return Errors.Product.NotFound;
+            return DomainError.Product.NotFound;
         }
 
         var categoriesDict = await _context

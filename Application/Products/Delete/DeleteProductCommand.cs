@@ -1,5 +1,5 @@
-﻿using Domain.Kernal;
-using MediatR;
+﻿using MediatR;
+using SharedKernel;
 
 namespace Application.Products.Delete;
 

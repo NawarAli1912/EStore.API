@@ -32,5 +32,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(p => p.Status)
             .HasDefaultValue(ProductStatus.Active);
+
+        builder
+            .HasMany(p => p.Reviews)
+            .WithOne()
+            .HasForeignKey(r => r.ProductId);
     }
 }

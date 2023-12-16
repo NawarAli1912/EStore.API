@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.DomainServices;
-using Domain.Kernal;
+using Domain.Orders.Errors;
+using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Orders.Reject;
 internal sealed class RejectOrderCommandHandler(IApplicationDbContext context)
@@ -22,7 +22,7 @@ internal sealed class RejectOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return Errors.Orders.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         var productsIds = order
@@ -33,7 +33,7 @@ internal sealed class RejectOrderCommandHandler(IApplicationDbContext context)
         var productsDict = await _context
             .Products
             .Where(p => productsIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, p => p);
+            .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
 
         OrderOrchestratorService.Reject(order, productsDict);
 

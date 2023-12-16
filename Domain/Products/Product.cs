@@ -1,17 +1,20 @@
 ﻿using Domain.Categories;
-using Domain.DomainErrors;
-using Domain.DomainEvents;
-using Domain.Kernal;
-using Domain.Kernal.Models;
 using Domain.ModelsSnapshots;
+using Domain.Products.Entities;
 using Domain.Products.Enums;
+using Domain.Products.Errors;
+using Domain.Products.Events;
 using Domain.Products.ValueObjects;
+using SharedKernel;
+using SharedKernel.Models;
 
 namespace Domain.Products;
 
 public class Product : AggregateRoot<Guid>
 {
-    private readonly List<Category> _cateogries = [];
+    private readonly List<Category> _categories = [];
+
+    private readonly List<ProductReview> _reviews = [];
 
     public string Name { get; private set; } = string.Empty;
 
@@ -27,7 +30,9 @@ public class Product : AggregateRoot<Guid>
 
     public ProductStatus Status { get; private set; }
 
-    public IReadOnlyCollection<Category> Categories => _cateogries;
+    public IReadOnlyCollection<Category> Categories => _categories;
+
+    public IReadOnlyCollection<ProductReview> Reviews => _reviews;
 
     public static Result<Product> Create(
         Guid id,
@@ -81,22 +86,22 @@ public class Product : AggregateRoot<Guid>
 
     public void AssignCategory(Category category)
     {
-        if (_cateogries.Contains(category))
+        if (_categories.Contains(category))
         {
             return;
         }
 
-        _cateogries.Add(category);
+        _categories.Add(category);
     }
 
     public void UnassignCategory(Category category)
     {
-        if (!_cateogries.Contains(category))
+        if (!_categories.Contains(category))
         {
             return;
         }
 
-        _cateogries.Remove(category);
+        _categories.Remove(category);
     }
 
     public Result<Product> Update(
@@ -134,15 +139,15 @@ public class Product : AggregateRoot<Guid>
     public Result<Updated> DecreaseQuantity(int value)
     {
         Quantity -= value;
-        if (Quantity < 0)
-        {
-            Quantity += value;
-            return Errors.Product.StockError(Name);
-        }
 
-        if (Quantity == 0)
+        switch (Quantity)
         {
-            Status = ProductStatus.OutOfStock;
+            case < 0:
+                Quantity += value;
+                return DomainError.Product.StockError(Name);
+            case 0:
+                Status = ProductStatus.OutOfStock;
+                break;
         }
 
         return Result.Updated;

@@ -1,9 +1,9 @@
 ﻿using Domain.Customers;
-using Domain.Kernal.Enums;
-using Domain.Kernal.Models;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Products;
+using SharedKernel.Enums;
+using SharedKernel.Models;
 
 namespace Domain.Orders;
 
@@ -39,20 +39,18 @@ public sealed class Order : AggregateRoot<Guid>
             CustomerId = customer.Id,
             Status = OrderStatus.Pending,
             CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
-        };
-
-        order.ShippingInfo = ShippingInfo.Create(
-            order.Id,
+            ModifiedAt = DateTime.UtcNow,
+            ShippingInfo = ShippingInfo.Create(
             shippingCompany,
             shippingCompanyAddress,
-            phoneNumber);
+            phoneNumber)
+        };
 
         return order;
 
     }
 
-    public void AddItems(Product product, int Quantity)
+    public void AddItems(Product product, int quantity)
     {
         var lineItem = LineItem
             .Create(
@@ -61,21 +59,20 @@ public sealed class Order : AggregateRoot<Guid>
             Id,
             product.CustomerPrice);
 
-        for (int i = 0; i < Quantity; ++i)
+        for (var i = 0; i < quantity; ++i)
         {
             _lineItems.Add(lineItem);
         }
 
-        TotalPrice += product.CustomerPrice * Quantity;
+        TotalPrice += product.CustomerPrice * quantity;
     }
 
     public void RemoveItems(Product product, int Quantity)
     {
-        for (int i = 0; i < Quantity; ++i)
+        for (var i = 0; i < Quantity; ++i)
         {
             var lineItem = _lineItems
-                .Where(item => item.ProductId == product.Id)
-                .FirstOrDefault();
+                .FirstOrDefault(item => item.ProductId == product.Id);
 
             if (lineItem is null)
             {

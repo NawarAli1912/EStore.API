@@ -1,8 +1,8 @@
 ﻿using Application.Common.Data;
-using Domain.Kernal;
 using Domain.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Products.Create;
 

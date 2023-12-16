@@ -1,11 +1,12 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
+using Domain.Customers.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Carts.Get;
-internal class GetCartQueryHandler(IApplicationDbContext context) : IRequestHandler<GetCartQuery, Result<CartResult>>
+internal class GetCartQueryHandler(IApplicationDbContext context) :
+    IRequestHandler<GetCartQuery, Result<CartResult>>
 {
     private readonly IApplicationDbContext _context = context;
 
@@ -20,7 +21,7 @@ internal class GetCartQueryHandler(IApplicationDbContext context) : IRequestHand
 
         if (customer is null)
         {
-            return Errors.Customers.NotFound;
+            return DomainError.Customers.NotFound;
         }
         var productsIds = customer
             .Cart
@@ -36,7 +37,10 @@ internal class GetCartQueryHandler(IApplicationDbContext context) : IRequestHand
                 Id = p.Id,
                 CustomerPrice = p.CustomerPrice
             })
-            .ToDictionaryAsync(p => p.Id, p => p.CustomerPrice);
+            .ToDictionaryAsync(
+                p => p.Id,
+                p => p.CustomerPrice,
+                cancellationToken: cancellationToken);
 
         List<CartItemResult> items = [];
         var totalPrice = 0.0M;

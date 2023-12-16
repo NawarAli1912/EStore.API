@@ -1,8 +1,8 @@
 ﻿using Application.Common.Data;
-using Domain.Kernal;
 using Domain.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Orders.List;
 internal class ListOrdersQueryHandler(IApplicationDbContext context)
@@ -10,7 +10,9 @@ internal class ListOrdersQueryHandler(IApplicationDbContext context)
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result<ListOrderResult>> Handle(ListOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ListOrderResult>> Handle(
+        ListOrdersQuery request,
+        CancellationToken cancellationToken)
     {
         IQueryable<Order> ordersQuery = _context
             .Orders

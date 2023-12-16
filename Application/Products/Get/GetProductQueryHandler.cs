@@ -1,13 +1,14 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
 using Domain.Products;
+using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Products.Get;
 
-internal sealed class GetProductQueryHandler(IApplicationDbContext context) : IRequestHandler<GetProductQuery, Result<Product>>
+internal sealed class GetProductQueryHandler(IApplicationDbContext context)
+    : IRequestHandler<GetProductQuery, Result<Product>>
 {
     private readonly IApplicationDbContext _context = context;
 
@@ -22,7 +23,7 @@ internal sealed class GetProductQueryHandler(IApplicationDbContext context) : IR
 
         if (product is null)
         {
-            return Errors.Product.NotFound;
+            return DomainError.Product.NotFound;
         }
         return product;
     }

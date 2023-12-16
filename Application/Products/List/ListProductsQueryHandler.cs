@@ -1,7 +1,7 @@
 ﻿using Application.Common.Repository;
-using Domain.Kernal;
 using Domain.Products;
 using MediatR;
+using SharedKernel;
 
 namespace Application.Products.List;
 
@@ -16,7 +16,6 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
     {
         var result = await _productsRepository
             .ListByFilter(request.Filter, request.Page, request.PageSize);
-
 
 
         result.Item1 = OrderResult(result.Item1);

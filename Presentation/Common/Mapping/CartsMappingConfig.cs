@@ -19,7 +19,7 @@ public class CartsMappingConfig : IRegister
             .Map(dest => dest.CustomerId, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
 
-        config.NewConfig<ShippingCompany, Domain.Kernal.Enums.ShippingCompany>()
+        config.NewConfig<ShippingCompany, SharedKernel.Enums.ShippingCompany>()
             .MapWith(src => MapToDomainShippingCompany(src));
 
         config.NewConfig<(Guid, CheckoutRequest), CheckoutCommand>()
@@ -27,11 +27,11 @@ public class CartsMappingConfig : IRegister
             .Map(dest => dest, src => src.Item2);
     }
 
-    private static Domain.Kernal.Enums.ShippingCompany MapToDomainShippingCompany(ShippingCompany src) => src switch
+    private static SharedKernel.Enums.ShippingCompany MapToDomainShippingCompany(ShippingCompany src) => src switch
     {
-        ShippingCompany.Alkadmous => Domain.Kernal.Enums.ShippingCompany.Alkadmous,
-        ShippingCompany.Alfouad => Domain.Kernal.Enums.ShippingCompany.Alfouad,
-        ShippingCompany.RahawanCargo => Domain.Kernal.Enums.ShippingCompany.RahawanCargo,
+        ShippingCompany.Alkadmous => SharedKernel.Enums.ShippingCompany.Alkadmous,
+        ShippingCompany.Alfouad => SharedKernel.Enums.ShippingCompany.Alfouad,
+        ShippingCompany.RahawanCargo => SharedKernel.Enums.ShippingCompany.RahawanCargo,
         _ => throw new ArgumentException(nameof(src)),
     };
 }

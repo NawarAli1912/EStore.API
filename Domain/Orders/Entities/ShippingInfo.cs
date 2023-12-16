@@ -1,37 +1,24 @@
-﻿using Domain.Kernal.Enums;
-using Domain.Kernal.Models;
+﻿using SharedKernel.Enums;
+using SharedKernel.Models;
 
 namespace Domain.Orders.Entities;
-public class ShippingInfo : Entity<Guid>
+public class ShippingInfo : ValueObject
 {
-    public Guid OrderId { get; private set; }
-
     public ShippingCompany ShippingCompany { get; private set; }
 
-    public string ShippingComapnyLocation { get; private set; } = default!;
+    public string ShippingCompanyLocation { get; private set; } = default!;
 
     public string PhoneNumber { get; private set; } = default!;
 
-    private ShippingInfo(Guid id) : base(id)
-    {
-    }
-
-    private ShippingInfo()
-        : base(Guid.NewGuid())
-    {
-    }
-
     internal static ShippingInfo Create(
-        Guid orderId,
         ShippingCompany shippingCompany,
-        string shippingComapnyLocation,
+        string shippingCompanyLocation,
         string phoneNumber)
     {
         return new ShippingInfo
         {
-            OrderId = orderId,
             ShippingCompany = shippingCompany,
-            ShippingComapnyLocation = shippingComapnyLocation,
+            ShippingCompanyLocation = shippingCompanyLocation,
             PhoneNumber = phoneNumber
         };
     }
@@ -42,7 +29,14 @@ public class ShippingInfo : Entity<Guid>
         string? phoneNumber)
     {
         ShippingCompany = shippingCompany ?? ShippingCompany;
-        ShippingComapnyLocation = shippingCompanyLocation ?? ShippingComapnyLocation;
+        ShippingCompanyLocation = shippingCompanyLocation ?? ShippingCompanyLocation;
         PhoneNumber = phoneNumber ?? PhoneNumber;
+    }
+
+    public override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return ShippingCompany;
+        yield return ShippingCompanyLocation;
+        yield return PhoneNumber;
     }
 }

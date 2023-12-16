@@ -1,6 +1,6 @@
 ﻿using Application.Common.Authentication.Models;
 using Domain.Authentication;
-using Infrastructure.Authentication;
+using Infrastructure.Authentication.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Base;

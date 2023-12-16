@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.DomainServices;
-using Domain.Kernal;
+using Domain.Orders.Errors;
+using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Orders.Approve;
 
@@ -23,7 +23,7 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return Errors.Orders.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         var productsIds = order

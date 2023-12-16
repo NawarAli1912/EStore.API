@@ -1,9 +1,10 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.DomainServices;
-using Domain.Kernal;
+using Domain.Orders.Enums;
+using Domain.Products.Errors;
+using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Orders.Update;
 
@@ -24,7 +25,12 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return Errors.Product.NotFound;
+            return DomainError.Product.NotFound;
+        }
+
+        if (order.Status != OrderStatus.Pending)
+        {
+            return Domain.Orders.Errors.DomainError.Orders.InvalidStatus(order.Status);
         }
 
         var productsIds = order.LineItems.Select(o => o.ProductId)
@@ -37,11 +43,14 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
             .Where(p => productsIds.Contains(p.Id))
             .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
 
+
         var updateResult = OrderOrchestratorService.UpdateItems(
             order,
             productsDict,
-            request.AddLineItems.ToDictionary(i => i.ProductId, i => i.Quantity),
-            request.DeleteLineItems.ToDictionary(i => i.ProductId, i => i.Quantity));
+            request.AddLineItems
+                .ToDictionary(i => i.ProductId, i => i.Quantity),
+            request.DeleteLineItems
+                .ToDictionary(i => i.ProductId, i => i.Quantity));
 
         if (updateResult.IsError)
         {

@@ -11,7 +11,7 @@ public sealed class ElasticSearchSync(IApplicationDbContext context, IElasticCli
     private readonly IApplicationDbContext _context = context;
     private readonly IElasticClient _elasticClient = elasticClient;
 
-    public async Task Execute(IJobExecutionContext context)
+    public async Task Execute(IJobExecutionContext jobContext)
     {
         var dbProductsDict = await _context
                 .Products
@@ -28,10 +28,7 @@ public sealed class ElasticSearchSync(IApplicationDbContext context, IElasticCli
         while (scrollResponse.IsValid && scrollResponse.Documents.Count != 0)
         {
             // Process each batch of documents
-            foreach (var productSnapshot in scrollResponse.Documents)
-            {
-                elasticProducts.Add(productSnapshot);
-            }
+            elasticProducts.AddRange(scrollResponse.Documents);
 
             // Fetch the next batch
             scrollResponse = _elasticClient.Scroll<ProductSnapshot>("5m", scrollResponse.ScrollId);
@@ -57,13 +54,10 @@ public sealed class ElasticSearchSync(IApplicationDbContext context, IElasticCli
             }
         }
 
-        foreach (var elasticProduct in elasticProductsDict.Values)
-        {
-            if (!dbProductsDict.ContainsKey(elasticProduct.Id))
-            {
-                toDelete.Add(elasticProduct);
-            }
-        }
+        toDelete.
+            AddRange(elasticProductsDict
+                .Values
+                .Where(elasticProduct => !dbProductsDict.ContainsKey(elasticProduct.Id)));
 
         foreach (var item in toUpdate)
         {

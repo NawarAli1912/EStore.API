@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.DomainServices;
-using Domain.Kernal;
+using Domain.Customers.Errors;
+using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Carts.Checkout;
 internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
@@ -23,12 +23,12 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
 
         if (customer is null)
         {
-            return Errors.Customers.NotFound;
+            return DomainError.Customers.NotFound;
         }
 
         if (customer.Cart.CartItems.Count == 0)
         {
-            return Errors.Cart.EmptyCart;
+            return DomainError.Cart.EmptyCart;
         }
 
         var productsIds = customer

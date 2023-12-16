@@ -1,8 +1,8 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
+using Domain.Customers.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Carts.Clear;
 
@@ -21,7 +21,7 @@ internal sealed class ClearCartCommandHandler(IApplicationDbContext context)
 
         if (customer is null)
         {
-            return Errors.Customers.NotFound;
+            return DomainError.Customers.NotFound;
         }
 
         customer.ClearCart();

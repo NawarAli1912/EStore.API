@@ -1,11 +1,11 @@
-﻿using Domain.Kernal.Models;
-using Infrastructure.Persistence;
+﻿using Infrastructure.Persistence;
 using Infrastructure.Persistence.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
+using SharedKernel.Models;
 
 namespace Infrastructure.BackgroundJobs;
 
@@ -19,21 +19,22 @@ public sealed class ProcessOutboxMessagesJob(
     private readonly IPublisher _publisher = publisher;
     private readonly ILogger<ProcessOutboxMessagesJob> _logger = logger;
 
-    public async Task Execute(IJobExecutionContext context)
+    public async Task Execute(IJobExecutionContext jobContext)
     {
         var messages = await _context
                         .Set<OutboxMessage>()
                         .Where(m => m.ProcessedOnUtc == null)
                         .Take(20)
                         .OrderBy(m => m.Id)
-                        .ToListAsync(context.CancellationToken);
+                        .ToListAsync(jobContext.CancellationToken);
 
         foreach (var message in messages)
         {
-            IDomainEvent? domainEvent = JsonConvert.DeserializeObject(message.Content, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            }) as IDomainEvent;
+            var domainEvent = JsonConvert
+                .DeserializeObject(message.Content, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                }) as IDomainEvent;
 
             if (domainEvent is null)
             {
@@ -42,7 +43,7 @@ public sealed class ProcessOutboxMessagesJob(
 
             try
             {
-                await _publisher.Publish(domainEvent, context.CancellationToken);
+                await _publisher.Publish(domainEvent, jobContext.CancellationToken);
                 message.ProcessedOnUtc = DateTime.UtcNow;
             }
             catch (Exception)

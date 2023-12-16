@@ -1,6 +1,6 @@
-﻿using Domain.Kernal;
-using Domain.Products;
+﻿using Domain.Products;
 using MediatR;
+using SharedKernel;
 
 namespace Application.Products.Update;
 

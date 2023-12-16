@@ -1,7 +1,7 @@
-﻿using Domain.Kernal;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Presentation.Common.Http;
+using SharedKernel;
 
 namespace Presentation.Controllers.Base;
 

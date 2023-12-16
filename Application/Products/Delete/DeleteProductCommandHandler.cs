@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
 using Domain.Orders.Enums;
+using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Products.Delete;
 internal class DeleteProductCommandHandler(IApplicationDbContext context)
@@ -18,7 +18,7 @@ internal class DeleteProductCommandHandler(IApplicationDbContext context)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (result is null)
-            return Errors.Product.NotFound;
+            return DomainError.Product.NotFound;
 
         var productsInOrder = await _context
             .Orders
@@ -27,7 +27,7 @@ internal class DeleteProductCommandHandler(IApplicationDbContext context)
 
         if (productsInOrder)
         {
-            return Errors.Product.InOrder;
+            return DomainError.Product.InOrder;
         }
 
         result.MarkAsDeleted();

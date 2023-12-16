@@ -2,13 +2,12 @@
 using Application.Products.AssignCategories;
 using Application.Products.Create;
 using Application.Products.Delete;
-using Application.Products.Filters;
 using Application.Products.Get;
 using Application.Products.List;
 using Application.Products.ListByCategory;
 using Application.Products.Update;
 using Contracts.Products;
-using Infrastructure.Authentication;
+using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

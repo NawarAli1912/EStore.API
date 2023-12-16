@@ -1,9 +1,9 @@
 ﻿using Application.Authentication.Common;
 using Application.Common.Authentication.Jwt;
-using Domain.DomainErrors.Authentication;
-using Domain.Kernal;
+using Domain.Authentication.Errors;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using SharedKernel;
 
 namespace Application.Authentication.Login;
 
@@ -24,7 +24,7 @@ internal class LoginQueryHandler(
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
         {
-            return Errors.Authentication.InvalidCredentials;
+            return DomainError.Authentication.InvalidCredentials;
         }
 
         var token = await _jwtTokenGenerator.Generate(user);

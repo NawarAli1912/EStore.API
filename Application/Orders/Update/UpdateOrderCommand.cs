@@ -1,6 +1,6 @@
-﻿using Domain.Kernal;
-using Domain.Kernal.Enums;
-using MediatR;
+﻿using MediatR;
+using SharedKernel;
+using SharedKernel.Enums;
 
 namespace Application.Orders.Update;
 

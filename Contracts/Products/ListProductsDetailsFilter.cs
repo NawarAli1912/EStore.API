@@ -1,4 +1,4 @@
-﻿namespace Application.Products.Filters;
+﻿namespace Contracts.Products;
 
 public record ListProductsDetailsFilter(
     string? SearchTerm,

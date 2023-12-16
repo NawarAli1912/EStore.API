@@ -1,6 +1,6 @@
-﻿using Domain.Kernal;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
+using SharedKernel;
 
 namespace Application.Common.Behaviors;
 

@@ -1,5 +1,5 @@
-﻿using Domain.Kernal;
-using Domain.Kernal.Models;
+﻿using SharedKernel;
+using SharedKernel.Models;
 
 namespace Domain.Products.ValueObjects;
 
@@ -18,14 +18,9 @@ public sealed class Sku : ValueObject
 
     public static Result<Sku?> Create(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return Result.From<Sku?>(null);
-        }
-
-        // More validation if needed
-
-        return new Sku(value);
+        return string.IsNullOrWhiteSpace(value) ? Result.From<Sku?>(null) :
+            // More validation if needed
+            new Sku(value);
     }
 
     public override IEnumerable<object> GetEqualityComponents()

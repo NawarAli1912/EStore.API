@@ -1,10 +1,9 @@
 ﻿using Application.Common.Data;
 using Dapper;
 using Domain.Categories;
-using Domain.DomainErrors;
-using Domain.Kernal;
 using MediatR;
 using Microsoft.Data.SqlClient;
+using SharedKernel;
 
 namespace Application.Categories.GetFullHierarchy;
 
@@ -26,7 +25,7 @@ public sealed class GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnec
 
         if (rootCategories is null || rootCategories.Count == 0)
         {
-            return Errors.Category.NotFound;
+            return Domain.Categories.Errors.DomainError.Category.NotFound;
         }
 
         var result = rootCategories

@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
 using Domain.Categories;
-using Domain.DomainErrors;
-using Domain.Kernal;
+using Domain.Categories.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 
 namespace Application.Categories.Create;
@@ -30,7 +30,7 @@ internal class CreateCategoryCommandHandler(IApplicationDbContext context)
 
             if (parentCategory is null)
             {
-                return Errors.Category.NotFound;
+                return DomainError.Category.NotFound;
             }
         }
 

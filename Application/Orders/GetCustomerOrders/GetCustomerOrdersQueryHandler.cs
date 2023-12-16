@@ -1,8 +1,8 @@
 ﻿using Application.Common.Data;
-using Domain.Kernal;
 using Domain.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Orders.GetCustomerOrders;
 internal sealed class GetCustomerOrdersQueryHandler(IApplicationDbContext context)
@@ -16,7 +16,7 @@ internal sealed class GetCustomerOrdersQueryHandler(IApplicationDbContext contex
             .Orders
             .Include(o => o.LineItems)
             .Include(o => o.ShippingInfo)
-            .Where(o => o.CustomerId == request.CutomerId)
+            .Where(o => o.CustomerId == request.CustomerId)
             .ToListAsync(cancellationToken);
 
         return orders;

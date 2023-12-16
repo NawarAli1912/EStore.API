@@ -4,7 +4,7 @@ using Application.Categories.GetHierarchyDownward;
 using Application.Categories.Update;
 using Application.Common.Authentication.Models;
 using Contracts.Categories;
-using Infrastructure.Authentication;
+using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

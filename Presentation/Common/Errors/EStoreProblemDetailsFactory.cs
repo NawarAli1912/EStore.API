@@ -1,9 +1,9 @@
-﻿using Domain.Kernal;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Presentation.Common.Http;
+using SharedKernel;
 using System.Diagnostics;
 
 namespace Presentation.Common.Errors;
@@ -90,8 +90,7 @@ public class EStoreProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Extensions["traceId"] = traceId;
         }
         // Adding extensions 
-        List<Error>? errors = httpContext?.Items[HttpContextItemKeys.Errors] as List<Error>;
-        if (errors is not null)
+        if (httpContext?.Items[HttpContextItemKeys.Errors] is List<Error> errors)
         {
             problemDetails.Extensions.Add(
                 "errors",

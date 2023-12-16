@@ -1,14 +1,13 @@
-﻿using Domain.Customers.ValueObjects;
-using Domain.DomainErrors;
-using Domain.Kernal;
-using Domain.Kernal.Models;
+﻿using Domain.Customers.Errors;
+using Domain.Customers.ValueObjects;
+using SharedKernel;
+using SharedKernel.Models;
 
 namespace Domain.Customers.Entities;
 
 public sealed class Cart : Entity<Guid>
 {
     private readonly HashSet<CartItem> _cartItems = [];
-    private readonly Dictionary<Guid, CartItem> _itemsDictionary = [];
 
     public Guid CustomerId { get; set; }
 
@@ -24,7 +23,6 @@ public sealed class Cart : Entity<Guid>
 
     private Cart() : base(Guid.NewGuid())
     {
-        _itemsDictionary = _cartItems.ToDictionary(i => i.ProductId, i => i);
     }
 
     internal Result<Updated> AddItem(CartItem item)
@@ -53,7 +51,7 @@ public sealed class Cart : Entity<Guid>
     {
         if (!_cartItems.TryGetValue(item, out var oldItem))
         {
-            return Errors.CartItem.NotFound;
+            return DomainError.CartItem.NotFound;
         }
 
         _cartItems.Remove(oldItem);

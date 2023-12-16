@@ -104,6 +104,11 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = -10,
+                            Name = "ManageOrdersLite"
+                        },
+                        new
+                        {
+                            Id = -11,
                             Name = "All"
                         });
                 });
@@ -137,15 +142,15 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ad610990-765a-4c75-bb12-4ad9f4c53f7f",
-                            ConcurrencyStamp = "18cbad38-c299-44e7-ace5-c847e42c955e",
+                            Id = "fb857135-c9b1-4bda-b1ca-91b6bff33ede",
+                            ConcurrencyStamp = "c3062c6a-584c-40e0-ae0d-a85a30160bae",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "8e68b266-86bd-462d-90e7-c238875c271f",
-                            ConcurrencyStamp = "e542d6cf-7098-4979-bf45-afb02cd334fd",
+                            Id = "dd83d280-5272-4c28-9273-a2eee793dac5",
+                            ConcurrencyStamp = "409e3224-cf26-4c11-a3c8-9acce583de30",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -223,34 +228,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("LineItems", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Orders.Entities.ShippingInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShippingComapnyLocation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ShippingCompany")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
-                    b.ToTable("ShippingInfo");
-                });
-
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -277,6 +254,29 @@ namespace Infrastructure.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Products.Entities.ProductReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductReview");
                 });
 
             modelBuilder.Entity("Domain.Products.Product", b =>
@@ -605,20 +605,47 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Orders.Entities.ShippingInfo", b =>
-                {
-                    b.HasOne("Domain.Orders.Order", null)
-                        .WithOne("ShippingInfo")
-                        .HasForeignKey("Domain.Orders.Entities.ShippingInfo", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.HasOne("Domain.Customers.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Domain.Orders.Entities.ShippingInfo", "ShippingInfo", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("PhoneNumber")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("ShippingCompanyLocation")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("ShippingCompany")
+                                .HasColumnType("int");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("ShippingInfo")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Products.Entities.ProductReview", b =>
+                {
+                    b.HasOne("Domain.Products.Product", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -703,9 +730,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Navigation("LineItems");
+                });
 
-                    b.Navigation("ShippingInfo")
-                        .IsRequired();
+            modelBuilder.Entity("Domain.Products.Product", b =>
+                {
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

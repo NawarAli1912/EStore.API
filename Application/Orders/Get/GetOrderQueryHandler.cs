@@ -1,9 +1,9 @@
 ﻿using Application.Common.Data;
-using Domain.DomainErrors;
-using Domain.Kernal;
 using Domain.Orders;
+using Domain.Orders.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 
 namespace Application.Orders.Get;
 
@@ -22,7 +22,7 @@ internal sealed class GetOrderQueryHandler(IApplicationDbContext context) :
 
         if (order is null)
         {
-            return Errors.Orders.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         return order;
