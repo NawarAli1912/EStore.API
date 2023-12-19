@@ -15,7 +15,10 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
         CancellationToken cancellationToken)
     {
         var result = await _productsRepository
-            .ListByFilter(request.Filter, request.Page, request.PageSize);
+            .ListByFilter(
+                request.Filter,
+                request.Page,
+                request.PageSize);
 
 
         result.Item1 = OrderResult(result.Item1);
@@ -25,7 +28,10 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
             result.Item2);
     }
 
-    private List<Product> OrderResult(List<Product> products, string? sortColumn = "", string? sortOrder = "asc")
+    private List<Product> OrderResult(
+        List<Product> products,
+        string? sortColumn = "",
+        string? sortOrder = "asc")
     {
         return sortColumn?.ToLowerInvariant() switch
         {

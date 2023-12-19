@@ -27,10 +27,7 @@ public sealed class Order : AggregateRoot<Guid>
 
     public static Order Create(
         Customer customer,
-        ShippingCompany shippingCompany,
-        string shippingCompanyAddress,
-        string phoneNumber
-        )
+        ShippingInfo shippingInfo)
     {
 
         var order = new Order
@@ -40,10 +37,7 @@ public sealed class Order : AggregateRoot<Guid>
             Status = OrderStatus.Pending,
             CreatedAt = DateTime.UtcNow,
             ModifiedAt = DateTime.UtcNow,
-            ShippingInfo = ShippingInfo.Create(
-            shippingCompany,
-            shippingCompanyAddress,
-            phoneNumber)
+            ShippingInfo = shippingInfo
         };
 
         return order;

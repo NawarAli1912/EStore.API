@@ -40,7 +40,9 @@ public class Money : ValueObject, IComparable, IComparable<Money>
 
     public int CompareTo(Money? other)
     {
+#pragma warning disable CS8604 // Possible null reference argument.
         AssertSameCurrency(this, other);
+#pragma warning restore CS8604 // Possible null reference argument.
         if (other is null)
             return 1;
         if (Value < other.Value)
@@ -56,12 +58,12 @@ public class Money : ValueObject, IComparable, IComparable<Money>
         {
             return 1;
         }
-        if (obj is not Money)
+        if (obj is not Money money)
         {
             throw new ArgumentException("Object is not Money object");
         }
 
-        return CompareTo((Money)obj);
+        return CompareTo(money);
     }
 
     public override IEnumerable<object> GetEqualityComponents()

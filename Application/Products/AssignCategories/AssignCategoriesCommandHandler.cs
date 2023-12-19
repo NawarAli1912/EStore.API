@@ -1,5 +1,8 @@
 ﻿using Application.Common.Data;
+using Domain.Categories;
+using Domain.ModelsSnapshots;
 using Domain.Products.Errors;
+using Domain.Products.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -7,11 +10,11 @@ using SharedKernel;
 namespace Application.Products.AssignCategories;
 
 internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
-        : IRequestHandler<AssignCategoriesCommand, Result<bool>>
+        : IRequestHandler<AssignCategoriesCommand, Result<Updated>>
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result<bool>> Handle(AssignCategoriesCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Updated>> Handle(AssignCategoriesCommand request, CancellationToken cancellationToken)
     {
         var product = await _context
             .Products
@@ -28,16 +31,22 @@ internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
             .Where(c => request.CategoriesIds.Contains(c.Id))
             .ToDictionaryAsync(i => i.Id, i => i, cancellationToken);
 
+        List<Category> productCateogries = [];
         foreach (var categoryId in request.CategoriesIds)
         {
             if (categoriesDict.TryGetValue(categoryId, out var category))
             {
-                product.AssignCategory(category);
+                productCateogries.Add(category);
             }
         }
 
+        product.AssignCategories(productCateogries);
+
+        product.RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(product)));
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return Result.Updated;
     }
 }

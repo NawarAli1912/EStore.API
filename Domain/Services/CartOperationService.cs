@@ -8,7 +8,7 @@ namespace Domain.Services;
 
 using CustomerErrors = Customers.Errors.DomainError;
 
-public sealed class CartOperationService
+public static class CartOperationService
 {
     public static Result<decimal> AddCartItem(
         Customer? customer,
@@ -17,7 +17,7 @@ public sealed class CartOperationService
     {
         if (customer is null)
         {
-            return Customers.Errors.DomainError.Customers.NotFound;
+            return CustomerErrors.Customers.NotFound;
         }
 
         if (product is null)

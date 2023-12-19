@@ -1,4 +1,5 @@
 ﻿using Domain.Categories;
+using Domain.Customers;
 using Domain.ModelsSnapshots;
 using Domain.Products.Entities;
 using Domain.Products.Enums;
@@ -10,11 +11,13 @@ using SharedKernel.Models;
 
 namespace Domain.Products;
 
-public class Product : AggregateRoot<Guid>
+public sealed class Product : AggregateRoot<Guid>
 {
     private readonly List<Category> _categories = [];
 
-    private readonly List<ProductReview> _reviews = [];
+    private readonly HashSet<ProductReview> _reviews = [];
+
+    private readonly HashSet<Rating> _ratings = [];
 
     public string Name { get; private set; } = string.Empty;
 
@@ -33,6 +36,9 @@ public class Product : AggregateRoot<Guid>
     public IReadOnlyCollection<Category> Categories => _categories;
 
     public IReadOnlyCollection<ProductReview> Reviews => _reviews;
+
+    public double AverageRating => _ratings.Select(r => r.Value).Sum() /
+                            _ratings.Count;
 
     public static Result<Product> Create(
         Guid id,
@@ -68,10 +74,9 @@ public class Product : AggregateRoot<Guid>
             Sku = skuResult.Value
         };
 
-        foreach (var category in categories ?? Array.Empty<Category>())
-        {
-            product.AssignCategory(category);
-        }
+
+        product.AssignCategories(categories ?? Array.Empty<Category>());
+
 
         product.Status = ProductStatus.Active;
         if (product.Quantity == 0)
@@ -84,24 +89,28 @@ public class Product : AggregateRoot<Guid>
         return product;
     }
 
-    public void AssignCategory(Category category)
+    public void AssignCategories(IEnumerable<Category> categories)
     {
-        if (_categories.Contains(category))
+        foreach (var category in categories)
         {
-            return;
+            if (!_categories.Contains(category))
+            {
+                _categories.Add(category);
+            }
         }
-
-        _categories.Add(category);
     }
 
-    public void UnassignCategory(Category category)
+    public void UnassignCategories(IEnumerable<Category> categories)
     {
-        if (!_categories.Contains(category))
+        foreach (var category in categories)
         {
-            return;
-        }
+            if (!categories.Contains(category))
+            {
+                continue;
+            }
 
-        _categories.Remove(category);
+            _categories.Remove(category);
+        }
     }
 
     public Result<Product> Update(
@@ -164,9 +173,66 @@ public class Product : AggregateRoot<Guid>
         RaiseDomainEvent(new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
     }
 
+    public void AddReview(ProductReview review)
+    {
+        _reviews.Add(review);
+    }
+
+    public void RemoveReview(Guid reviewId)
+    {
+        var productReview = ProductReview.Create(reviewId);
+
+        _reviews.Remove(productReview);
+    }
+
+    public void UpdateReview(Guid reviewId, ProductReview newReview)
+    {
+        var oldReview = ProductReview
+            .Create(reviewId);
+
+        if (!_reviews.TryGetValue(oldReview, out oldReview))
+        {
+            return;
+        }
+
+        oldReview.UpdateComment(newReview.Comment);
+    }
+
+    public Result<Updated> AddRating(Customer customer, int rating)
+    {
+        var customerRating = Rating.Create(customer.Id, rating);
+
+        if (customerRating.IsError)
+        {
+            return customerRating.Errors;
+        }
+
+        _ratings.Add(customerRating.Value);
+
+        return Result.Updated;
+    }
+
+    public Result<Updated> RemoveRating(Customer customer, int rating)
+    {
+        var customerRating = Rating.Create(customer.Id, rating);
+
+        if (customerRating.IsError)
+            return customerRating.Errors;
+
+        if (!_ratings.TryGetValue(customerRating.Value, out var oldRating))
+        {
+            return DomainError.Rating.NotFound;
+        }
+
+        _ratings.Remove(oldRating);
+
+        return Result.Updated;
+    }
+
     private Product() : base(Guid.NewGuid())
     {
     }
 
-    private Product(Guid id) : base(id) { }
+    private Product(Guid id)
+        : base(id) { }
 }

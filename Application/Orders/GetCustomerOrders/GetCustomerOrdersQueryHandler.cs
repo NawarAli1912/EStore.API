@@ -1,5 +1,6 @@
 ﻿using Application.Common.Data;
 using Domain.Orders;
+using Domain.Orders.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -18,6 +19,11 @@ internal sealed class GetCustomerOrdersQueryHandler(IApplicationDbContext contex
             .Include(o => o.ShippingInfo)
             .Where(o => o.CustomerId == request.CustomerId)
             .ToListAsync(cancellationToken);
+
+        if (orders.Count == 0)
+        {
+            return DomainError.Orders.NotFound;
+        }
 
         return orders;
     }

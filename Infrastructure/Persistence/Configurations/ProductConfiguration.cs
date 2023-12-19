@@ -15,11 +15,15 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder
             .HasKey(p => p.Id);
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning disable CS8604 // Possible null reference argument.
         builder.Property(p => p.Sku)
             .HasConversion(
                 sku => (sku == null) ? null : sku.Value,
                 value => Sku.Create(value).Value)
             .IsRequired(false);
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         builder.Property(p => p.CustomerPrice)
             .HasColumnType("decimal(12,2)");

@@ -21,4 +21,13 @@ public static partial class DomainError
 
         public static Error NotExists(string name) => Error.Validation("Product.NotExists", $"The product {name}, doesn't exists.");
     }
+
+    public static class Rating
+    {
+        public static Error InvalidRatingValue =
+            Error.Validation("Rating.InvalidRatingValue", "Rating value must be between 0 and 5");
+
+        public static Error NotFound =
+            Error.Validation("Rating.NotFound", "Rating doesn't exists.");
+    }
 }

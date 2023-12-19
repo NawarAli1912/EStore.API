@@ -15,14 +15,15 @@ public sealed class Category : AggregateRoot<Guid>
     public Category? ParentCategory { get; private set; }
 
     public IReadOnlySet<Product> Products => _products;
+
     public IReadOnlyList<Category> SubCategories => _subCategories;
 
     public static Category Create(
         Guid id,
         string name,
-        Category parentCategory,
-        List<Category>? subCategories = null,
-        Guid? parentCategoryId = null)
+        Guid? parentCategoryId = null,
+        Category? parentCategory = null,
+        List<Category>? subCategories = null)
     {
         return new Category(
             id,
@@ -33,7 +34,9 @@ public sealed class Category : AggregateRoot<Guid>
         );
     }
 
-    public static List<Category> BuildCategoryTree(List<Category> categories, Guid? parentId = null)
+    public static List<Category> BuildCategoryTree(
+        List<Category> categories,
+        Guid? parentId = null)
     {
         var tree = categories
             .Where(c => c.ParentCategoryId == parentId)
@@ -70,7 +73,7 @@ public sealed class Category : AggregateRoot<Guid>
     private Category(
         Guid id,
         string name,
-        Category parentCategory,
+        Category? parentCategory,
         List<Category> subCategories,
         Guid? parentCategoryId = null) : base(id)
     {

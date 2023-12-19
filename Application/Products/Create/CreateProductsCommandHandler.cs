@@ -1,4 +1,5 @@
 ﻿using Application.Common.Data;
+using Domain.Categories;
 using Domain.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -45,15 +46,17 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
             }
 
             var currentProduct = productResult.Value;
+            List<Category> productCategories = [];
             foreach (var categoryId in item.Categories)
             {
                 if (categoriesDict.TryGetValue(categoryId, out var category))
                 {
-                    currentProduct.AssignCategory(category);
+                    productCategories.Add(category);
                 }
             }
-            products.Add(currentProduct);
 
+            currentProduct.AssignCategories(productCategories);
+            products.Add(currentProduct);
         }
 
         if (errors.Count > 0)
@@ -67,6 +70,7 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
                 product,
                 cancellationToken);
         }
+
 
         await _context.SaveChangesAsync(cancellationToken);
 

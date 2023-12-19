@@ -41,8 +41,10 @@ public static class DependencyInjection
             {
                 var interceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
 
+#pragma warning disable CS8604 // Possible null reference argument.
                 options.UseSqlServer(configuration.GetConnectionString("Default"))
                     .AddInterceptors(interceptor);
+#pragma warning restore CS8604 // Possible null reference argument.
             });
 
         services.AddScoped<IApplicationDbContext>(sp =>

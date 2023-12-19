@@ -21,6 +21,8 @@ public sealed class ProductSnapshot
 
     public ProductStatus Status { get; set; }
 
+    public List<CategorySnapshot> Categories { get; set; } = [];
+
     public static ProductSnapshot Snapshot(Product product)
     {
         var item = new ProductSnapshot
@@ -35,6 +37,11 @@ public sealed class ProductSnapshot
             Status = product.Status
         };
 
+        foreach (var category in product.Categories)
+        {
+            item.Categories.Add(CategorySnapshot.Snapshot(category));
+        }
+
         return item;
     }
 
@@ -46,6 +53,8 @@ public sealed class ProductSnapshot
             && lhs.Quantity == rhs.Quantity
             && lhs.PurchasePrice.Equals(rhs.PurchasePrice)
             && lhs.CustomerPrice.Equals(rhs.CustomerPrice)
-            && lhs.Sku.Equals(rhs.Sku);
+            && lhs.Sku.Equals(rhs.Sku)
+            && lhs.Categories.OrderBy(c => c.CategoryId)
+                    .SequenceEqual(rhs.Categories.OrderBy(c => c.CategoryId));
     }
 }

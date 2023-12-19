@@ -9,7 +9,7 @@ public sealed class Cart : Entity<Guid>
 {
     private readonly HashSet<CartItem> _cartItems = [];
 
-    public Guid CustomerId { get; set; }
+    public Guid CustomerId { get; private set; }
 
     public IReadOnlySet<CartItem> CartItems => _cartItems;
 
@@ -27,7 +27,8 @@ public sealed class Cart : Entity<Guid>
 
     internal Result<Updated> AddItem(CartItem item)
     {
-        if (!_cartItems.TryGetValue(item, out var oldItem))
+        if (!_cartItems.TryGetValue(item,
+                out var oldItem))
         {
             _cartItems.Add(item);
 

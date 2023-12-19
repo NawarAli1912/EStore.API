@@ -15,6 +15,7 @@ public sealed class ElasticSearchSync(IApplicationDbContext context, IElasticCli
     {
         var dbProductsDict = await _context
                 .Products
+                .Include(p => p.Categories)
                 .Select(p => ProductSnapshot.Snapshot(p))
                 .ToDictionaryAsync(p => p.Id, p => p);
 

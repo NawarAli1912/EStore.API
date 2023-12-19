@@ -1,5 +1,6 @@
 ﻿using Application.Common.Data;
 using Domain.Customers.Errors;
+using Domain.Orders.Entities;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -45,9 +46,10 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
         var orderResult = OrderOrchestratorService.CreateOrder(
             customer,
             productsDict,
-            request.ShippingCompany,
-            request.ShippingCompanyLocation,
-            request.PhoneNumber);
+            ShippingInfo.Create(
+                request.ShippingCompany,
+                request.ShippingCompanyLocation,
+                request.PhoneNumber));
 
         if (orderResult.IsError)
         {

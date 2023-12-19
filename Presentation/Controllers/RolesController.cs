@@ -37,7 +37,9 @@ public class RolesController(RoleManager<Role> roleManager, UserManager<Identity
         var user = await _userManager.FindByIdAsync(userId);
         var role = await _roleManager.FindByNameAsync(roleName);
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         var result = await _userManager.AddToRoleAsync(user!, role.Name!);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
         return Ok(result);
     }

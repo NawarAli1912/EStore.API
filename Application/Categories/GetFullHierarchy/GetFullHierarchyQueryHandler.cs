@@ -32,9 +32,9 @@ public sealed class GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnec
             .Select(root => Category.Create(
                 root.Id,
                 root.Name,
+                root.ParentCategoryId,
                 null!,
-                Category.BuildCategoryTree(queryResult, root.Id),
-                root.ParentCategoryId))
+                Category.BuildCategoryTree(queryResult, root.Id)))
             .ToList();
 
         return result;

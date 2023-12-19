@@ -37,7 +37,7 @@ internal class CreateCategoryCommandHandler(IApplicationDbContext context)
         var categroy = Category.Create(
             Guid.NewGuid(),
             request.Name,
-            parentCategory);
+            parentCategory: parentCategory);
 
         categroy.AssignProducts(products);
 

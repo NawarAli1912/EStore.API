@@ -1,14 +1,14 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
+using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
 using Domain.Products.Errors;
 using SharedKernel;
-using SharedKernel.Enums;
 
 namespace Domain.Services;
-public class OrderOrchestratorService
+public static class OrderOrchestratorService
 {
     /// <summary>
     /// Creates a new order for a customer, updating product quantities and handling errors.
@@ -19,14 +19,8 @@ public class OrderOrchestratorService
     /// <param name="productDict">
     ///     A dictionary containing product information (mapping product ID to product).
     /// </param>
-    /// <param name="shippingCompany">
-    ///     The shipping company for the order.
-    /// </param>
-    /// <param name="shippingCompanyLocation">
-    ///     The shipping company specific location for the order.
-    /// </param>
-    /// <param name="phoneNumber">
-    ///     The customer's phone number for shipping communication.
+    /// <param name="shippingInfo">
+    ///     A shipping info value object to relate it to the order
     /// </param>
     /// <returns>
     ///     A Result containing the created order if successful.
@@ -35,16 +29,12 @@ public class OrderOrchestratorService
     public static Result<Order> CreateOrder(
         Customer customer,
         Dictionary<Guid, Product> productDict,
-        ShippingCompany shippingCompany,
-        string shippingCompanyLocation,
-        string phoneNumber
+        ShippingInfo shippingInfo
         )
     {
         var order = Order.Create(
             customer,
-            shippingCompany,
-            shippingCompanyLocation,
-            phoneNumber);
+            shippingInfo);
 
         List<Error> errors = [];
         var cartItems = customer.Cart.CartItems.ToList();

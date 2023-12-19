@@ -9,6 +9,13 @@ public sealed class ProductReview : Entity<Guid>
 
     public string Comment { get; private set; }
 
+    internal static ProductReview Create(Guid id)
+    {
+        return new ProductReview
+        {
+            Id = id
+        };
+    }
 
     public static ProductReview Create(
         Guid id,
@@ -23,17 +30,20 @@ public sealed class ProductReview : Entity<Guid>
             comment);
     }
 
+    internal void UpdateComment(string comment)
+    {
+        Comment = comment;
+    }
+
     private ProductReview(
         Guid id,
         Guid productId,
         Guid customerId,
-        string comment)
-        : base(id)
+        string comment) : base(id)
     {
-        ProductId = productId;
-        CustomerId = customerId;
-        Comment = comment;
+
     }
+
 
     private ProductReview() : base(Guid.NewGuid())
     {

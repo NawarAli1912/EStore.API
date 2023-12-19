@@ -5,7 +5,6 @@ using Dapper;
 using Domain.Categories;
 using Domain.ModelsSnapshots;
 using Domain.Products;
-using Microsoft.EntityFrameworkCore;
 using Nest;
 
 namespace Infrastructure.Persistence.Repository;
@@ -72,12 +71,11 @@ public sealed class ProductsRepository(
                         Category.Create(
                         categorySnap.CategoryId,
                         categorySnap.CategoryName,
-                        null!,
-                        parentCategoryId: categorySnap.ParentCategoryId);
+                        categorySnap.ParentCategoryId);
 
                 if (productDict.TryGetValue(productSnap.Id, out Product? product))
                 {
-                    product.AssignCategory(category);
+                    product.AssignCategories([category]);
 
                     return product;
                 }
@@ -91,7 +89,7 @@ public sealed class ProductsRepository(
                     productSnap.PurchasePrice,
                     productSnap.Sku).Value;
 
-                product.AssignCategory(category);
+                product.AssignCategories([category]);
                 productDict.Add(productSnap.Id, product);
                 return product;
             },
@@ -126,7 +124,6 @@ public sealed class ProductsRepository(
 
     public async Task<(List<Product>, int)> ListByFilter(ProductsFilter filter, int pageIndex, int pageSize)
     {
-        #region elastic query
         var products = await _elasticClient
             .SearchAsync<ProductSnapshot>(s => s
             .Query(q =>
@@ -167,23 +164,28 @@ public sealed class ProductsRepository(
             .From((pageIndex - 1) * pageSize)
             .Size(pageSize));
 
-        #endregion
 
 
-        var productsIds = products.Hits
-            .Select(hit => hit.Source.Id)
-            .ToHashSet();
+        var categoriesDict = new Dictionary<Guid, List<Category>>();
 
-        var categoriesDict = await _context
-                        .Products
-                        .Include(p => p.Categories)
-                        .Where(p => productsIds.Contains(p.Id))
-                        .Select(p => new
-                        {
-                            Id = p.Id,
-                            Categories = p.Categories.ToList()
-                        })
-                        .ToDictionaryAsync(item => item.Id, item => item.Categories);
+        foreach (var product in products.Hits)
+        {
+            foreach (var categorySnapshot in product.Source.Categories)
+            {
+                var category = Category.Create(
+                    categorySnapshot.CategoryId,
+                    categorySnapshot.CategoryName,
+                    parentCategoryId: categorySnapshot.ParentCategoryId);
+
+                if (categoriesDict.TryGetValue(product.Source.Id, out var cateogires))
+                {
+                    categoriesDict[product.Source.Id].Add(category);
+                    continue;
+                }
+
+                categoriesDict[product.Source.Id] = [category];
+            }
+        }
 
 
         List<Product> result = [];

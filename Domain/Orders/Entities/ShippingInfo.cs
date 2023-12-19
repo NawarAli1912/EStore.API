@@ -10,7 +10,7 @@ public class ShippingInfo : ValueObject
 
     public string PhoneNumber { get; private set; } = default!;
 
-    internal static ShippingInfo Create(
+    public static ShippingInfo Create(
         ShippingCompany shippingCompany,
         string shippingCompanyLocation,
         string phoneNumber)
