@@ -1,5 +1,6 @@
 ﻿using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
+using Application.Common.Cache;
 using Application.Common.Data;
 using Application.Common.Repository;
 using Domain.Authentication;
@@ -9,6 +10,7 @@ using Infrastructure.Authentication.Authorization;
 using Infrastructure.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
 using Infrastructure.BackgroundJobs;
+using Infrastructure.Caching;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repository;
@@ -79,6 +81,10 @@ public static class DependencyInjection
         });
 
         services.AddQuartzHostedService();
+
+        services.AddMemoryCache();
+
+        services.AddSingleton<ICacheService, CacheService>();
 
         return services;
     }

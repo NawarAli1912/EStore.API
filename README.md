@@ -12,13 +12,14 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 - **NEST and Elasticsearch:** Implements Elasticsearch using NEST for efficient and scalable product searching.
 - **Mapster:** Utilizes Mapster for object-to-object mapping, simplifying data transformations.
 - **Quartz:** Implements Quartz for job scheduling, enhancing the project with timely tasks.
-- **Domain-Driven Design (DDD) Principles:** Incorporates DDD principles, including domain models, domain events, and domain services
-- to create a robust and maintainable codebase.
+- **Domain-Driven Design (DDD) Principles:** Incorporates DDD principles, including domain models, domain events, and domain services to create a robust and maintainable codebase.
 - **Authentication:** Implements JWT Bearer authentication for secure access to the API.
 - **Authorization:** Implements permission-based access control from scratch, ensuring that users have the necessary permissions to perform specific actions.
 - **Outbox Pattern:** Implements the Outbox pattern to store domain events, ensuring reliable event processing.
 - **Global Error Handling:** New way for global error handling following RFC specification and reimplement dotnet ProblemDetailsFactory.
 - **Reuslt Pattern:** Generic result type which work with domain errors to avoid throwing exceptions and return explicit errors.
+- **Cache:** Implement Cache-Aside Pattern to optimize complex queries, using MediatR piplines feature.
+- **Unit Testing:** Unit testing using x-unit framework.
 
 ## Getting Started
 
