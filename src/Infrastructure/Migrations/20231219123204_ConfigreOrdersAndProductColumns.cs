@@ -7,7 +7,7 @@
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ProductsReviewTableAndShippingInfoValueObject : Migration
+    public partial class ConfigreOrdersAndProductColumns : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,15 +15,16 @@ namespace Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "ShippingInfo");
 
-            migrationBuilder.AddColumn<string>(
-                name: "ShippingInfo_PhoneNumber",
-                table: "Orders",
-                type: "nvarchar(max)",
+
+            migrationBuilder.AddColumn<int>(
+                name: "Status",
+                table: "Products",
+                type: "int",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 2);
 
             migrationBuilder.AddColumn<string>(
-                name: "ShippingInfo_ShippingComapnyLocation",
+                name: "ShippingInfo_PhoneNumber",
                 table: "Orders",
                 type: "nvarchar(max)",
                 nullable: false,
@@ -35,6 +36,13 @@ namespace Infrastructure.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ShippingInfo_ShippingCompanyLocation",
+                table: "Orders",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.CreateTable(
                 name: "ProductReview",
@@ -56,6 +64,7 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+
             migrationBuilder.CreateIndex(
                 name: "IX_ProductReview_ProductId",
                 table: "ProductReview",
@@ -69,15 +78,19 @@ namespace Infrastructure.Migrations
                 name: "ProductReview");
 
             migrationBuilder.DropColumn(
+                name: "Status",
+                table: "Products");
+
+            migrationBuilder.DropColumn(
                 name: "ShippingInfo_PhoneNumber",
                 table: "Orders");
 
             migrationBuilder.DropColumn(
-                name: "ShippingInfo_ShippingComapnyLocation",
+                name: "ShippingInfo_ShippingCompany",
                 table: "Orders");
 
             migrationBuilder.DropColumn(
-                name: "ShippingInfo_ShippingCompany",
+                name: "ShippingInfo_ShippingCompanyLocation",
                 table: "Orders");
 
             migrationBuilder.CreateTable(

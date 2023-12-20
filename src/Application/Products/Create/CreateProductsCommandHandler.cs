@@ -1,6 +1,7 @@
 ﻿using Application.Common.Data;
 using Domain.Categories;
 using Domain.Products;
+using Domain.Products.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -30,6 +31,17 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
 
         foreach (var item in request.Items)
         {
+            Sku? sku = null;
+            var skuResult = Sku.Create(item.Sku);
+            if (skuResult.IsError)
+            {
+                errors.AddRange(skuResult.Errors);
+            }
+            else
+            {
+                sku = skuResult.Value;
+            }
+
             var productResult = Product.Create(
                 Guid.NewGuid(),
                 item.Name,
@@ -37,7 +49,7 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
                 item.Quantity,
                 item.CustomerPrice,
                 item.PurchasePrice,
-                item.Sku);
+                sku);
 
             if (productResult.IsError)
             {

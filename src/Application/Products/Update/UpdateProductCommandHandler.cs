@@ -1,6 +1,7 @@
 ﻿using Application.Common.Data;
 using Domain.Products;
 using Domain.Products.Errors;
+using Domain.Products.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -24,13 +25,21 @@ internal class UpdateProductCommandHandler(IApplicationDbContext context)
             return DomainError.Product.NotFound;
         }
 
+        var skuResult =
+            Sku.Create(request.Sku);
+
+        if (skuResult.IsError)
+        {
+            return skuResult.Errors;
+        }
+
         var updateProductResult = product.Update(
             request.Name,
             request.Description,
             request.Quantity,
             request.CustomerPrice,
             request.PurchasePrice,
-            request.Sku,
+            skuResult.Value,
             request.NullSku);
 
         if (updateProductResult.IsError)

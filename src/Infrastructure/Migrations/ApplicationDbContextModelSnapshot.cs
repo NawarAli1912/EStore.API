@@ -4,7 +4,6 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,11 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231212150558_ProductStautsProductTable")]
-    partial class ProductStautsProductTable
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +104,11 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = -10,
+                            Name = "ManageOrdersLite"
+                        },
+                        new
+                        {
+                            Id = -11,
                             Name = "All"
                         });
                 });
@@ -140,15 +142,15 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ad610990-765a-4c75-bb12-4ad9f4c53f7f",
-                            ConcurrencyStamp = "18cbad38-c299-44e7-ace5-c847e42c955e",
+                            Id = "8002db41-d254-4724-ba19-a66750dec68a",
+                            ConcurrencyStamp = "3e6fb7ae-4efd-4dad-a28b-a9e4a1168733",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "8e68b266-86bd-462d-90e7-c238875c271f",
-                            ConcurrencyStamp = "e542d6cf-7098-4979-bf45-afb02cd334fd",
+                            Id = "3113e82b-6654-406c-885d-342593c71cc0",
+                            ConcurrencyStamp = "6b58ffa8-b976-4956-9665-884ae5630b95",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -226,34 +228,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("LineItems", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Orders.Entities.ShippingInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShippingComapnyLocation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ShippingCompany")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
-                    b.ToTable("ShippingInfo");
-                });
-
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -280,6 +254,29 @@ namespace Infrastructure.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Products.Entities.ProductReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductReview");
                 });
 
             modelBuilder.Entity("Domain.Products.Product", b =>
@@ -608,20 +605,47 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Orders.Entities.ShippingInfo", b =>
-                {
-                    b.HasOne("Domain.Orders.Order", null)
-                        .WithOne("ShippingInfo")
-                        .HasForeignKey("Domain.Orders.Entities.ShippingInfo", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.HasOne("Domain.Customers.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Domain.Orders.Entities.ShippingInfo", "ShippingInfo", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("PhoneNumber")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("ShippingCompany")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("ShippingCompanyLocation")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("ShippingInfo")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Products.Entities.ProductReview", b =>
+                {
+                    b.HasOne("Domain.Products.Product", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -706,9 +730,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Navigation("LineItems");
+                });
 
-                    b.Navigation("ShippingInfo")
-                        .IsRequired();
+            modelBuilder.Entity("Domain.Products.Product", b =>
+                {
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

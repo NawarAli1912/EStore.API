@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231216123407_ProductsReviewTableAndShippingInfoValueObject")]
-    partial class ProductsReviewTableAndShippingInfoValueObject
+    [Migration("20231219123204_ConfigreOrdersAndProductColumns")]
+    partial class ConfigreOrdersAndProductColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,15 +145,15 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fb857135-c9b1-4bda-b1ca-91b6bff33ede",
-                            ConcurrencyStamp = "c3062c6a-584c-40e0-ae0d-a85a30160bae",
+                            Id = "8002db41-d254-4724-ba19-a66750dec68a",
+                            ConcurrencyStamp = "3e6fb7ae-4efd-4dad-a28b-a9e4a1168733",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "dd83d280-5272-4c28-9273-a2eee793dac5",
-                            ConcurrencyStamp = "409e3224-cf26-4c11-a3c8-9acce583de30",
+                            Id = "3113e82b-6654-406c-885d-342593c71cc0",
+                            ConcurrencyStamp = "6b58ffa8-b976-4956-9665-884ae5630b95",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -625,12 +625,12 @@ namespace Infrastructure.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("ShippingComapnyLocation")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
                             b1.Property<int>("ShippingCompany")
                                 .HasColumnType("int");
+
+                            b1.Property<string>("ShippingCompanyLocation")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("OrderId");
 

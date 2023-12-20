@@ -8,10 +8,11 @@ using Domain.Products.Events;
 using Domain.Products.ValueObjects;
 using SharedKernel;
 using SharedKernel.Models;
+using Result = SharedKernel.Result;
 
 namespace Domain.Products;
 
-public sealed class Product : AggregateRoot<Guid>
+public class Product : AggregateRoot<Guid>
 {
     private readonly List<Category> _categories = [];
 
@@ -37,8 +38,8 @@ public sealed class Product : AggregateRoot<Guid>
 
     public IReadOnlyCollection<ProductReview> Reviews => _reviews;
 
-    public double AverageRating => _ratings.Select(r => r.Value).Sum() /
-                            _ratings.Count;
+    public double AverageRating => _ratings.Count > 0 ? _ratings.Select(r => r.Value).Sum() /
+                            _ratings.Count : 0.0;
 
     public static Result<Product> Create(
         Guid id,
@@ -47,16 +48,10 @@ public sealed class Product : AggregateRoot<Guid>
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
-        string? sku = default,
+        Sku? sku = default,
         IEnumerable<Category>? categories = default)
     {
         List<Error> errors = [];
-
-        var skuResult = Sku.Create(sku);
-        if (skuResult.IsError)
-        {
-            errors.AddRange(skuResult.Errors);
-        }
 
         if (errors.Count > 0)
         {
@@ -71,7 +66,7 @@ public sealed class Product : AggregateRoot<Guid>
             Quantity = quantity,
             CustomerPrice = customerPrice,
             PurchasePrice = purchasePrice,
-            Sku = skuResult.Value
+            Sku = sku
         };
 
 
@@ -84,7 +79,8 @@ public sealed class Product : AggregateRoot<Guid>
             product.Status = ProductStatus.OutOfStock;
         }
 
-        product.RaiseDomainEvent(new ProductCreatedDomainEvent(ProductSnapshot.Snapshot(product)));
+        product.RaiseDomainEvent(
+            new ProductCreatedDomainEvent(ProductSnapshot.Snapshot(product)));
 
         return product;
     }
@@ -119,28 +115,32 @@ public sealed class Product : AggregateRoot<Guid>
         int? quantity,
         decimal? customerPrice,
         decimal? purchasePrice,
-        string? sku,
+        Sku? sku,
         bool nullSku = false)
     {
         List<Error> errors = [];
-        var newCustomerPrice = customerPrice ?? CustomerPrice;
-        var newPurchasePrice = purchasePrice ?? PurchasePrice;
         Sku = null;
         if (!nullSku)
         {
-            var skuResult = Sku.Create(sku ?? Sku?.Value);
-            errors.AddRange(skuResult.Errors);
-            if (!skuResult.IsError)
-            {
-                Sku = skuResult.Value;
-            }
+            Sku = sku;
+        }
+
+        if (quantity < 0)
+        {
+            errors.Add(DomainError.Product.StockError(Name));
+        }
+
+        if (errors.Count > 0)
+        {
+            return errors;
         }
 
         Name = name ?? Name;
         Description = description ?? Description;
         Quantity = quantity ?? Quantity;
-        CustomerPrice = newCustomerPrice;
-        PurchasePrice = newPurchasePrice;
+        CustomerPrice = customerPrice ?? CustomerPrice;
+        PurchasePrice = purchasePrice ?? PurchasePrice;
+        Status = quantity == 0 ? ProductStatus.OutOfStock : Status;
 
         return this;
     }
@@ -233,6 +233,7 @@ public sealed class Product : AggregateRoot<Guid>
     {
     }
 
-    private Product(Guid id)
-        : base(id) { }
+    private Product(Guid id) : base(id)
+    {
+    }
 }
