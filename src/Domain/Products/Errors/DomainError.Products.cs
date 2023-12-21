@@ -17,9 +17,13 @@ public static partial class DomainError
 
         public static Error InOrder = Error.Validation("Product.InOrder", "The product is currently included on an active order, so it can't be deleted.");
 
-        public static Error Inactive(string name) => Error.Validation("Product.Inactive", $"The product {name}, is incative.");
+        public static Error Deleted(string name) => Error.Validation("Product.Inactive", $"The product {name}, is deleted.");
+
+        public static Error OutOfStock(string name) => Error.Validation("Product.Inactive", $"The product {name}, is out of stock.");
 
         public static Error NotExists(string name) => Error.Validation("Product.NotExists", $"The product {name}, doesn't exists.");
+
+        public static Error InvalidState(string name) => Error.Unexpected("Product.InvalidState", $"The product {name}, is on an invalid state.");
     }
 
     public static class Rating

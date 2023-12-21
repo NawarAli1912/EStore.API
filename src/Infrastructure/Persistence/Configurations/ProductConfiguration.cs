@@ -3,6 +3,7 @@ using Domain.Products.Enums;
 using Domain.Products.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection;
 
 namespace Infrastructure.Persistence.Configurations;
 
@@ -41,5 +42,12 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMany(p => p.Reviews)
             .WithOne()
             .HasForeignKey(r => r.ProductId);
+
+        var rowVersionProperty = typeof(Product).GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        builder
+            .Property("_version")
+            .HasColumnName("Version")
+            .IsRowVersion();
     }
 }

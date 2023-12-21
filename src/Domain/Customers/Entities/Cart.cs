@@ -57,7 +57,8 @@ public sealed class Cart : Entity<Guid>
 
         _cartItems.Remove(oldItem);
 
-        var newItemResult = CartItem.Create(Id, item.ProductId, oldItem.Quantity - item.Quantity);
+        var newItemResult = CartItem
+            .Create(Id, item.ProductId, oldItem.Quantity - item.Quantity);
 
         if (newItemResult.IsError)
         {

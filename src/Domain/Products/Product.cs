@@ -14,6 +14,8 @@ namespace Domain.Products;
 
 public class Product : AggregateRoot<Guid>
 {
+    private byte[] _version { get; set; }
+
     private readonly List<Category> _categories = [];
 
     private readonly HashSet<ProductReview> _reviews = [];
@@ -40,6 +42,8 @@ public class Product : AggregateRoot<Guid>
 
     public double AverageRating => _ratings.Count > 0 ? _ratings.Select(r => r.Value).Sum() /
                             _ratings.Count : 0.0;
+
+
 
     public static Result<Product> Create(
         Guid id,
@@ -142,6 +146,10 @@ public class Product : AggregateRoot<Guid>
         PurchasePrice = purchasePrice ?? PurchasePrice;
         Status = quantity == 0 ? ProductStatus.OutOfStock : Status;
 
+        RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+
+
         return this;
     }
 
@@ -159,18 +167,25 @@ public class Product : AggregateRoot<Guid>
                 break;
         }
 
+        RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+
         return Result.Updated;
     }
 
     public void IncreaseQuantity(int value)
     {
         Quantity += value;
+        RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+
     }
 
     public void MarkAsDeleted()
     {
         Status = ProductStatus.Deleted;
-        RaiseDomainEvent(new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+        RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
     }
 
     public void AddReview(ProductReview review)

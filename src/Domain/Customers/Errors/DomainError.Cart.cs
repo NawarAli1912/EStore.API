@@ -9,5 +9,10 @@ public static partial class DomainError
         public static Error EmptyCart = Error.Validation(
             "Cart.Empty",
             "The cart is emtpty.");
+
+
+        public static Error CheckoutFailed = Error.Unexpected(
+            "Cart.CheckoutFailed",
+            "The checkout process has encountered unexpeted error.");
     }
 }

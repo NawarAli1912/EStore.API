@@ -1,7 +1,9 @@
 ﻿using Domain.Customers;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
+using Domain.Orders.Errors;
 using Domain.Products;
+using SharedKernel;
 using SharedKernel.Enums;
 using SharedKernel.Models;
 
@@ -46,37 +48,39 @@ public sealed class Order : AggregateRoot<Guid>
 
     public void AddItems(Product product, int quantity)
     {
-        var lineItem = LineItem
-            .Create(
-            Guid.NewGuid(),
-            product.Id,
-            Id,
-            product.CustomerPrice);
-
         for (var i = 0; i < quantity; ++i)
         {
+            var lineItem = LineItem
+                .Create(
+                Guid.NewGuid(),
+                product.Id,
+                Id,
+                product.CustomerPrice);
+
             _lineItems.Add(lineItem);
         }
 
         TotalPrice += product.CustomerPrice * quantity;
     }
 
-    public void RemoveItems(Product product, int Quantity)
+    public Result<Updated> RemoveItems(Product product, int Quantity)
     {
+        if (_lineItems.Count(li => li.ProductId == product.Id) < Quantity)
+        {
+            return DomainError.LineItem.ExceedsAvailableQuantity(product.Id);
+        }
+
         for (var i = 0; i < Quantity; ++i)
         {
             var lineItem = _lineItems
-                .FirstOrDefault(item => item.ProductId == product.Id);
-
-            if (lineItem is null)
-            {
-                return;
-            }
+                .First(item => item.ProductId == product.Id);
 
             _lineItems.Remove(lineItem);
 
             TotalPrice -= lineItem.Price;
         }
+
+        return Result.Updated;
     }
 
     public void UpdateShippingInfo(

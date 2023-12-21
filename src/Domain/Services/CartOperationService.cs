@@ -27,12 +27,22 @@ public static class CartOperationService
 
         if (product.Status != ProductStatus.Active)
         {
-            return DomainError.Product.Inactive(product.Name);
+            return product.Status switch
+            {
+                ProductStatus.Deleted =>
+                    DomainError.Product.Deleted(product.Name),
+                ProductStatus.OutOfStock =>
+                    DomainError.Product.OutOfStock(product.Name),
+                _ =>
+                    DomainError.Product.InvalidState(product.Name)
+            };
         }
 
-        if (product.Quantity < requestedQuantity)
+        var decreaseQuantityResult = product
+            .DecreaseQuantity(requestedQuantity);
+        if (decreaseQuantityResult.IsError)
         {
-            return DomainError.Product.StockError(product.Name);
+            return decreaseQuantityResult.Errors;
         }
 
         var result = customer.AddCartItem(product.Id, requestedQuantity);

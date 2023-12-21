@@ -4,8 +4,8 @@ using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
-using Domain.Products.Errors;
 using SharedKernel;
+using DomainError = Domain.Products.Errors.DomainError;
 
 namespace Domain.Services;
 public static class OrderOrchestratorService
@@ -32,12 +32,17 @@ public static class OrderOrchestratorService
         ShippingInfo shippingInfo
         )
     {
+        var cartItems = customer.Cart.CartItems.ToList();
+        if (customer.Cart.CartItems.Count == 0)
+        {
+            return Customers.Errors.DomainError.Cart.EmptyCart;
+        }
+
         var order = Order.Create(
             customer,
             shippingInfo);
 
         List<Error> errors = [];
-        var cartItems = customer.Cart.CartItems.ToList();
         foreach (var item in cartItems)
         {
             if (!productDict.TryGetValue(item.ProductId, out var product))
@@ -48,8 +53,15 @@ public static class OrderOrchestratorService
 
             if (product.Status != ProductStatus.Active)
             {
-                errors.Add(DomainError.Product.Inactive(product.Name));
-                continue;
+                errors.Add(product.Status switch
+                {
+                    ProductStatus.Deleted =>
+                        DomainError.Product.Deleted(product.Name),
+                    ProductStatus.OutOfStock =>
+                        DomainError.Product.OutOfStock(product.Name),
+                    _ =>
+                        DomainError.Product.InvalidState(product.Name)
+                });
             }
 
             var decreaseQuantityResult = product.DecreaseQuantity(item.Quantity);
@@ -64,6 +76,7 @@ public static class OrderOrchestratorService
 
         if (errors.Count > 0)
         {
+
             return errors;
         }
 
@@ -129,8 +142,15 @@ public static class OrderOrchestratorService
 
                 if (product.Status != ProductStatus.Active)
                 {
-                    errors.Add(DomainError.Product.Inactive(product.Name));
-                    continue;
+                    return product.Status switch
+                    {
+                        ProductStatus.Deleted =>
+                            DomainError.Product.Deleted(product.Name),
+                        ProductStatus.OutOfStock =>
+                            DomainError.Product.OutOfStock(product.Name),
+                        _ =>
+                            DomainError.Product.InvalidState(product.Name)
+                    };
                 }
 
                 var result = product.DecreaseQuantity(group.Count());

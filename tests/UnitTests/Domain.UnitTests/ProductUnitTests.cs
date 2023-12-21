@@ -1,7 +1,9 @@
 using Domain.Categories;
 using Domain.Products;
+using Domain.Products.Enums;
 using Domain.Products.Errors;
 using Domain.Products.ValueObjects;
+using SharedKernel;
 
 namespace Domain.UnitTests;
 
@@ -140,5 +142,69 @@ public class ProductUnitTests
             DomainError.Product.StockError(product.Name),
             result.Errors.First());
     }
+
+    [Fact]
+    public void DecreaseQuantity_WhenQuantityIsGreaterThanZero_ShouldReturnUpdated()
+    {
+        // Arrange
+        var product = Product.Create(
+            Guid.NewGuid(),
+            ProductName(1),
+            ProductDescription(1),
+            HighQuantity,
+            CustomerPrice,
+            PurchasePrice).Value;
+
+        // Act
+        var result = product.DecreaseQuantity(2);
+
+        // Assert
+        Assert.Equal(Result.Updated, result);
+        Assert.Equal(product.Quantity, HighQuantity - 2);
+        Assert.Equal(ProductStatus.Active, product.Status);
+    }
+
+    [Fact]
+    public void DecreaseQuantity_WhenQuantityBecomesZero_ShouldSetStatusToOutOfStock()
+    {
+        // Arrange
+        var product = Product.Create(
+            Guid.NewGuid(),
+            ProductName(1),
+            ProductDescription(1),
+            1,
+            CustomerPrice,
+            PurchasePrice).Value;
+
+        // Act
+        var result = product.DecreaseQuantity(1);
+
+        // Assert
+        Assert.Equal(Result.Updated, result);
+        Assert.Equal(0, product.Quantity);
+        Assert.Equal(ProductStatus.OutOfStock, product.Status);
+    }
+
+    [Fact]
+    public void DecreaseQuantity_WhenQuantityBecomesNegative_ShouldReturnStockError()
+    {
+        // Arrange
+        var product = Product.Create(
+            Guid.NewGuid(),
+            ProductName(1),
+            ProductDescription(1),
+            1,
+            CustomerPrice,
+            PurchasePrice).Value;
+
+        // Act
+        var result = product.DecreaseQuantity(2);
+
+        // Assert
+        Assert.Contains(DomainError.Product.StockError(product.Name), result.Errors);
+        Assert.Equal(ProductStatus.Active, product.Status); // Ensure status remains unchanged
+    }
+
+
 
 }
