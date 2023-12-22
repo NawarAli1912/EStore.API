@@ -2,7 +2,7 @@
 using Domain.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Orders.List;
 internal class ListOrdersQueryHandler(IApplicationDbContext context)
@@ -19,9 +19,9 @@ internal class ListOrdersQueryHandler(IApplicationDbContext context)
             .Include(o => o.ShippingInfo)
             .Include(o => o.LineItems)
             .Where(o => request.Filter.Status.Contains(o.Status))
-            .Where(o => o.ModifiedAt >= request.Filter.ModifiedFrom)
-            .Where(o => o.ModifiedAt <= request.Filter.ModifiedTo)
-            .OrderBy(o => o.ModifiedAt)
+            .Where(o => o.ModifiedAtUtc >= request.Filter.ModifiedFrom)
+            .Where(o => o.ModifiedAtUtc <= request.Filter.ModifiedTo)
+            .OrderBy(o => o.ModifiedAtUtc)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize);
 

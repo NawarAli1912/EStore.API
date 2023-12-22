@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231219123204_ConfigreOrdersAndProductColumns")]
-    partial class ConfigreOrdersAndProductColumns
+    [Migration("20231222013815_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,7 +56,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("Permission");
+                    b.ToTable("Permissions");
 
                     b.HasData(
                         new
@@ -141,22 +141,6 @@ namespace Infrastructure.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "8002db41-d254-4724-ba19-a66750dec68a",
-                            ConcurrencyStamp = "3e6fb7ae-4efd-4dad-a28b-a9e4a1168733",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "3113e82b-6654-406c-885d-342593c71cc0",
-                            ConcurrencyStamp = "6b58ffa8-b976-4956-9665-884ae5630b95",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Categories.Category", b =>
@@ -237,13 +221,13 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime>("ModifiedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
@@ -312,6 +296,13 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(2);
+
+                    b.Property<byte[]>("_version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("Version");
 
                     b.HasKey("Id");
 

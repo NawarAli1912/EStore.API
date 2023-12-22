@@ -4,7 +4,7 @@ using Domain.Categories;
 using Domain.Categories.Errors;
 using MediatR;
 using Microsoft.Data.SqlClient;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Categories.GetHierarchyDownward;
 

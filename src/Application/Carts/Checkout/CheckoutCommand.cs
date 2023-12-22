@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SharedKernel;
 using SharedKernel.Enums;
+using SharedKernel.Primitives;
 
 namespace Application.Carts.Checkout;
 

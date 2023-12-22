@@ -3,7 +3,7 @@ using Domain.Products;
 using Domain.Products.Enums;
 using Domain.Products.Errors;
 using Domain.Products.ValueObjects;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Domain.UnitTests;
 

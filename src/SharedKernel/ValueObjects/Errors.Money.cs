@@ -1,4 +1,6 @@
 ﻿
+using SharedKernel.Primitives;
+
 namespace SharedKernel.ValueObjects;
 
 public static partial class Errors

@@ -3,7 +3,7 @@ using Domain.Orders.Enums;
 using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Products.Delete;
 internal class DeleteProductCommandHandler(IApplicationDbContext context)

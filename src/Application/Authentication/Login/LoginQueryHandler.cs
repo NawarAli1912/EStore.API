@@ -3,7 +3,7 @@ using Application.Common.Authentication.Jwt;
 using Domain.Authentication.Errors;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Authentication.Login;
 

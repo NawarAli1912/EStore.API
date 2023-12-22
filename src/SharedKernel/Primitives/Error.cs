@@ -1,4 +1,4 @@
-﻿namespace SharedKernel;
+﻿namespace SharedKernel.Primitives;
 
 public readonly record struct Error
 {

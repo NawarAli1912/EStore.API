@@ -1,6 +1,6 @@
 ﻿using Domain.Orders;
 using MediatR;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Orders.Get;
 

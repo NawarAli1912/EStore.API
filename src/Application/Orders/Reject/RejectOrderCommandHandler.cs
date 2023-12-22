@@ -3,7 +3,7 @@ using Domain.Orders.Errors;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Orders.Reject;
 internal sealed class RejectOrderCommandHandler(IApplicationDbContext context)

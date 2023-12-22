@@ -1,6 +1,6 @@
 ﻿using Application.Common.Cache;
 using Microsoft.Extensions.Caching.Memory;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Infrastructure.Caching;
 internal sealed class CacheService(IMemoryCache memoryCache)

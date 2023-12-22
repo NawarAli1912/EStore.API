@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -97,7 +98,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Permission",
+                name: "Permissions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -106,7 +107,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Permission", x => x.Id);
+                    table.PrimaryKey("PK_Permissions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,12 +115,14 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     CustomerPrice = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     PurchasePrice = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
-                    Sku = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Sku = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 2)
                 },
                 constraints: table =>
                 {
@@ -257,9 +260,12 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    ShippingInfo_ShippingCompany = table.Column<int>(type: "int", nullable: false),
+                    ShippingInfo_ShippingCompanyLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingInfo_PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -289,9 +295,9 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PermissionRole_Permission_PermissionsId",
+                        name: "FK_PermissionRole_Permissions_PermissionsId",
                         column: x => x.PermissionsId,
-                        principalTable: "Permission",
+                        principalTable: "Permissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -315,6 +321,26 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_CategoryProduct_Products_ProductsId",
                         column: x => x.ProductsId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReview",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductReview", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductReview_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -367,42 +393,13 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ShippingInfo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ShippingCompany = table.Column<int>(type: "int", nullable: false),
-                    ShippingComapnyLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShippingInfo", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ShippingInfo_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "7dd5c937-c92b-4557-a43a-cf84b635d60c", "6e4026aa-ac60-4550-9885-4e7837a04cd5", "Customer", "CUSTOMER" },
-                    { "84ddb1a6-375a-4d1e-b2d8-a4b75b9513a0", "b12bfce4-7f15-47f9-a554-bf912e139435", "Admin", "ADMIN" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Permission",
+                table: "Permissions",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { -10, "All" },
+                    { -11, "All" },
+                    { -10, "ManageOrdersLite" },
                     { -9, "ConfigureAccessControl" },
                     { -8, "ManageRoles" },
                     { -7, "ManageCustomers" },
@@ -485,20 +482,19 @@ namespace Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permission_Id",
-                table: "Permission",
-                column: "Id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PermissionRole_RoleId",
                 table: "PermissionRole",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShippingInfo_OrderId",
-                table: "ShippingInfo",
-                column: "OrderId",
-                unique: true);
+                name: "IX_Permissions_Id",
+                table: "Permissions",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReview_ProductId",
+                table: "ProductReview",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
@@ -535,7 +531,7 @@ namespace Infrastructure.Migrations
                 name: "PermissionRole");
 
             migrationBuilder.DropTable(
-                name: "ShippingInfo");
+                name: "ProductReview");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -547,16 +543,16 @@ namespace Infrastructure.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Permission");
+                name: "Permissions");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Customers");

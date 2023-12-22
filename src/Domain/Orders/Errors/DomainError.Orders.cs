@@ -1,5 +1,5 @@
 ﻿using Domain.Orders.Enums;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Domain.Orders.Errors;
 public static partial class DomainError

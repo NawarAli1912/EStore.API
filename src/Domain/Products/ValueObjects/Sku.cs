@@ -1,5 +1,5 @@
-﻿using SharedKernel;
-using SharedKernel.Models;
+﻿using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Domain.Products.ValueObjects;
 

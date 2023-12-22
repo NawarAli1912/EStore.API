@@ -4,7 +4,7 @@ using Domain.Products.Errors;
 using Domain.Products.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Products.Update;
 

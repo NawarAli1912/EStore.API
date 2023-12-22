@@ -12,6 +12,7 @@ using Infrastructure.Authentication.Models;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Caching;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.DataSeed;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,18 +37,24 @@ public static class DependencyInjection
 
         services.AddElasticSearch(configuration);
 
-        services.AddScoped<ConvertDomainEventsToOutboxMessagesInterceptor>();
+        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>(
             (sp, options) =>
             {
-                var interceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
+                var outBoxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
+                var auditalbeInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
 
 #pragma warning disable CS8604 // Possible null reference argument.
                 options.UseSqlServer(configuration.GetConnectionString("Default"))
-                    .AddInterceptors(interceptor);
+                    .AddInterceptors(
+                        outBoxInterceptor,
+                        auditalbeInterceptor);
 #pragma warning restore CS8604 // Possible null reference argument.
             });
+
+        services.AddScoped<DbInit>();
 
         services.AddScoped<IApplicationDbContext>(sp =>
             sp.GetRequiredService<ApplicationDbContext>());

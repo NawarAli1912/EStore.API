@@ -3,7 +3,7 @@ using Domain.Orders;
 using Domain.Orders.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Orders.GetCustomerOrders;
 internal sealed class GetCustomerOrdersQueryHandler(IApplicationDbContext context)

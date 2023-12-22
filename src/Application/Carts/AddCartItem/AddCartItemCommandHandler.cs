@@ -3,7 +3,7 @@ using Application.Common.Data;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Carts.AddCartItem;
 internal class AddCartItemCommandHandler(IApplicationDbContext context)

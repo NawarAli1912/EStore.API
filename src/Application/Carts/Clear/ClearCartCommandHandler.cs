@@ -2,7 +2,7 @@
 using Domain.Customers.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Carts.Clear;
 

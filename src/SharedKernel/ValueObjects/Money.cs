@@ -1,5 +1,6 @@
 ﻿using SharedKernel.Enums;
 using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace SharedKernel.ValueObjects;
 

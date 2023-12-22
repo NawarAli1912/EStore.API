@@ -4,7 +4,7 @@ using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
-using SharedKernel;
+using SharedKernel.Primitives;
 using DomainError = Domain.Products.Errors.DomainError;
 
 namespace Domain.Services;

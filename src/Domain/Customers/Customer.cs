@@ -1,7 +1,7 @@
 ﻿using Domain.Customers.Entities;
 using Domain.Customers.ValueObjects;
-using SharedKernel;
 using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Domain.Customers;
 

@@ -6,9 +6,9 @@ using Domain.Products.Enums;
 using Domain.Products.Errors;
 using Domain.Products.Events;
 using Domain.Products.ValueObjects;
-using SharedKernel;
 using SharedKernel.Models;
-using Result = SharedKernel.Result;
+using SharedKernel.Primitives;
+using Result = SharedKernel.Primitives.Result;
 
 namespace Domain.Products;
 

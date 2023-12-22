@@ -1,6 +1,6 @@
 ﻿using Domain.Categories;
 using MediatR;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Categories.GetFullHierarchy;
 

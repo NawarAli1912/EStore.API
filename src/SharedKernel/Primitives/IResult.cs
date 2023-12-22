@@ -1,4 +1,4 @@
-﻿namespace SharedKernel;
+﻿namespace SharedKernel.Primitives;
 
 public interface IResult
 {

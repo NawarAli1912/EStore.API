@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Presentation.Common.Http;
-using SharedKernel;
+using SharedKernel.Primitives;
 using System.Diagnostics;
 
 namespace Presentation.Common.Errors;

@@ -1,4 +1,4 @@
-﻿using SharedKernel;
+﻿using SharedKernel.Primitives;
 
 namespace Domain.Categories.Errors;
 

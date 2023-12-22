@@ -2,7 +2,7 @@
 using Domain.Products;
 using Domain.Products.Enums;
 using Domain.Products.Errors;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Domain.Services;
 

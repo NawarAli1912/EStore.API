@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Common.Behaviors;
 

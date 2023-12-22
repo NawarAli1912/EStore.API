@@ -1,5 +1,4 @@
-﻿using Application.Common.Authentication.Models;
-using Domain.Authentication;
+﻿using Domain.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,13 +9,5 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
         builder.HasMany(r => r.Permissions)
             .WithMany();
-
-        builder.HasData(
-                Enum.GetValues<Roles>()
-                .Select(r => new Role(r.ToString())
-                {
-                    NormalizedName = r.ToString().ToUpperInvariant(),
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                }));
     }
 }

@@ -3,7 +3,7 @@ using Dapper;
 using Domain.Categories;
 using MediatR;
 using Microsoft.Data.SqlClient;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Categories.GetFullHierarchy;
 

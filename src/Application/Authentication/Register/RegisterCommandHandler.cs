@@ -5,7 +5,7 @@ using Application.Common.Data;
 using Domain.Customers;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Authentication.Register;
 

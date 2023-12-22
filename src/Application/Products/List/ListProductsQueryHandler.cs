@@ -1,7 +1,7 @@
 ﻿using Application.Common.Repository;
 using Domain.Products;
 using MediatR;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Products.List;
 

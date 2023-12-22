@@ -3,13 +3,13 @@ using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Orders.Errors;
 using Domain.Products;
-using SharedKernel;
 using SharedKernel.Enums;
 using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Domain.Orders;
 
-public sealed class Order : AggregateRoot<Guid>
+public sealed class Order : AggregateRoot<Guid>, IAuditableEntity
 {
     private readonly HashSet<LineItem> _lineItems = [];
 
@@ -19,13 +19,13 @@ public sealed class Order : AggregateRoot<Guid>
 
     public ShippingInfo ShippingInfo { get; private set; }
 
-    public DateTime CreatedAt { get; private set; }
-
-    public DateTime ModifiedAt { get; private set; }
-
     public decimal TotalPrice { get; private set; }
 
     public IReadOnlySet<LineItem> LineItems => _lineItems;
+
+    public DateTime CreatedAtUtc { get; set; }
+
+    public DateTime ModifiedAtUtc { get; set; }
 
     public static Order Create(
         Customer customer,
@@ -37,8 +37,6 @@ public sealed class Order : AggregateRoot<Guid>
             Id = Guid.NewGuid(),
             CustomerId = customer.Id,
             Status = OrderStatus.Pending,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow,
             ShippingInfo = shippingInfo
         };
 

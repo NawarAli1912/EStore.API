@@ -27,6 +27,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = default!;
 
+    public DbSet<Permission> Permissions { get; set; } = default!;
+
     public async Task BeginTransactionAsync()
     {
         _currentTransaction = await Database.BeginTransactionAsync();
@@ -64,4 +66,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         base.OnModelCreating(modelBuilder);
     }
+
+
 }

@@ -4,7 +4,7 @@ using Domain.Orders.Entities;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Carts.Checkout;
 internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
@@ -45,8 +45,6 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
             .Where(p => productsIds.Contains(p.Id))
             .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
 
-        await _context.BeginTransactionAsync();
-
         var orderResult = OrderOrchestratorService.CreateOrder(
             customer,
             productsDict,
@@ -59,19 +57,10 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
         {
             return orderResult.Errors;
         }
-        try
-        {
-            await _context.Orders.AddAsync(orderResult.Value, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
-            await _context.CommitTransactionAsync();
+        await _context.Orders.AddAsync(orderResult.Value, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
-        }
-        catch (Exception)
-        {
-            await _context.RollbackTransactionAsync();
-            return DomainError.Cart.CheckoutFailed;
-        }
 
         return Result.Created;
     }

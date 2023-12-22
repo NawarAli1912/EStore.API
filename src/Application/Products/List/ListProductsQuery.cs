@@ -1,5 +1,5 @@
 ﻿using Application.Common.Cache;
-using SharedKernel;
+using SharedKernel.Primitives;
 using System.Text;
 
 namespace Application.Products.List;

@@ -3,7 +3,7 @@ using Domain.Categories;
 using Domain.Categories.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Categories.Update;
 

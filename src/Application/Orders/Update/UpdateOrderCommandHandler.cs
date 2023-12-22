@@ -4,7 +4,7 @@ using Domain.Products.Errors;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Orders.Update;
 

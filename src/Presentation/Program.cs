@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Persistence.DataSeed;
 using Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,11 @@ var app = builder.Build();
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    using var scope = app.Services.CreateScope();
+
+    var dbInit = scope.ServiceProvider.GetRequiredService<DbInit>();
+    await dbInit.Init();
 
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();

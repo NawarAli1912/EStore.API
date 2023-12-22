@@ -3,7 +3,7 @@ using Domain.Products;
 using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+using SharedKernel.Primitives;
 
 namespace Application.Products.Get;
 

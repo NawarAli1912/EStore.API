@@ -53,7 +53,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("Permission");
+                    b.ToTable("Permissions");
 
                     b.HasData(
                         new
@@ -138,22 +138,6 @@ namespace Infrastructure.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "b83a87d6-ad48-4b4e-b175-764e16ab9b58",
-                            ConcurrencyStamp = "4a16f077-5f6b-4f26-99d7-b6cd0b6f218a",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "0649420b-a6df-45e4-bea0-ef9d58992fcc",
-                            ConcurrencyStamp = "a2b63824-5479-4075-a531-3770b51dbf13",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Categories.Category", b =>
@@ -234,13 +218,13 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime>("ModifiedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
