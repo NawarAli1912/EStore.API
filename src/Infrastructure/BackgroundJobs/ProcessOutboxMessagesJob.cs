@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
-using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Infrastructure.BackgroundJobs;
 

@@ -1,4 +1,4 @@
-﻿namespace SharedKernel.Models;
+﻿namespace SharedKernel.Primitives;
 
 public interface IAggregateRoot
 {

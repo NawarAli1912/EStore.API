@@ -6,7 +6,6 @@ using Domain.Products.Enums;
 using Domain.Products.Errors;
 using Domain.Products.Events;
 using Domain.Products.ValueObjects;
-using SharedKernel.Models;
 using SharedKernel.Primitives;
 using Result = SharedKernel.Primitives.Result;
 
@@ -35,6 +34,8 @@ public class Product : AggregateRoot<Guid>
     public Sku? Sku { get; private set; } = default;
 
     public ProductStatus Status { get; private set; }
+
+    public int ViewCount { get; private set; }
 
     public IReadOnlyCollection<Category> Categories => _categories;
 

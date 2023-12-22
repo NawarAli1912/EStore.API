@@ -1,4 +1,4 @@
-﻿namespace SharedKernel.Models;
+﻿namespace SharedKernel.Primitives;
 
 public abstract class Entity<T> : IEquatable<Entity<T>>
     where T : notnull

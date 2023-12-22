@@ -1,4 +1,4 @@
-﻿using SharedKernel.Models;
+﻿using SharedKernel.Primitives;
 
 namespace Domain.Products.Entities;
 public sealed class ProductReview : Entity<Guid>

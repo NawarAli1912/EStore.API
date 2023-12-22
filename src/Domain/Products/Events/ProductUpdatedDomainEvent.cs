@@ -1,5 +1,5 @@
 ﻿using Domain.ModelsSnapshots;
-using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Domain.Products.Events;
 

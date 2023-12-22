@@ -1,5 +1,4 @@
 ﻿using Domain.Products.Errors;
-using SharedKernel.Models;
 using SharedKernel.Primitives;
 
 namespace Domain.Products.ValueObjects;

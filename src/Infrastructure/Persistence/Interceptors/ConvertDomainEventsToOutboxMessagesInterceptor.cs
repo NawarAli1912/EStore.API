@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
-using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Infrastructure.Persistence.Interceptors;
 

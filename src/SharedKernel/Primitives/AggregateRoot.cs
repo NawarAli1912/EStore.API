@@ -1,4 +1,4 @@
-﻿namespace SharedKernel.Models;
+﻿namespace SharedKernel.Primitives;
 
 public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot
     where T : notnull

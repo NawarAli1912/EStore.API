@@ -61,6 +61,18 @@ We welcome contributions! Feel free to submit issues, feature requests, or pull 
 
 This project is licensed under the [MIT License](LICENSE).
 
+## Codebase Maintainability Index
+
+| Hierarchy                    | Maintainability Index  |
+|------------------------------|------------------------|
+| src\Application (Debug)      | 87%                    |
+| src\Contracts (Debug)        | 99%                    |
+| src\Domain (Debug)           | 89%                    |
+| src\Infrastructure (Debug)   | 73%                    |
+| src\Presentation (Debug)     | 73%                    |
+| src\SharedKernel (Debug)     | 95%                    |
+
+
 ## Notes
 
 This project is still under development.

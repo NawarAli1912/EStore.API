@@ -1,5 +1,5 @@
 ﻿using SharedKernel.Enums;
-using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Domain.Orders.Entities;
 public class ShippingInfo : ValueObject

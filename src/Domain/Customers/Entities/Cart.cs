@@ -1,6 +1,5 @@
 ﻿using Domain.Customers.Errors;
 using Domain.Customers.ValueObjects;
-using SharedKernel.Models;
 using SharedKernel.Primitives;
 
 namespace Domain.Customers.Entities;

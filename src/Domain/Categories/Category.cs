@@ -1,5 +1,5 @@
 ﻿using Domain.Products;
-using SharedKernel.Models;
+using SharedKernel.Primitives;
 
 namespace Domain.Categories;
 

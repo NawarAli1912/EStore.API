@@ -19,6 +19,8 @@ public sealed class ProductSnapshot
 
     public string Sku { get; set; } = default!;
 
+    public int ViewCount { get; set; }
+
     public ProductStatus Status { get; set; }
 
     public List<CategorySnapshot> Categories { get; set; } = [];
@@ -34,6 +36,7 @@ public sealed class ProductSnapshot
             PurchasePrice = product.PurchasePrice,
             CustomerPrice = product.CustomerPrice,
             Sku = product.Sku is null ? string.Empty : product.Sku.Value,
+            ViewCount = product.ViewCount,
             Status = product.Status
         };
 

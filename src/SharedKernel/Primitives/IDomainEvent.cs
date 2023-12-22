@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace SharedKernel.Models;
+namespace SharedKernel.Primitives;
 
 public interface IDomainEvent : INotification
 {
