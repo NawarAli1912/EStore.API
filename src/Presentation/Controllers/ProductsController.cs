@@ -5,6 +5,8 @@ using Application.Products.Delete;
 using Application.Products.Get;
 using Application.Products.List;
 using Application.Products.ListByCategory;
+using Application.Products.ListUncategorizedProducts;
+using Application.Products.UnassignCategories;
 using Application.Products.Update;
 using Contracts.Products;
 using Infrastructure.Authentication.Authorization;
@@ -18,7 +20,7 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 namespace Presentation.Controllers;
 
 [Route("api/products")]
-public class ProductsController(
+public sealed class ProductsController(
     ISender sender,
     IMapper mapper) : ApiController
 {
@@ -131,13 +133,27 @@ public class ProductsController(
             Problem);
     }
 
-    [HttpPost("{id:guid}/categories")]
+    [HttpPost("{id:guid}/categories/assign")]
     [HasPermission(Permissions.ManageProducts | Permissions.ManageCategories)]
     public async Task<IActionResult> AssignCategories(
         Guid id,
-        AssignCategoriesRequest request)
+        AssignUnAssignCategoriesRequest request)
     {
         var result = await _sender.Send(_mapper.Map<AssignCategoriesCommand>((id, request)));
+
+        return result.Match(
+            _ => Ok(),
+            Problem);
+    }
+
+    [HttpPost("{id:guid}/categories/unassign")]
+    [HasPermission(Permissions.ManageProducts | Permissions.ManageCategories)]
+    public async Task<IActionResult> UnassignCategories(
+        Guid id,
+        AssignUnAssignCategoriesRequest request)
+    {
+        var result = await _sender.Send(
+            _mapper.Map<UnassignCategoriesCommand>((id, request)));
 
         return result.Match(
             _ => Ok(),
@@ -162,4 +178,23 @@ public class ProductsController(
                                     value.TotalCount)),
             Problem);
     }
+
+    [HttpGet("uncategoriezed")]
+    [HasPermission(Permissions.ManageProducts)]
+    public async Task<IActionResult> ListUncategoriezedProducts(
+        int page = 1,
+        int pageSize = 10)
+    {
+        var result = await _sender
+           .Send(new ListUncategorizedProductsQuery(page, pageSize));
+
+        return result.Match(
+            value => Ok(PagedList<ProductDetailedResponse>.Create(
+                                    _mapper.Map<List<ProductDetailedResponse>>(value.Products),
+                                    page,
+                                    pageSize,
+                                    value.TotalCount)),
+            Problem);
+    }
+
 }

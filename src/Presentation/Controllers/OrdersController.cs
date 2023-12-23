@@ -16,7 +16,7 @@ using Presentation.Controllers.Base;
 namespace Presentation.Controllers;
 
 [Route("api/orders")]
-public class OrdersController(ISender sender, IMapper mapper) : ApiController
+public sealed class OrdersController(ISender sender, IMapper mapper) : ApiController
 {
     private readonly ISender _sender = sender;
     private readonly IMapper _mapper = mapper;

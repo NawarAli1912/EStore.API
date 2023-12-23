@@ -13,7 +13,7 @@ using Presentation.Controllers.Base;
 namespace Presentation.Controllers;
 
 [Route("api/categories")]
-public class CategoriesController(ISender sender, IMapper mapper) : ApiController
+public sealed class CategoriesController(ISender sender, IMapper mapper) : ApiController
 {
     private readonly ISender _sender = sender;
     private readonly IMapper _mapper = mapper;

@@ -8,6 +8,8 @@ public sealed class Customer : AggregateRoot<Guid>
 {
     public Cart Cart { get; private set; } = default!;
 
+    public CustomerStatus Status { get; private set; } = CustomerStatus.Active;
+
     private Customer(Guid id) : base(id)
     {
     }

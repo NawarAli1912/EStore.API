@@ -35,7 +35,7 @@ public class ProductsMappingConfig : IRegister
             .Map(dest => dest.Id, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
 
-        config.NewConfig<(Guid, AssignCategoriesRequest), AssignCategoriesCommand>()
+        config.NewConfig<(Guid, AssignUnAssignCategoriesRequest), AssignCategoriesCommand>()
             .Map(dest => dest.Id, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
 

@@ -7,6 +7,7 @@ using Domain.Products.Errors;
 using Domain.Products.Events;
 using Domain.Products.ValueObjects;
 using SharedKernel.Primitives;
+using static Domain.Products.Errors.DomainError;
 using Result = SharedKernel.Primitives.Result;
 
 namespace Domain.Products;
@@ -99,6 +100,9 @@ public class Product : AggregateRoot<Guid>
                 _categories.Add(category);
             }
         }
+
+        RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
     }
 
     public void UnassignCategories(IEnumerable<Category> categories)
@@ -112,6 +116,9 @@ public class Product : AggregateRoot<Guid>
 
             _categories.Remove(category);
         }
+
+        RaiseDomainEvent(
+            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
     }
 
     public Result<Product> Update(

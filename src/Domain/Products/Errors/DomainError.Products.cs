@@ -24,6 +24,8 @@ public static partial class DomainError
         public static Error NotExists(string name) => Error.Validation("Product.NotExists", $"The product {name}, doesn't exists.");
 
         public static Error InvalidState(string name) => Error.Unexpected("Product.InvalidState", $"The product {name}, is on an invalid state.");
+
+        public static Error UnassignedCategory(string name, Guid categoryId) => Error.Validation("Product.UnassignedCategory", $"The product {name}, wasn't categorized by {categoryId}");
     }
 
     public static class Rating

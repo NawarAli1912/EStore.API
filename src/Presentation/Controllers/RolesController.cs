@@ -11,7 +11,7 @@ namespace Presentation.Controllers;
 
 [Route("api/roles")]
 [HasPermission(Permissions.ConfigureAccessControl)]
-public class RolesController(RoleManager<Role> roleManager, UserManager<IdentityUser> userManager)
+public sealed class RolesController(RoleManager<Role> roleManager, UserManager<IdentityUser> userManager)
     : ApiController
 {
     private readonly RoleManager<Role> _roleManager = roleManager;

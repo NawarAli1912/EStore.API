@@ -200,7 +200,7 @@ public sealed class ProductsRepository(
                     hit.Source.CustomerPrice,
                     hit.Source.PurchasePrice,
                     Sku.Create(hit.Source.Sku).Value,
-                    categoriesDict[hit.Source.Id]).Value));
+                    categoriesDict.GetValueOrDefault(hit.Source.Id)).Value));
 
         return (result, (int)products.Total);
     }

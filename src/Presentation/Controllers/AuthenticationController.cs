@@ -10,7 +10,7 @@ using RegisterRequest = Contracts.Authentication.RegisterRequest;
 
 namespace Presentation.Controllers;
 
-public class AuthenticationController(
+public sealed class AuthenticationController(
     ISender sender,
     IMapper mapper) : ApiController
 {

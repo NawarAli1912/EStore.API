@@ -5,7 +5,7 @@ using Presentation.Controllers.Base;
 namespace Presentation.Controllers;
 
 [Route("api/elastic")]
-public class ElasticController(IElasticClient client) : ApiController
+public sealed class ElasticController(IElasticClient client) : ApiController
 {
     private readonly IElasticClient _client = client;
 

@@ -1,5 +1,5 @@
 ﻿namespace Contracts.Products;
 
-public record AssignCategoriesRequest(
+public record AssignUnAssignCategoriesRequest(
     List<Guid> CategoriesIds
     );
