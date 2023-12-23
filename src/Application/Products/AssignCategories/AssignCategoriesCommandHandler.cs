@@ -1,8 +1,6 @@
 ﻿using Application.Common.Data;
 using Domain.Categories;
-using Domain.ModelsSnapshots;
 using Domain.Products.Errors;
-using Domain.Products.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
@@ -42,8 +40,7 @@ internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
 
         product.AssignCategories(productCateogries);
 
-        product.RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(product)));
+
 
         await _context.SaveChangesAsync(cancellationToken);
 
