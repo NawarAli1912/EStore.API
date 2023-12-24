@@ -8,7 +8,8 @@ internal class CartConfiguration : IEntityTypeConfiguration<Cart>
 {
     public void Configure(EntityTypeBuilder<Cart> builder)
     {
-        builder.ToTable(TablesNames.Cart);
+        builder
+            .ToTable(TablesNames.Cart);
 
         builder
             .HasKey(c => c.Id);

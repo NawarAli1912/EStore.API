@@ -25,6 +25,9 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
             .IsRequired();
 
         builder
-            .OwnsOne(o => o.ShippingInfo);
+            .ComplexProperty(o => o.ShippingInfo);
+
+        builder.Property(o => o.TotalPrice)
+            .HasPrecision(12, 2);
     }
 }

@@ -78,33 +78,6 @@ public static class OrderOrchestratorService
     }
 
     /// <summary>
-    ///     Rejects an order, increasing product quantities and updating order status.
-    /// </summary>
-    /// <param name="order">
-    ///     The order to be rejected.
-    /// </param>
-    /// <param name="productDict">
-    ///     A dictionary containing product information (mapping product ID to product).
-    /// </param>
-    public static void Reject(
-        Order order,
-        Dictionary<Guid, Product> productDict)
-    {
-        var lineItemsGroups = order
-            .LineItems
-            .GroupBy(li => li.ProductId);
-
-        foreach (var group in lineItemsGroups)
-        {
-            var product = productDict[group.Key];
-
-            product.IncreaseQuantity(group.Count());
-        }
-
-        order.Reject();
-    }
-
-    /// <summary>
     /// Approves an order, decreasing product quantities and updating order status if the order is not rejected.
     /// </summary>
     /// <param name="order">

@@ -32,6 +32,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithOne()
             .HasForeignKey(r => r.ProductId);
 
+        builder
+            .Property(p => p.Status)
+            .HasDefaultValue(ProductStatus.Active);
+
         var rowVersionProperty = typeof(Product).GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
 
         builder

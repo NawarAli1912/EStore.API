@@ -19,4 +19,6 @@ public static class TablesNames
     public const string Order = "Orders";
 
     public const string Customer = "Customers";
+
+    public const string Offer = "Offers";
 }

@@ -25,9 +25,8 @@ internal class ListOrdersQueryHandler(IApplicationDbContext context)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize);
 
-        var orders = await ordersQuery.ToListAsync(cancellationToken);
-        var totalCount = await ordersQuery.CountAsync(cancellationToken);
-
-        return new ListOrderResult(orders, totalCount);
+        return new ListOrderResult(
+            await ordersQuery.ToListAsync(cancellationToken),
+            await ordersQuery.CountAsync(cancellationToken));
     }
 }
