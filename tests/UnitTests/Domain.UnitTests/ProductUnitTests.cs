@@ -2,7 +2,6 @@ using Domain.Categories;
 using Domain.Products;
 using Domain.Products.Enums;
 using Domain.Products.Errors;
-using Domain.Products.ValueObjects;
 using SharedKernel.Primitives;
 
 namespace Domain.UnitTests;
@@ -12,7 +11,6 @@ public class ProductUnitTests
     private static string CategoryName(int NameModifier) => $"CategoryName{NameModifier}";
     private static string ProductName(int NameModifier) => "ProductName" + NameModifier.ToString();
     private static string ProductDescription(int NameModifier) => "Description" + NameModifier.ToString();
-    private static readonly string ProductSku = "DummySku-1212";
     private static readonly int HighQuantity = 10;
     private static readonly int LowQuantity = 1;
     private static readonly decimal CustomerPrice = 20M;
@@ -24,15 +22,13 @@ public class ProductUnitTests
     public void AssignCategories_NewCategories_CategoriesAssigned()
     {
         // Arrange
-        var sku = Sku.Create(ProductSku).Value;
         var product = Product.Create(
             Guid.NewGuid(),
             ProductName(1),
             ProductDescription(1),
             HighQuantity,
             CustomerPrice,
-            PurchasePrice,
-            sku).Value;
+            PurchasePrice);
 
         var category1 = Category.Create(Guid.NewGuid(), CategoryName(1));
 
@@ -50,7 +46,6 @@ public class ProductUnitTests
     public void UnassignCategories_NewCategories_CategoriesAssigned()
     {
         // Arrange
-        var sku = Sku.Create(ProductSku).Value;
         var category1 = Category.Create(Guid.NewGuid(), CategoryName(1));
         var category2 = Category.Create(Guid.NewGuid(), CategoryName(2));
         var product = Product.Create(
@@ -60,8 +55,7 @@ public class ProductUnitTests
             HighQuantity,
             CustomerPrice,
             PurchasePrice,
-            sku,
-            [category1, category2]).Value;
+            [category1, category2]);
 
 
         // Act
@@ -76,22 +70,19 @@ public class ProductUnitTests
     public void Update_ValidData_PropertiesUpdated()
     {
         // Arrange
-        var sku = Sku.Create(ProductSku).Value;
         var product = Product.Create(
             Guid.NewGuid(),
             ProductName(1),
             ProductDescription(1),
             HighQuantity,
             CustomerPrice,
-            PurchasePrice,
-            sku).Value;
+            PurchasePrice);
 
         var newName = ProductName(2);
         var newDescription = ProductDescription(2);
         var newQuantity = 22;
         var newCustomerPrice = 39.99m;
         var newPurchasePrice = 29.99m;
-        var newSku = Sku.Create("NewSku").Value;
 
 
         // Act
@@ -100,8 +91,7 @@ public class ProductUnitTests
             newDescription,
             newQuantity,
             newCustomerPrice,
-            newPurchasePrice,
-            newSku).Value;
+            newPurchasePrice).Value;
 
         // Assert
         Assert.Equal(newName, result.Name);
@@ -109,30 +99,25 @@ public class ProductUnitTests
         Assert.Equal(newQuantity, result.Quantity);
         Assert.Equal(newCustomerPrice, result.CustomerPrice);
         Assert.Equal(newPurchasePrice, result.PurchasePrice);
-        Assert.NotNull(result.Sku);
-        Assert.Equal(newSku?.Value, result.Sku?.Value);
     }
 
     [Fact]
     public void Update_InvalidQuantity_StockErrorAdded()
     {
         // Arrange
-        var sku = Sku.Create(ProductSku).Value;
         var product = Product.Create(
             Guid.NewGuid(),
             ProductName(1),
             ProductDescription(1),
             HighQuantity,
             CustomerPrice,
-            PurchasePrice,
-            sku).Value;
+            PurchasePrice);
 
         // Act
         var result = product.Update(
             default!,
             default!,
             -1,
-            default!,
             default!,
             default!);
 
@@ -153,7 +138,7 @@ public class ProductUnitTests
             ProductDescription(1),
             HighQuantity,
             CustomerPrice,
-            PurchasePrice).Value;
+            PurchasePrice);
 
         // Act
         var result = product.DecreaseQuantity(2);
@@ -174,7 +159,7 @@ public class ProductUnitTests
             ProductDescription(1),
             1,
             CustomerPrice,
-            PurchasePrice).Value;
+            PurchasePrice);
 
         // Act
         var result = product.DecreaseQuantity(1);
@@ -195,7 +180,7 @@ public class ProductUnitTests
             ProductDescription(1),
             1,
             CustomerPrice,
-            PurchasePrice).Value;
+            PurchasePrice);
 
         // Act
         var result = product.DecreaseQuantity(2);

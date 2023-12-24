@@ -41,7 +41,6 @@ internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
         product.AssignCategories(productCateogries);
 
 
-
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result.Updated;

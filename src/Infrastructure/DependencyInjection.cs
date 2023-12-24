@@ -76,8 +76,8 @@ public static class DependencyInjection
                         schedule.WithIntervalInSeconds(60)
                         .RepeatForever()));
 
-            var elasticSearchJobKey = new JobKey(nameof(ElasticSearchSync));
-            configure.AddJob<ElasticSearchSync>(elasticSearchJobKey)
+            var elasticSearchJobKey = new JobKey(nameof(ElasticSearchSyncJob));
+            configure.AddJob<ElasticSearchSyncJob>(elasticSearchJobKey)
             .AddTrigger(
                 trigger =>
                 trigger.ForJob(elasticSearchJobKey)

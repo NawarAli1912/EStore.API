@@ -10,7 +10,5 @@ public record UpdateProductCommand(
     string? Description,
     int? Quantity,
     decimal? PurchasePrice,
-    decimal? CustomerPrice,
-    string? Sku,
-    bool NullSku) : IRequest<Result<Product>>;
+    decimal? CustomerPrice) : IRequest<Result<Product>>;
 

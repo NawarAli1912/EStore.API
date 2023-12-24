@@ -7,7 +7,6 @@ using Domain.Products.Errors;
 using Domain.Products.Events;
 using Domain.Products.ValueObjects;
 using SharedKernel.Primitives;
-using static Domain.Products.Errors.DomainError;
 using Result = SharedKernel.Primitives.Result;
 
 namespace Domain.Products;
@@ -32,8 +31,6 @@ public class Product : AggregateRoot<Guid>
 
     public decimal PurchasePrice { get; private set; } = default!;
 
-    public Sku? Sku { get; private set; } = default;
-
     public ProductStatus Status { get; private set; }
 
     public int ViewCount { get; private set; }
@@ -47,22 +44,16 @@ public class Product : AggregateRoot<Guid>
 
 
 
-    public static Result<Product> Create(
+    public static Product Create(
         Guid id,
         string name,
         string description,
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
-        Sku? sku = default,
         IEnumerable<Category>? categories = default)
     {
         List<Error> errors = [];
-
-        if (errors.Count > 0)
-        {
-            return errors;
-        }
 
         var product = new Product
         {
@@ -72,7 +63,6 @@ public class Product : AggregateRoot<Guid>
             Quantity = quantity,
             CustomerPrice = customerPrice,
             PurchasePrice = purchasePrice,
-            Sku = sku
         };
 
 
@@ -126,25 +116,11 @@ public class Product : AggregateRoot<Guid>
         string? description,
         int? quantity,
         decimal? customerPrice,
-        decimal? purchasePrice,
-        Sku? sku,
-        bool nullSku = false)
+        decimal? purchasePrice)
     {
-        List<Error> errors = [];
-        Sku = null;
-        if (!nullSku)
-        {
-            Sku = sku;
-        }
-
         if (quantity < 0)
         {
-            errors.Add(DomainError.Product.StockError(Name));
-        }
-
-        if (errors.Count > 0)
-        {
-            return errors;
+            return DomainError.Product.StockError(Name);
         }
 
         Name = name ?? Name;

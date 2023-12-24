@@ -13,5 +13,4 @@ public record CreateProductItems(
     int Quantity,
     decimal CustomerPrice,
     decimal PurchasePrice,
-    string? Sku,
     List<Guid> Categories);

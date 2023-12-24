@@ -1,7 +1,6 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
 using Domain.Orders.Entities;
-using Domain.Orders.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
 using SharedKernel.Primitives;
@@ -64,13 +63,6 @@ public static class OrderOrchestratorService
                 });
             }
 
-            var decreaseQuantityResult = product.DecreaseQuantity(item.Quantity);
-            if (decreaseQuantityResult.IsError)
-            {
-                errors.AddRange(decreaseQuantityResult.Errors);
-                continue;
-            }
-
             order.AddItems(product, item.Quantity);
         }
 
@@ -111,6 +103,7 @@ public static class OrderOrchestratorService
 
         order.Reject();
     }
+
     /// <summary>
     /// Approves an order, decreasing product quantities and updating order status if the order is not rejected.
     /// </summary>
@@ -130,37 +123,32 @@ public static class OrderOrchestratorService
     {
         List<Error> errors = [];
 
-        if (order.Status == OrderStatus.Rejected)
+        var lineItemsGroups = order
+            .LineItems
+            .GroupBy(li => li.ProductId);
+
+        foreach (var group in lineItemsGroups)
         {
-            var lineItemsGroups = order
-                .LineItems
-                .GroupBy(li => li.ProductId);
+            var product = productDict[group.Key];
 
-            foreach (var group in lineItemsGroups)
+            if (product.Status != ProductStatus.Active)
             {
-                var product = productDict[group.Key];
-
-                if (product.Status != ProductStatus.Active)
+                return product.Status switch
                 {
-                    return product.Status switch
-                    {
-                        ProductStatus.Deleted =>
-                            DomainError.Product.Deleted(product.Name),
-                        ProductStatus.OutOfStock =>
-                            DomainError.Product.OutOfStock(product.Name),
-                        _ =>
-                            DomainError.Product.InvalidState(product.Name)
-                    };
-                }
+                    ProductStatus.Deleted =>
+                        DomainError.Product.Deleted(product.Name),
+                    ProductStatus.OutOfStock =>
+                        DomainError.Product.OutOfStock(product.Name),
+                    _ =>
+                        DomainError.Product.InvalidState(product.Name)
+                };
+            }
 
-                var result = product.DecreaseQuantity(group.Count());
+            var decreaseQuantityResult = product.DecreaseQuantity(group.Count());
 
-                if (!result.IsError)
-                {
-                    continue;
-                }
-
-                errors.AddRange(result.Errors);
+            if (decreaseQuantityResult.IsError)
+            {
+                errors.AddRange(decreaseQuantityResult.Errors);
             }
         }
 

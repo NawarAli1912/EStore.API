@@ -5,8 +5,7 @@ public record CreateProductResponse(
     string Name,
     string Description,
     int Quantity,
-    decimal CustomerPrice,
-    string Sku);
+    decimal CustomerPrice);
 
 public record CreateProductsResponse(
     List<CreateProductResponse> Items);

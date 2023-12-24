@@ -7,7 +7,6 @@ public record ProductDetailedResponse(
     int Quantity,
     decimal CustomerPrice,
     decimal PurchasePrice,
-    string Sku,
     List<CategoryResponse> Categories
     );
 

@@ -3,7 +3,6 @@ using Domain.Orders;
 using Domain.Orders.Entities;
 using Domain.Orders.Errors;
 using Domain.Products;
-using Domain.Products.ValueObjects;
 using SharedKernel.Enums;
 
 namespace Domain.UnitTests;
@@ -15,17 +14,13 @@ public sealed class OrderUnitTests
     private static readonly ShippingInfo shippingInfo = ShippingInfo
         .Create(ShippingCompany.Alkadmous, "Location1", "+963992465535");
 
-    private static readonly Sku sku1 = Sku.Create("Sku1").Value!;
-    private static readonly Sku sku2 = Sku.Create("Sku1").Value!;
-
     private static readonly Product product1 = Product.Create(
         Guid.NewGuid(),
         "Product1",
         "Description1",
         20,
         99,
-        80,
-        sku2).Value;
+        80);
 
     private static readonly Product product2 = Product.Create(
        Guid.NewGuid(),
@@ -33,8 +28,7 @@ public sealed class OrderUnitTests
        "Description2",
        12,
        199,
-       150,
-       sku2).Value;
+       150);
 
 
     [Fact]

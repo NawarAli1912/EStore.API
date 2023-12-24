@@ -12,20 +12,9 @@ public class ProductsMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8604 // Possible null reference argument.
-        config.NewConfig<Product, CreateProductResponse>()
-            .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        config.NewConfig<Product, CreateProductResponse>();
 
-
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8604 // Possible null reference argument.
-        config.NewConfig<Product, ProductDetailedResponse>()
-            .Map(dest => dest.Sku, src => src.Sku == null ? "" : src.Sku.Value);
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        config.NewConfig<Product, ProductDetailedResponse>();
 
         config.NewConfig<Product, ProductResponse>();
 

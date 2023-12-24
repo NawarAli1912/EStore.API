@@ -1,7 +1,6 @@
 ﻿using Domain.Customers;
 using Domain.Products;
 using Domain.Products.Errors;
-using Domain.Products.ValueObjects;
 using Domain.Services;
 
 namespace Domain.UnitTests.Services;
@@ -18,8 +17,7 @@ public class CartOperationServiceTests
             "Description",
             10,
             100,
-            80,
-            Sku.Create("Sku1").Value!).Value;
+            80);
 
         var requestedQuantity = 2;
 
@@ -56,8 +54,7 @@ public class CartOperationServiceTests
             "Description",
             10,
             100,
-            80,
-            Sku.Create("Sku1").Value!).Value;
+            80);
         var requestedQuantity = 2;
 
         // Act
@@ -79,8 +76,7 @@ public class CartOperationServiceTests
             "Description",
             10,
             100,
-            80,
-            Sku.Create("Sku1").Value!).Value;
+            80);
 
         var initialQuantity = 3;
         var additionalQuantity = 2;
@@ -112,8 +108,8 @@ public class CartOperationServiceTests
             "Description",
             10,
             100,
-            80,
-            Sku.Create("Sku1").Value!).Value;
+            80);
+
         product.MarkAsDeleted(); // Mark product as deleted
         var requestedQuantity = 2;
 
@@ -135,8 +131,8 @@ public class CartOperationServiceTests
             "Description",
             10,
             100,
-            80,
-            Sku.Create("Sku1").Value!).Value;
+            80);
+
         customer.AddCartItem(product.Id, 3); // Add 3 items to cart
         var requestedQuantity = 2;
 
@@ -159,8 +155,8 @@ public class CartOperationServiceTests
             "Description",
             10,
             100,
-            80,
-            Sku.Create("Sku1").Value!).Value;
+            80);
+
         var requestedQuantity = 2;
 
         // Act
@@ -190,7 +186,7 @@ public class CartOperationServiceTests
     {
         // Arrange
         var customer = Customer.Create(Guid.NewGuid());
-        var product = Product.Create(Guid.NewGuid(), "TestProduct", "Description", 10, 100, 80, Sku.Create("Sku1").Value!).Value;
+        var product = Product.Create(Guid.NewGuid(), "TestProduct", "Description", 10, 100, 80);
         customer.AddCartItem(product.Id, 2); // Add 2 items to cart
 
         // Act

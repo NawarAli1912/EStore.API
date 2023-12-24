@@ -5,7 +5,6 @@ using Dapper;
 using Domain.Categories;
 using Domain.ModelsSnapshots;
 using Domain.Products;
-using Domain.Products.ValueObjects;
 using Nest;
 
 namespace Infrastructure.Persistence.Repository;
@@ -87,8 +86,7 @@ public sealed class ProductsRepository(
                     productSnap.Description,
                     productSnap.Quantity,
                     productSnap.CustomerPrice,
-                    productSnap.PurchasePrice,
-                    Sku.Create(productSnap.Sku).Value).Value;
+                    productSnap.PurchasePrice);
 
                 product.AssignCategories([category]);
                 productDict.Add(productSnap.Id, product);
@@ -199,8 +197,7 @@ public sealed class ProductsRepository(
                     hit.Source.Quantity,
                     hit.Source.CustomerPrice,
                     hit.Source.PurchasePrice,
-                    Sku.Create(hit.Source.Sku).Value,
-                    categoriesDict.GetValueOrDefault(hit.Source.Id)).Value));
+                    categoriesDict.GetValueOrDefault(hit.Source.Id))));
 
         return (result, (int)products.Total);
     }
