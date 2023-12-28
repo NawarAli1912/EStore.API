@@ -3,7 +3,7 @@ using SharedKernel.Primitives;
 
 namespace Domain.Categories;
 
-public sealed class Category : AggregateRoot<Guid>
+public sealed class Category : AggregateRoot
 {
     private readonly HashSet<Product> _products = [];
     private readonly List<Category> _subCategories;

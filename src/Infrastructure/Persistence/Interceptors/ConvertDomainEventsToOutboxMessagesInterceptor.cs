@@ -20,7 +20,7 @@ public sealed class ConvertDomainEventsToOutboxMessagesInterceptor
         }
 
         var outboxMessages = context.ChangeTracker
-            .Entries<IAggregateRoot>()
+            .Entries<AggregateRoot>()
             .Select(x => x.Entity)
             .SelectMany(aggregateRoot =>
             {

@@ -1,5 +1,6 @@
 ﻿using Domain.Categories;
 using Domain.Customers;
+using Domain.Offers;
 using Domain.Orders;
 using Domain.Products;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ public interface IApplicationDbContext
     DbSet<Order> Orders { get; set; }
 
     DbSet<Customer> Customers { get; set; }
+
+    DbSet<Offer> Offers { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

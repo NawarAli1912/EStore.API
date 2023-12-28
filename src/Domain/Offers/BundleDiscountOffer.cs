@@ -14,15 +14,33 @@ public sealed class BundleDiscountOffer : Offer
         string name,
         string description,
         List<Guid> bundleProductsIds,
-        decimal percentage)
+        decimal percentage,
+        DateOnly startDate,
+        DateOnly endDate)
     {
+
         var offer = new BundleDiscountOffer(Guid.NewGuid())
         {
             Name = name,
             Description = description,
             Discount = percentage,
-            Type = OfferType.PercentageDiscountOffer
+            Type = OfferType.BundleDiscountOffer,
+            StartsAt = startDate,
+            EndsAt = endDate
         };
+
+        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        offer.Status = OfferStatus.Draft;
+
+        if (currentDate >= startDate && currentDate <= endDate)
+        {
+            offer.Status = OfferStatus.Published;
+        }
+        else if (currentDate > endDate)
+        {
+            offer.Status = OfferStatus.End;
+        }
 
         foreach (var id in bundleProductsIds)
         {

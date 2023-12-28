@@ -30,7 +30,7 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
 
         if (order.Status != OrderStatus.Pending)
         {
-            return Domain.Orders.Errors.DomainError.Orders.InvalidStatus(order.Status);
+            return Domain.Orders.Errors.DomainError.Order.InvalidStatus(order.Status);
         }
 
         var productsIds = order.LineItems.Select(o => o.ProductId)

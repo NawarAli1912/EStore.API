@@ -1,6 +1,6 @@
 ﻿using Application.Common.Data;
 using Domain.Customers.Errors;
-using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
 
         if (customer is null)
         {
-            return DomainError.Customers.NotFound;
+            return DomainError.Customer.NotFound;
         }
 
         if (customer.Cart.CartItems.Count == 0)

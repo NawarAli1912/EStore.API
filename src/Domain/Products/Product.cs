@@ -11,7 +11,7 @@ using Result = SharedKernel.Primitives.Result;
 
 namespace Domain.Products;
 
-public class Product : AggregateRoot<Guid>
+public class Product : AggregateRoot
 {
     private byte[] _version { get; set; }
 

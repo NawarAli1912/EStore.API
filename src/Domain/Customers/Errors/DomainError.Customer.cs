@@ -4,7 +4,7 @@ namespace Domain.Customers.Errors;
 
 public static partial class DomainError
 {
-    public static class Customers
+    public static class Customer
     {
         public static Error DuplicateEmail = Error.Conflict(
             "Cusotmer.DuplicateEmail",

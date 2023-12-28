@@ -1,31 +1,30 @@
 ﻿namespace SharedKernel.Primitives;
 
-public abstract class Entity<T> : IEquatable<Entity<T>>
-    where T : notnull
+public abstract class Entity : IEquatable<Entity>
 {
-    public T Id { get; protected set; }
+    public Guid Id { get; protected set; }
 
-    protected Entity(T id)
+    protected Entity(Guid id)
     {
         Id = id;
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is Entity<T> entity && Id.Equals(entity.Id);
+        return obj is Entity entity && Id.Equals(entity.Id);
     }
 
-    public bool Equals(Entity<T>? other)
+    public bool Equals(Entity? other)
     {
         return Equals((object?)other);
     }
 
-    public static bool operator ==(Entity<T> left, Entity<T> right)
+    public static bool operator ==(Entity left, Entity right)
     {
         return Equals(left, right);
     }
 
-    public static bool operator !=(Entity<T> left, Entity<T> right)
+    public static bool operator !=(Entity left, Entity right)
     {
         return !Equals(left, right);
     }

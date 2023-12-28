@@ -3,6 +3,7 @@ using Application.Orders.Update;
 using Contracts.Orders;
 using Domain.Orders;
 using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
 using Mapster;
 using Microsoft.CodeAnalysis;
 

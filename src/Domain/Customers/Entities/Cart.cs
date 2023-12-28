@@ -4,7 +4,7 @@ using SharedKernel.Primitives;
 
 namespace Domain.Customers.Entities;
 
-public sealed class Cart : Entity<Guid>
+public sealed class Cart : Entity
 {
     private readonly HashSet<CartItem> _cartItems = [];
 

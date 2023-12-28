@@ -1,7 +1,7 @@
 ﻿using SharedKernel.Primitives;
 
 namespace Domain.Products.Entities;
-public sealed class ProductReview : Entity<Guid>
+public sealed class ProductReview : Entity
 {
     public Guid ProductId { get; private set; }
 

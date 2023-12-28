@@ -4,7 +4,7 @@ using SharedKernel.Primitives;
 
 namespace Domain.Customers;
 
-public sealed class Customer : AggregateRoot<Guid>
+public sealed class Customer : AggregateRoot
 {
     public Cart Cart { get; private set; } = default!;
 

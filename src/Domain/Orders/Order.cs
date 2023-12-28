@@ -2,13 +2,14 @@
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Orders.Errors;
+using Domain.Orders.ValueObjects;
 using Domain.Products;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.Orders;
 
-public sealed class Order : AggregateRoot<Guid>, IAuditableEntity
+public sealed class Order : AggregateRoot, IAuditableEntity
 {
     private readonly HashSet<LineItem> _lineItems = [];
 

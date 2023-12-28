@@ -2,6 +2,7 @@
 using Domain.Authentication;
 using Domain.Categories;
 using Domain.Customers;
+using Domain.Offers;
 using Domain.Orders;
 using Domain.Products;
 using Infrastructure.Persistence.Outbox;
@@ -28,6 +29,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = default!;
 
     public DbSet<Permission> Permissions { get; set; } = default!;
+
+    public DbSet<Offer> Offers { get; set; } = default!;
 
     public async Task BeginTransactionAsync()
     {

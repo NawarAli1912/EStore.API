@@ -1,5 +1,5 @@
 ﻿using Domain.Customers;
-using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
 using Domain.Products;
 using Domain.Products.Errors;
 using Domain.Services;

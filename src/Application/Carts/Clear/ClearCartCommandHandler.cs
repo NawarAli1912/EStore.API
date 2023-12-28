@@ -21,7 +21,7 @@ internal sealed class ClearCartCommandHandler(IApplicationDbContext context)
 
         if (customer is null)
         {
-            return DomainError.Customers.NotFound;
+            return DomainError.Customer.NotFound;
         }
 
         customer.ClearCart();

@@ -1,6 +1,6 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
-using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
 using Domain.Products;
 using Domain.Products.Enums;
 using SharedKernel.Primitives;

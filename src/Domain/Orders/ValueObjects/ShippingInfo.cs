@@ -1,7 +1,7 @@
 ﻿using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
-namespace Domain.Orders.Entities;
+namespace Domain.Orders.ValueObjects;
 public class ShippingInfo : ValueObject
 {
     public ShippingCompany ShippingCompany { get; private set; }

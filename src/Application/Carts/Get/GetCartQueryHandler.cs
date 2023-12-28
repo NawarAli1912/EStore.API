@@ -21,7 +21,7 @@ internal class GetCartQueryHandler(IApplicationDbContext context) :
 
         if (customer is null)
         {
-            return DomainError.Customers.NotFound;
+            return DomainError.Customer.NotFound;
         }
         var productsIds = customer
             .Cart

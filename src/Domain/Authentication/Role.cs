@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Authentication;
+
 public sealed class Role(string name)
     : IdentityRole(name)
 {

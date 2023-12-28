@@ -37,7 +37,6 @@ public sealed class ProductsRepository(
                      p.Quantity,
                      p.PurchasePrice,
                      p.CustomerPrice,
-                     p.Sku,
                      c.Id AS CategoryId,
                      c.Name AS CategoryName,
                      c.ParentCategoryId,
@@ -57,7 +56,6 @@ public sealed class ProductsRepository(
                      Quantity,
                      PurchasePrice,
                      CustomerPrice,
-                     Sku,
                      CategoryId,
                      CategoryName,
                      ParentCategoryId

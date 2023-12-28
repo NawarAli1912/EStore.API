@@ -24,7 +24,7 @@ internal class RegisterCommandHandler(
     {
         if (await _userManager.FindByEmailAsync(request.Email) is not null)
         {
-            return Domain.Customers.Errors.DomainError.Customers.DuplicateEmail;
+            return Domain.Customers.Errors.DomainError.Customer.DuplicateEmail;
         }
 
         string token;

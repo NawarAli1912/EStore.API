@@ -72,7 +72,6 @@ This project is licensed under the [MIT License](LICENSE).
 | src\Presentation (Debug)     | 73%                    |
 | src\SharedKernel (Debug)     | 95%                    |
 
-
 ## Notes
 
 This project is still under development.

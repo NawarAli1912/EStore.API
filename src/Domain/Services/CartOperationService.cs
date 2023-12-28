@@ -17,7 +17,7 @@ public static class CartOperationService
     {
         if (customer is null)
         {
-            return CustomerErrors.Customers.NotFound;
+            return CustomerErrors.Customer.NotFound;
         }
 
         if (product is null)
@@ -62,7 +62,7 @@ public static class CartOperationService
     {
         if (customer is null)
         {
-            return CustomerErrors.Customers.NotFound;
+            return CustomerErrors.Customer.NotFound;
         }
 
         if (product is null)

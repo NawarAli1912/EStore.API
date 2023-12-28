@@ -2,7 +2,7 @@
 
 namespace Domain.Orders.Entities;
 
-public sealed class LineItem : Entity<Guid>
+public sealed class LineItem : Entity
 {
     private LineItem(
         Guid id,

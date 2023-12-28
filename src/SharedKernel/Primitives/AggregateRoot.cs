@@ -1,11 +1,10 @@
 ﻿namespace SharedKernel.Primitives;
 
-public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot
-    where T : notnull
+public abstract class AggregateRoot : Entity
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 
-    protected AggregateRoot(T id) : base(id)
+    protected AggregateRoot(Guid id) : base(id)
     {
     }
 

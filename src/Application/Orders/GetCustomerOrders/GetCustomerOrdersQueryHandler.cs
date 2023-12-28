@@ -22,7 +22,7 @@ internal sealed class GetCustomerOrdersQueryHandler(IApplicationDbContext contex
 
         if (orders.Count == 0)
         {
-            return DomainError.Orders.NotFound;
+            return DomainError.Order.NotFound;
         }
 
         return orders;
