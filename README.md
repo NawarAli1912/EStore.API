@@ -20,6 +20,7 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 - **Reuslt Pattern:** Generic result type which work with domain errors to avoid throwing exceptions and return explicit errors.
 - **Cache:** Implement Cache-Aside Pattern to optimize complex queries, using MediatR piplines feature.
 - **Unit Testing:** Unit testing using x-unit framework.
+- **Architecture Tests:** NetArchTest.Rules to test that the code is follwoing the clean archittecture.
 
 ## Getting Started
 
@@ -49,7 +50,7 @@ The project implements domain events and the Outbox pattern to synchronize SQL d
 
 The project uses a background service with Quartz to handle domain events in the Outbox, ensuring asynchronous and reliable processing.
 
-### eStore API
+### EStore API
 
 This API serves as an eStore, providing endpoints to manage products, orders, categories and more. It seamlessly integrates Elasticsearch for efficient product searching.
 

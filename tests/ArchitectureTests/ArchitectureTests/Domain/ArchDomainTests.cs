@@ -7,6 +7,11 @@ namespace ArchitectureTests.Domain;
 public class ArchDomainTests
 {
     private static readonly Assembly DomainAssembly = typeof(Product).Assembly;
+    private const string ApplicationNamespace = "Application";
+    private const string InfrastructureNamespace = "Infrastructure";
+    private const string PresentationNamespace = "Presentation";
+
+
     [Fact]
     public void DomainEvents_Should_BeSealed()
     {
@@ -55,5 +60,23 @@ public class ArchDomainTests
         }
 
         Assert.Empty(fallingTypes);
+    }
+
+    [Fact]
+    public void DomainProject_Should_NotHaveDepeendencyOnOtherProject()
+    {
+        var otherProjects = new[]
+        {
+            ApplicationNamespace,
+            InfrastructureNamespace,
+            PresentationNamespace
+        };
+
+        var result = Types.InAssembly(DomainAssembly)
+            .ShouldNot()
+            .HaveDependencyOnAll(otherProjects)
+            .GetResult();
+
+        Assert.True(result.IsSuccessful);
     }
 }

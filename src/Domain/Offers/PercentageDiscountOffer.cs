@@ -12,7 +12,9 @@ public sealed class PercentageDiscountOffer : Offer
         string name,
         string description,
         Guid productId,
-        decimal percentage)
+        decimal percentage,
+        DateOnly startDate,
+        DateOnly endDate)
     {
         return new PercentageDiscountOffer
         {
@@ -20,7 +22,9 @@ public sealed class PercentageDiscountOffer : Offer
             Description = description,
             ProductId = productId,
             Discount = percentage,
-            Type = OfferType.PercentageDiscountOffer
+            Type = OfferType.PercentageDiscountOffer,
+            StartsAt = startDate,
+            EndsAt = endDate
         };
     }
 
