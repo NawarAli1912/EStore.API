@@ -6,14 +6,14 @@ using Quartz;
 
 namespace Infrastructure.BackgroundJobs;
 
-public sealed class ElasticSearchSyncJob(IApplicationDbContext context, IElasticClient elasticClient) : IJob
+public sealed class ElasticSearchSyncJob(IApplicationDbContext dbcontext, IElasticClient elasticClient) : IJob
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _dbContext = dbcontext;
     private readonly IElasticClient _elasticClient = elasticClient;
 
-    public async Task Execute(IJobExecutionContext jobContext)
+    public async Task Execute(IJobExecutionContext context)
     {
-        var dbProductsDict = await _context
+        var dbProductsDict = await _dbContext
                 .Products
                 .Include(p => p.Categories)
                 .Select(p => ProductSnapshot.Snapshot(p))

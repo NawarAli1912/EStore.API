@@ -4,5 +4,5 @@ public enum OfferStatus
 {
     Draft,
     Published,
-    End
+    Expired
 }

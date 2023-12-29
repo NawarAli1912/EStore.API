@@ -23,4 +23,22 @@ public abstract class Offer : AggregateRoot
     private Offer() : base(Guid.NewGuid())
     {
     }
+
+    public void UpdateStatus()
+    {
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (currentDate >= StartsAt && currentDate <= EndsAt)
+        {
+            Status = OfferStatus.Published;
+        }
+        else if (currentDate > EndsAt)
+        {
+            Status = OfferStatus.Expired;
+        }
+        else
+        {
+            Status = OfferStatus.Draft;
+        }
+    }
 }

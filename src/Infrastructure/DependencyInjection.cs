@@ -37,32 +37,7 @@ public static class DependencyInjection
 
         services.AddElasticSearch(configuration);
 
-        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
-        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
-
-        services.AddDbContext<ApplicationDbContext>(
-            (sp, options) =>
-            {
-                var outBoxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
-                var auditalbeInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
-
-#pragma warning disable CS8604 // Possible null reference argument.
-                options.UseSqlServer(configuration.GetConnectionString("Default"))
-                    .AddInterceptors(
-                        outBoxInterceptor,
-                        auditalbeInterceptor);
-#pragma warning restore CS8604 // Possible null reference argument.
-            });
-
-        services.AddScoped<DbInit>();
-
-        services.AddScoped<IApplicationDbContext>(sp =>
-            sp.GetRequiredService<ApplicationDbContext>());
-
-        services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
-
-        services.AddScoped<IProductsRepository, ProductsRepository>();
-        services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+        services.AddEFCore(configuration);
 
         services.AddQuartz(configure =>
         {
@@ -85,6 +60,18 @@ public static class DependencyInjection
                         schedule =>
                         schedule.WithIntervalInHours(24)
                         .RepeatForever()));
+
+            var manageOffersStatusJobKey = new JobKey(nameof(ManageOffersStatusJob)); // Unique job name
+            configure.AddJob<ManageOffersStatusJob>(manageOffersStatusJobKey)
+                .AddTrigger(
+                    trigger => trigger
+                        .ForJob(manageOffersStatusJobKey) // Use the same JobKey for the trigger
+                        .StartNow()
+                        .WithDailyTimeIntervalSchedule(builder =>
+                            builder
+                                .WithIntervalInHours(24)
+                                .OnEveryDay()
+                                .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 0))));
         });
 
         services.AddQuartzHostedService();
@@ -92,6 +79,36 @@ public static class DependencyInjection
         services.AddMemoryCache();
 
         services.AddSingleton<ICacheService, CacheService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddEFCore(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+
+        services.AddDbContext<ApplicationDbContext>(
+            (sp, options) =>
+            {
+                var outBoxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
+                var auditalbeInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+
+                options.UseSqlServer(configuration.GetConnectionString("Default"))
+                    .AddInterceptors(
+                        outBoxInterceptor!,
+                        auditalbeInterceptor!);
+            });
+
+        services.AddScoped<DbInit>();
+
+        services.AddScoped<IApplicationDbContext>(sp =>
+            sp.GetRequiredService<ApplicationDbContext>());
+
+        services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
+
+        services.AddScoped<IProductsRepository, ProductsRepository>();
+        services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
         return services;
     }

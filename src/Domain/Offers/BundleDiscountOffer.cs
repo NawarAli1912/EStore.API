@@ -29,23 +29,12 @@ public sealed class BundleDiscountOffer : Offer
             EndsAt = endDate
         };
 
-        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
-
-        offer.Status = OfferStatus.Draft;
-
-        if (currentDate >= startDate && currentDate <= endDate)
-        {
-            offer.Status = OfferStatus.Published;
-        }
-        else if (currentDate > endDate)
-        {
-            offer.Status = OfferStatus.End;
-        }
-
         foreach (var id in bundleProductsIds)
         {
             offer.AddProduct(id);
         }
+
+        offer.UpdateStatus();
 
         return offer;
     }

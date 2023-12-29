@@ -11,26 +11,28 @@ namespace Infrastructure.BackgroundJobs;
 
 [DisallowConcurrentExecution]
 public sealed class ProcessOutboxMessagesJob(
-    ApplicationDbContext context,
+    ApplicationDbContext dbContext,
     IPublisher publisher,
     ILogger<ProcessOutboxMessagesJob> logger) : IJob
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly ApplicationDbContext _dbContext = dbContext;
     private readonly IPublisher _publisher = publisher;
     private readonly ILogger<ProcessOutboxMessagesJob> _logger = logger;
 
-    public async Task Execute(IJobExecutionContext jobContext)
+    private const int MaxRetries = 3;
+
+    public async Task Execute(IJobExecutionContext context)
     {
-        var messages = await _context
+        var messages = await _dbContext
                         .Set<OutboxMessage>()
                         .Where(m => m.ProcessedOnUtc == null)
-                        .Take(20)
                         .OrderBy(m => m.Id)
-                        .ToListAsync(jobContext.CancellationToken);
+                        .Take(20)
+                        .ToListAsync(context.CancellationToken);
 
         foreach (var message in messages)
         {
-            var domainEvent = JsonConvert
+            IDomainEvent? domainEvent = JsonConvert
                 .DeserializeObject(message.Content, new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.All
@@ -43,21 +45,21 @@ public sealed class ProcessOutboxMessagesJob(
 
             try
             {
-                await _publisher.Publish(domainEvent, jobContext.CancellationToken);
+                await _publisher.Publish(domainEvent, context.CancellationToken);
                 message.ProcessedOnUtc = DateTime.UtcNow;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _logger.LogError($"Failed to process domain event {message.Type}");
-                /*message.RetryCount++;
+                message.RetryCount++;
                 if (message.RetryCount >= MaxRetries)
                 {
                     message.Error = ex.Message.ToString();
-                }*/
+                }
             }
         }
 
-        await _context.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
     }
 }
