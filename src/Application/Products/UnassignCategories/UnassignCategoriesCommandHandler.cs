@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Products.UnassignCategories;
-internal class UnassignCategoriesCommandHandler(IApplicationDbContext context)
+internal sealed class UnassignCategoriesCommandHandler(IApplicationDbContext context)
     : IRequestHandler<UnassignCategoriesCommand, Result<Updated>>
 {
     private readonly IApplicationDbContext _context = context;

@@ -19,7 +19,7 @@ public sealed class BundleDiscountOffer : Offer
         DateOnly endDate)
     {
 
-        var offer = new BundleDiscountOffer(Guid.NewGuid())
+        var offer = new BundleDiscountOffer
         {
             Name = name,
             Description = description,
@@ -55,7 +55,7 @@ public sealed class BundleDiscountOffer : Offer
         _bundleProductsIds.Add(productId);
     }
 
-    public BundleDiscountOffer(Guid id) : base(id)
+    private BundleDiscountOffer() : base(Guid.NewGuid())
     {
     }
 }

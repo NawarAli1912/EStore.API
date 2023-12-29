@@ -7,7 +7,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Carts.RemoveCartItem;
 
-internal class RemoveCartItemCommandHandler(IApplicationDbContext context)
+internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context)
     : IRequestHandler<RemoveCartItemCommand, Result<AddRemoveCartItemResult>>
 {
     private readonly IApplicationDbContext _context = context;

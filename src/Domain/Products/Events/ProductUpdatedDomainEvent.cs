@@ -3,6 +3,6 @@ using SharedKernel.Primitives;
 
 namespace Domain.Products.Events;
 
-public record ProductUpdatedDomainEvent(
+public sealed record ProductUpdatedDomainEvent(
     ProductSnapshot Product) : IDomainEvent;
 

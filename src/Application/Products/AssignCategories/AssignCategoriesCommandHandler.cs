@@ -7,7 +7,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.AssignCategories;
 
-internal class AssignCategoriesCommandHandler(IApplicationDbContext context)
+internal sealed class AssignCategoriesCommandHandler(IApplicationDbContext context)
         : IRequestHandler<AssignCategoriesCommand, Result<Updated>>
 {
     private readonly IApplicationDbContext _context = context;

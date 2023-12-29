@@ -19,4 +19,8 @@ public abstract class Offer : AggregateRoot
     protected Offer(Guid id) : base(id)
     {
     }
+
+    private Offer() : base(Guid.NewGuid())
+    {
+    }
 }

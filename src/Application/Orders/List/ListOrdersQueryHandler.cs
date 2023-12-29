@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Orders.List;
-internal class ListOrdersQueryHandler(IApplicationDbContext context)
+internal sealed class ListOrdersQueryHandler(IApplicationDbContext context)
     : IRequestHandler<ListOrdersQuery, Result<ListOrderResult>>
 {
     private readonly IApplicationDbContext _context = context;

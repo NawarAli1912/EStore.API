@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.AddCartItem;
-internal class AddCartItemCommandHandler(IApplicationDbContext context)
+internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
     : IRequestHandler<AddCartItemCommand, Result<AddRemoveCartItemResult>>
 {
     private readonly IApplicationDbContext _context = context;

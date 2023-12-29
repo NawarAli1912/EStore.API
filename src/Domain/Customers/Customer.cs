@@ -1,4 +1,5 @@
 ﻿using Domain.Customers.Entities;
+using Domain.Customers.Enums;
 using Domain.Customers.ValueObjects;
 using SharedKernel.Primitives;
 
@@ -65,5 +66,9 @@ public sealed class Customer : AggregateRoot
     public void ClearCart()
     {
         Cart.Clear();
+    }
+
+    private Customer() : base(Guid.NewGuid())
+    {
     }
 }

@@ -7,7 +7,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Authentication.Login;
 
-internal class LoginQueryHandler(
+internal sealed class LoginQueryHandler(
     UserManager<IdentityUser> userManager,
     IJwtTokenGenerator jwtTokenGenerator) :
     IRequestHandler<LoginQuery, Result<AuthenticationResult>>

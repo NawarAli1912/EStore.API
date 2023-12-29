@@ -9,7 +9,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Authentication.Register;
 
-internal class RegisterCommandHandler(
+internal sealed class RegisterCommandHandler(
     UserManager<IdentityUser> userManager,
     IJwtTokenGenerator jwtTokenGenerator,
     IApplicationDbContext context) : IRequestHandler<RegisterCommand, Result<AuthenticationResult>>

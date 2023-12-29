@@ -7,7 +7,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Categories.Update;
 
-internal class UpdateCategoryCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext context)
     : IRequestHandler<UpdateCategoryCommand, Result<Category>>
 {
     private readonly IApplicationDbContext _context = context;

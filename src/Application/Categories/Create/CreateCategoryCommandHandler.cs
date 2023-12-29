@@ -8,7 +8,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Categories.Create;
 
-internal class CreateCategoryCommandHandler(IApplicationDbContext context)
+internal sealed class CreateCategoryCommandHandler(IApplicationDbContext context)
         : IRequestHandler<CreateCategoryCommand, Result<Created>>
 {
     private readonly IApplicationDbContext _context = context;

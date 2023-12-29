@@ -14,7 +14,7 @@ public sealed class PercentageDiscountOffer : Offer
         Guid productId,
         decimal percentage)
     {
-        return new PercentageDiscountOffer(Guid.NewGuid())
+        return new PercentageDiscountOffer
         {
             Name = name,
             Description = description,
@@ -24,7 +24,7 @@ public sealed class PercentageDiscountOffer : Offer
         };
     }
 
-    private PercentageDiscountOffer(Guid id) : base(id)
+    private PercentageDiscountOffer() : base(Guid.NewGuid())
     {
 
     }

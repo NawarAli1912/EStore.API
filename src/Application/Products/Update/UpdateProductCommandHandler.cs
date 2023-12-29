@@ -7,7 +7,7 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.Update;
 
-internal class UpdateProductCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateProductCommandHandler(IApplicationDbContext context)
         : IRequestHandler<UpdateProductCommand, Result<Product>>
 {
     private readonly IApplicationDbContext _context = context;

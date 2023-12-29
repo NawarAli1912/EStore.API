@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Products.Delete;
-internal class DeleteProductCommandHandler(IApplicationDbContext context)
+internal sealed class DeleteProductCommandHandler(IApplicationDbContext context)
         : IRequestHandler<DeleteProductCommand, Result<Deleted>>
 {
     private readonly IApplicationDbContext _context = context;

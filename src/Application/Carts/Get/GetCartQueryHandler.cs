@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.Get;
-internal class GetCartQueryHandler(IApplicationDbContext context) :
+internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
     IRequestHandler<GetCartQuery, Result<CartResult>>
 {
     private readonly IApplicationDbContext _context = context;
