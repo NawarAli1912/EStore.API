@@ -3,7 +3,7 @@ using Domain.Authentication;
 using Infrastructure.Authentication.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Controllers.Base;
+using Presentation.Controllers.Common;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Presentation.Controllers;

@@ -3,7 +3,7 @@ using Contracts.Offers;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Controllers.Base;
+using Presentation.Controllers.Common;
 
 namespace Presentation.Controllers;
 

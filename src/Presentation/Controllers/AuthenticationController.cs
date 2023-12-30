@@ -4,7 +4,7 @@ using Contracts.Authentication;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Controllers.Base;
+using Presentation.Controllers.Common;
 using LoginRequest = Contracts.Authentication.LoginRequest;
 using RegisterRequest = Contracts.Authentication.RegisterRequest;
 

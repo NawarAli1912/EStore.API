@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Controllers.Errors;
+namespace Presentation.Controllers.Common;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorsController : ControllerBase

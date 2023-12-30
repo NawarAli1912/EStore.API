@@ -1,8 +1,10 @@
-﻿using Application.Common.Authentication;
+﻿using Amazon.S3;
+using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Cache;
 using Application.Common.Data;
 using Application.Common.Repository;
+using Application.Common.Storage;
 using Domain.Authentication;
 using Domain.ModelsSnapshots;
 using Infrastructure.Authentication;
@@ -15,6 +17,7 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.DataSeed;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repository;
+using Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +36,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));
+        services.AddSingleton<IStorageService, StorageService>();
+        services.AddSingleton<IAmazonS3, AmazonS3Client>();
+
         services.AddAuth(configuration);
 
         services.AddElasticSearch(configuration);
@@ -115,7 +122,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddElasticSearch(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<ElasticSearchSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.Configure<ElasticSearchSettings>(configuration.GetSection(ElasticSearchSettings.SectionName));
         var elasticSearchSettings = configuration.GetSection(ElasticSearchSettings.SectionName)
                         .Get<ElasticSearchSettings>();
 

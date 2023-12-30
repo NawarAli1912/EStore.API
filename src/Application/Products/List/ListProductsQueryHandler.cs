@@ -21,14 +21,14 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
                 request.PageSize);
 
 
-        result.Item1 = OrderResult(result.Item1);
+        result.Item1 = SortResult(result.Item1);
 
         return new ListProductResult(
             result.Item1,
             result.Item2);
     }
 
-    private List<Product> OrderResult(
+    private List<Product> SortResult(
         List<Product> products,
         string? sortColumn = "",
         string? sortOrder = "asc")

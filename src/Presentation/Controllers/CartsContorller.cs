@@ -9,7 +9,7 @@ using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Controllers.Base;
+using Presentation.Controllers.Common;
 using System.Security.Claims;
 
 namespace Presentation.Controllers;
@@ -45,7 +45,6 @@ public sealed class CartsContorller(ISender sender, IMapper mapper) : ApiControl
         return result.Match(
             value => Ok(_mapper.Map<AddRemoveCartItemResponse>(value)),
             Problem);
-
     }
 
 

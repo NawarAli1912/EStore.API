@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Presentation.Common.Http;
 using SharedKernel.Primitives;
 
-namespace Presentation.Controllers.Base;
+namespace Presentation.Controllers.Common;
 
 [ApiController]
 [Route("api")]

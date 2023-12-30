@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nest;
-using Presentation.Controllers.Base;
+using Presentation.Controllers.Common;
 
 namespace Presentation.Controllers;
 
