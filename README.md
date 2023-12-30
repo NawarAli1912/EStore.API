@@ -6,7 +6,7 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 
 ## Features
 
-- **Clean Architecture:** The project is structured following the Clean Architecture principles, ensuring a separation of concerns and maintainability.
+- **Clean Architecture:** ensures a modular and maintainable codebase by following Clean Architecture principles.
 - **MediatR:** Utilizes the MediatR library for implementing the mediator pattern, promoting loose coupling between components.
 - **Entity Framework Core and Dapper:** Uses both EF Core and Dapper for data access, providing flexibility and performance optimization where needed.
 - **NEST and Elasticsearch:** Implements Elasticsearch using NEST for efficient and scalable product searching.
@@ -14,13 +14,14 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 - **Quartz:** Implements Quartz for job scheduling, enhancing the project with timely tasks.
 - **Domain-Driven Design (DDD) Principles:** Incorporates DDD principles, including domain models, domain events, and domain services to create a robust and maintainable codebase.
 - **Authentication:** Implements JWT Bearer authentication for secure access to the API.
-- **Authorization:** Implements permission-based access control from scratch, ensuring that users have the necessary permissions to perform specific actions.
-- **Outbox Pattern:** Implements the Outbox pattern to store domain events, ensuring reliable event processing.
-- **Global Error Handling:** New way for global error handling following RFC specification and reimplement dotnet ProblemDetailsFactory.
-- **Reuslt Pattern:** Generic result type which work with domain errors to avoid throwing exceptions and return explicit errors.
+- **Authorization:** Secures API access with JWT Bearer authentication and custom permission-based control.
+- **Outbox Pattern:** Ensures reliable event processing by implementing the Outbox pattern for storing domain events.
+- **Global Error Handling:** Adheres to RFC specifications for global error handling, with a reimplementation of the dotnet ProblemDetailsFactory.
+- **Reuslt Pattern:** Utilizes a generic result type for explicit error handling, avoiding exceptions.
 - **Cache:** Implement Cache-Aside Pattern to optimize complex queries, using MediatR piplines feature.
 - **Unit Testing:** Unit testing using x-unit framework.
-- **Architecture Tests:** NetArchTest.Rules to test that the code is follwoing the clean archittecture.
+- **Architecture Tests:** Utilizes NetArchTest.Rules to ensure compliance with Clean Architecture principles.
+- **AWS S3 for Image Storage**: s Amazon Web Services (AWS) S3 for secure and scalable storage of product and customers images. This integration enhances the overall media asset management, providing a reliable solution for handling product images.
 
 ## Getting Started
 
@@ -31,16 +32,21 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 
 ### Installation
 
-1. Clone the repository.
-2. Configure the database connection in `appsettings.json`.
-3. Run the database migrations using `dotnet ef database update`.
-4. Start the Elasticsearch server.
-5. Start the application using `dotnet run`.
+1. **Clone the repository.**
+2. **Configure the database connection in `appsettings.json`.**
+3. **Run database migrations using `dotnet ef database update`.**
+4. **Start the Elasticsearch server.**
+5. **Configure AWS S3 settings for product images.**
+   - **AWS S3 Configuration:**
+     - Make sure you have an AWS account and access to the S3 service.
+     - Configure your AWS credentials on your machine.
+     - Since this project is currently set up to use AWS services with the root user, ensure that you are using the appropriate credentials on your local machine.
+6. **Start the application using `dotnet run`.**
 
 ### Usage
 
 - Ensure Elasticsearch is running.
-- Explore the API documentation to understand available endpoints and their functionalities.
+- Explore the API Endpoints to understand available endpoints and their functionalities.
 
 ### Syncing Database and Elasticsearch
 
