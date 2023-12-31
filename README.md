@@ -21,7 +21,8 @@ This project is a .NET 8 Web API built following the principles of Clean Archite
 - **Cache:** Implement Cache-Aside Pattern to optimize complex queries, using MediatR piplines feature.
 - **Unit Testing:** Unit testing using x-unit framework.
 - **Architecture Tests:** Utilizes NetArchTest.Rules to ensure compliance with Clean Architecture principles.
-- **AWS S3 for Image Storage**: s Amazon Web Services (AWS) S3 for secure and scalable storage of product and customers images. This integration enhances the overall media asset management, providing a reliable solution for handling product images.
+- **AWS S3 for Image Storage:** s Amazon Web Services (AWS) S3 for secure and scalable storage of product and customers images. This integration enhances the overall media asset management, providing a reliable solution for handling product images.
+- **Idempotency Support:** The system features a solid implementation of idempotency for select endpoints. This guarantees consistent outcomes for repeated requests, promoting reliability in key operations.
 
 ## Getting Started
 

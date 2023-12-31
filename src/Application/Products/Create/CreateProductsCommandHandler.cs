@@ -30,7 +30,6 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
 
         foreach (var item in request.Items)
         {
-
             var currentProduct = Product.Create(
                 Guid.NewGuid(),
                 item.Name,
@@ -63,7 +62,6 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
                 product,
                 cancellationToken);
         }
-
 
         await _context.SaveChangesAsync(cancellationToken);
 

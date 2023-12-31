@@ -21,7 +21,7 @@ public sealed class StorageService(IAmazonS3 amazonS3, IOptions<StorageSettings>
             PutObjectRequest request = new()
             {
                 BucketName = bucketName,
-                Key = $"poducts/{id}/{id}-{DateTime.UtcNow.Ticks}",
+                Key = $"poducts/{id}/{DateTime.UtcNow.Ticks}",
                 ContentType = file.ContentType,
                 InputStream = file.OpenReadStream(),
                 Metadata =

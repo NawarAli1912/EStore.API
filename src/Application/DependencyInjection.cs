@@ -15,6 +15,8 @@ public static class DependencyInjection
             config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
 
             config.AddOpenBehavior(typeof(QueryCachingPipelineBehavior<,>));
+
+            config.AddOpenBehavior(typeof(IdempotentCommandsPipelineBehavior<,>));
         });
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

@@ -1,11 +1,11 @@
-﻿using MediatR;
+﻿using Application.Common.Idempotency;
 using SharedKernel.Primitives;
 
 namespace Application.Products.Create;
 
-
 public record CreateProductsCommand(
-    List<CreateProductItems> Items) : IRequest<Result<CreateProductsResult>>;
+    Guid RequestId,
+    List<CreateProductItems> Items) : IdempotentCommand<Result<CreateProductsResult>>(RequestId);
 
 public record CreateProductItems(
     string Name,

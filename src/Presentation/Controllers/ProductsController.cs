@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Common.Models.Paging;
 using Presentation.Controllers.Common;
+using SharedKernel.Primitives;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace Presentation.Controllers;
@@ -63,9 +64,17 @@ public sealed class ProductsController(
 
     [HttpPost]
     [HasPermission(Permissions.ManageProducts)]
-    public async Task<IActionResult> Create(CreateProductsRequest request)
+    public async Task<IActionResult> Create(
+        [FromHeader(Name = "X-Idempotency-Key")] string requestId,
+        CreateProductsRequest request)
     {
-        var result = await _sender.Send(_mapper.Map<CreateProductsCommand>(request));
+        if (!Guid.TryParse(requestId, out Guid parsedRequestId))
+        {
+            return Problem([Error.Validation("IdempotencyKey.Failure", "IdempotencyKey must be guid.")]);
+        }
+
+        var command = _mapper.Map<CreateProductsCommand>((parsedRequestId, request));
+        var result = await _sender.Send(command);
 
         return result.Match(
             value => Ok(_mapper.Map<CreateProductsResponse>(value)),

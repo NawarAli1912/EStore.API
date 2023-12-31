@@ -3,6 +3,7 @@ using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Cache;
 using Application.Common.Data;
+using Application.Common.Idempotency;
 using Application.Common.Repository;
 using Application.Common.Storage;
 using Domain.Authentication;
@@ -13,6 +14,7 @@ using Infrastructure.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Caching;
+using Infrastructure.Idempotency;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.DataSeed;
 using Infrastructure.Persistence.Interceptors;
@@ -36,6 +38,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IIdemptencyService, IdempotencyService>();
+
         services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));
         services.AddSingleton<IStorageService, StorageService>();
         services.AddSingleton<IAmazonS3, AmazonS3Client>();

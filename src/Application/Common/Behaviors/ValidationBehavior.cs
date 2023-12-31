@@ -4,17 +4,12 @@ using SharedKernel.Primitives;
 
 namespace Application.Common.Behaviors;
 
-public class ValidationBehavior<TRequest, TResponse>
+public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest>? validator = null)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IResult
 {
-    private readonly IValidator<TRequest>? _validator;
-
-    public ValidationBehavior(IValidator<TRequest>? validator = null)
-    {
-        _validator = validator;
-    }
+    private readonly IValidator<TRequest>? _validator = validator;
 
     public async Task<TResponse> Handle(
         TRequest request,

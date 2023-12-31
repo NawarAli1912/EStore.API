@@ -1,4 +1,5 @@
 ﻿using Application.Products.AssignCategories;
+using Application.Products.Create;
 using Application.Products.List;
 using Application.Products.Update;
 using Contracts.Products;
@@ -12,6 +13,10 @@ public class ProductsMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+        config.NewConfig<(Guid, CreateProductsRequest), CreateProductsCommand>()
+            .Map(dest => dest.RequestId, src => src.Item1)
+            .Map(dest => dest.Items, src => src.Item2.Items);
+
         config.NewConfig<Product, CreateProductResponse>();
 
         config.NewConfig<Product, ProductDetailedResponse>();
