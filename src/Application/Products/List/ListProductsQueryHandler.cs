@@ -21,7 +21,7 @@ internal sealed class ListProductsQueryHandler(IProductsRepository productsRepos
                 request.PageSize);
 
 
-        result.Item1 = SortResult(result.Item1);
+        result.Item1 = SortResult(result.Item1, request.SortColumn, request.SortOrder);
 
         return new ListProductResult(
             result.Item1,

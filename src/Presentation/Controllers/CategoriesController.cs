@@ -1,4 +1,5 @@
 ﻿using Application.Categories.Create;
+using Application.Categories.Delete;
 using Application.Categories.GetFullHierarchy;
 using Application.Categories.GetHierarchyDownward;
 using Application.Categories.Update;
@@ -9,6 +10,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
+using SubcategoryActions = Contracts.Categories.SubcategoryActions;
 
 namespace Presentation.Controllers;
 
@@ -60,6 +62,17 @@ public sealed class CategoriesController(ISender sender, IMapper mapper) : ApiCo
 
         return result.Match(
             value => Ok(_mapper.Map<CategoryResponse>(value)),
+            Problem);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.ManageCategories)]
+    public async Task<IActionResult> Delete(Guid id, [FromQuery] SubcategoryActions action)
+    {
+        var result = await _sender.Send(new DeleteCategoryCommand(id, _mapper.Map<Domain.Categories.Enums.SubcategoryActions>(action)));
+
+        return result.Match(
+            _ => Ok(),
             Problem);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domain.Products;
+﻿using Domain.Categories.Enums;
+using Domain.Products;
 using SharedKernel.Primitives;
 
 namespace Domain.Categories;
@@ -67,6 +68,24 @@ public sealed class Category : AggregateRoot
         if (nullParent)
         {
             ParentCategoryId = null;
+        }
+    }
+
+    public void PrepareDelete(SubcategoryActions action)
+    {
+        var parent = ParentCategory;
+        var parentId = ParentCategoryId;
+
+        if (action == SubcategoryActions.Detach)
+        {
+            parent = null;
+            parentId = null;
+        }
+
+        foreach (var subCategory in _subCategories)
+        {
+            subCategory.ParentCategory = parent;
+            subCategory.ParentCategoryId = parentId;
         }
     }
 

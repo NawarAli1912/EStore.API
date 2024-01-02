@@ -4,7 +4,6 @@ using Application.Common.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Serilog;
-using System.Collections.Concurrent;
 
 namespace Infrastructure.Storage;
 
@@ -73,8 +72,7 @@ public sealed class StorageService(IAmazonS3 amazonS3, IOptions<StorageSettings>
             .Select(item => item.Key)
             .ToList();
 
-        var keyToDownloadLinks = new ConcurrentDictionary<string, Task<string>>();
-
+        Dictionary<string, Task<string>> keyToDownloadLinks = [];
         foreach (var key in keys)
         {
             keyToDownloadLinks.TryAdd(key, Task.Run(() =>

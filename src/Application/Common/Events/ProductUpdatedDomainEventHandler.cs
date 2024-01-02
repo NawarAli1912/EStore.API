@@ -14,6 +14,7 @@ public sealed class ProductUpdatedDomainEventHandler(
 {
     private readonly IElasticClient _elasticClient = elasticClient;
     private readonly ILogger<ProductUpdatedDomainEventHandler> _logger = logger;
+
     public async Task Handle(ProductUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
         try

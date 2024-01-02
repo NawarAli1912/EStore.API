@@ -36,7 +36,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .Property(p => p.Status)
             .HasDefaultValue(ProductStatus.Active);
 
-        var rowVersionProperty = typeof(Product).GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
+        var rowVersionProperty =
+            typeof(Product).GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
 
         builder
             .Property("_version")

@@ -6,7 +6,7 @@ using Quartz;
 
 namespace Infrastructure.BackgroundJobs;
 
-internal class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
+public sealed class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
 

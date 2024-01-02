@@ -23,6 +23,8 @@ public sealed class PermissionService(UserManager<IdentityUser> userManager, Rol
 
         return roles
         .SelectMany(r => r.Permissions)
-        .Aggregate(0, (current, permission) => current | (int)Enum.Parse(typeof(Permissions), permission.Name));
+        .Aggregate(0, (current, permission) => current | (int)Enum.Parse(
+            typeof(Permissions),
+            permission.Name));
     }
 }
