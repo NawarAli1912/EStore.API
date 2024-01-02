@@ -16,6 +16,7 @@ internal sealed class ListUncategorizedProductsQueryHandler(IApplicationDbContex
     {
         var query = _context.Products
                 .Where(p => p.Categories.Count() == 0)
+                .OrderBy(p => p.Id)
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize);
 

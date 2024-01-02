@@ -17,9 +17,11 @@ public sealed class ListByCategoryQueryHandler(
         ListByCategoryQuery request,
         CancellationToken cancellationToken)
     {
-        var categoryIds = await _categoriesRepository.GetCategoryIdsInHierarchy(request.CategoryId);
+        var categoryIds = await _categoriesRepository
+            .GetCategoryIdsInHierarchy(request.CategoryId);
 
-        var products = await _productsRepository.ListByCategories(categoryIds, request.Page, request.PageSize);
+        var products = await _productsRepository
+            .ListByCategories(categoryIds, request.Page, request.PageSize);
 
         var totalCount = await _productsRepository.GetProductCountByCategory(categoryIds);
 

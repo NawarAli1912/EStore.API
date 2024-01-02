@@ -62,7 +62,5 @@ public sealed class GetHierarchyDownwardQueryHandler(
             categories
                 .First(c => c.Id == request.Id).ParentCategoryId)
                 .First();
-
-
     }
 }
