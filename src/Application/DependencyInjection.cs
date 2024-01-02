@@ -16,10 +16,10 @@ public static class DependencyInjection
 
             config.AddOpenBehavior(typeof(QueryCachingPipelineBehavior<,>));
 
-            config.AddOpenBehavior(typeof(IdempotentCommandsPipelineBehavior<,>));
+            config.AddOpenBehavior(typeof(IdempotentPipelineBehavior<,>));
         });
 
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

@@ -1,15 +1,21 @@
-﻿namespace Application.Common.Cache;
+﻿using SharedKernel.Primitives;
+
+namespace Application.Common.Cache;
 
 public interface ICacheService
 {
-    Task<T> CreateAsync<T>(Func<CancellationToken, Task<T>> factory, string key, TimeSpan? expiration = null, CancellationToken cancellationToken = default);
-
-    Task<T?> GetAsync<T>(string key)
-        where T : class;
-
     Task<T> GetOrCreateAsync<T>(
         Func<CancellationToken, Task<T>> factory,
         string key,
         TimeSpan? expiration = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default)
+        where T : IResult;
+
+    Task<TResponse?> TryGetFromCacheAsync<TResponse>(string key);
+
+
+    Task CacheAsync<TResponse>(
+        string key,
+        TResponse response,
+        TimeSpan? expiration = null);
 }

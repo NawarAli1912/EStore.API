@@ -14,7 +14,7 @@ public class PagedList<T>
         TotalCount = totalCount;
     }
 
-    public List<T> Items { get; set; }
+    public List<T> Items { get; }
 
     public int Page { get; }
 
@@ -26,7 +26,11 @@ public class PagedList<T>
 
     public bool HasPreviousPage => Page > 1;
 
-    public static PagedList<T> Create(List<T> items, int page, int pageSize, int totalCount)
+    public static PagedList<T> Create(
+        List<T> items,
+        int page,
+        int pageSize,
+        int totalCount)
     {
         return new(items, page, pageSize, totalCount);
     }

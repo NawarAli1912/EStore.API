@@ -72,11 +72,11 @@ public static class DependencyInjection
                         schedule.WithIntervalInHours(24)
                         .RepeatForever()));
 
-            var manageOffersStatusJobKey = new JobKey(nameof(ManageOffersStatusJob)); // Unique job name
+            var manageOffersStatusJobKey = new JobKey(nameof(ManageOffersStatusJob));
             configure.AddJob<ManageOffersStatusJob>(manageOffersStatusJobKey)
                 .AddTrigger(
                     trigger => trigger
-                        .ForJob(manageOffersStatusJobKey) // Use the same JobKey for the trigger
+                        .ForJob(manageOffersStatusJobKey)
                         .StartNow()
                         .WithDailyTimeIntervalSchedule(builder =>
                             builder
@@ -119,6 +119,7 @@ public static class DependencyInjection
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
 
         services.AddScoped<IProductsRepository, ProductsRepository>();
+
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
         return services;
@@ -138,7 +139,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IElasticClient>(client);
 
-        CreateIndex(client, elasticSearchSettings.DefaultIndex);
+        CreateIProductsElasticIndex(client, elasticSearchSettings.DefaultIndex);
 
         return services;
     }
@@ -148,9 +149,6 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         services.AddScoped<IUserIdentifierProvider, UserIdentifierProvider>();
-
-        services.AddScoped<IApplicationDbContext>(sp =>
-            sp.GetRequiredService<ApplicationDbContext>());
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
@@ -194,7 +192,7 @@ public static class DependencyInjection
         return services;
     }
 
-    private static void CreateIndex(ElasticClient client, string indexName)
+    private static void CreateIProductsElasticIndex(ElasticClient client, string indexName)
     {
         try
         {

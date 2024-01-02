@@ -3,7 +3,7 @@ using MediatR;
 using SharedKernel.Primitives;
 
 namespace Application.Common.Behaviors;
-public sealed class IdempotentCommandsPipelineBehavior<TRequest, TResponse>(IIdemptencyService idemptoecyService)
+public sealed class IdempotentPipelineBehavior<TRequest, TResponse>(IIdemptencyService idemptoecyService)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IdempotentCommand<TResponse>
     where TResponse : IResult

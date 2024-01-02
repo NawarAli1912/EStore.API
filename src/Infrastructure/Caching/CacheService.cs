@@ -10,52 +10,55 @@ internal sealed class CacheService(IMemoryCache memoryCache)
 
     private readonly IMemoryCache _memoryCache = memoryCache;
 
+    public async Task CacheAsync<TResponse>(
+        string key,
+        TResponse response,
+        TimeSpan? expiration)
+    {
+        var cacheEntryOptions = new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = expiration ?? DefaultExpiration
+        };
+
+        await Task.Run(() => _memoryCache.Set(key, response, cacheEntryOptions));
+    }
+
+    public async Task<TResponse?> TryGetFromCacheAsync<TResponse>(string key)
+    {
+        var result = await Task.Run(() =>
+        {
+            if (_memoryCache.TryGetValue(key, out TResponse? cachedResponse))
+            {
+                return cachedResponse;
+            }
+
+            return default;
+        });
+
+        return result;
+    }
+
     public async Task<T> GetOrCreateAsync<T>(
         Func<CancellationToken, Task<T>> factory,
         string key,
         TimeSpan? expiration = null,
         CancellationToken cancellationToken = default)
+        where T : IResult
     {
         T? result = await _memoryCache.GetOrCreateAsync(
             key,
-            entry =>
+            async entry =>
             {
                 entry.SetAbsoluteExpiration(expiration ?? DefaultExpiration);
-                return factory(cancellationToken);
+                var factoryValue = await factory(cancellationToken);
+                if (factoryValue.IsError)
+                {
+                    throw new InvalidOperationException();
+                }
+                return factoryValue;
             });
 
         return result!;
-    }
-
-    public async Task<T> CreateAsync<T>(
-        Func<CancellationToken, Task<T>> factory,
-        string key,
-        TimeSpan? expiration = null,
-        CancellationToken cancellationToken = default)
-    {
-        T? result = await _memoryCache.GetOrCreateAsync(
-            key,
-            entry =>
-            {
-                entry.SetAbsoluteExpiration(expiration ?? DefaultExpiration);
-                return factory(cancellationToken);
-            });
-
-        return result!;
-    }
-
-    // Method for getting the cached item if it exists
-    public async Task<T?> GetAsync<T>(string key)
-        where T : class
-    {
-        var result = await Task.Run(() =>
-        {
-            var value = _memoryCache.Get<T>(key);
-
-            return value;
-        });
-
-        return result is Result<T> ret && ret.Errors.Count > 0 ? null : result;
     }
 }
 

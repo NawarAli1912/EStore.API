@@ -106,7 +106,7 @@ public sealed class ProductsController(
                             Problem);
     }
 
-    [HttpGet("details/{id:guid}", Name = "GetDetailes")]
+    [HttpGet("{id:guid}/details", Name = "GetDetailes")]
     [HasPermission(Permissions.ReadDetails)]
     public async Task<IActionResult> GetDetails(Guid id)
     {
@@ -142,7 +142,7 @@ public sealed class ProductsController(
             Problem);
     }
 
-    [HttpPost("{id:guid}/categories/assign")]
+    [HttpPatch("{id:guid}/categories/assign")]
     [HasPermission(Permissions.ManageProducts | Permissions.ManageCategories)]
     public async Task<IActionResult> AssignCategories(
         Guid id,
@@ -155,7 +155,7 @@ public sealed class ProductsController(
             Problem);
     }
 
-    [HttpPost("{id:guid}/categories/unassign")]
+    [HttpPatch("{id:guid}/categories/unassign")]
     [HasPermission(Permissions.ManageProducts | Permissions.ManageCategories)]
     public async Task<IActionResult> UnassignCategories(
         Guid id,
@@ -188,7 +188,7 @@ public sealed class ProductsController(
             Problem);
     }
 
-    [HttpGet("uncategoriezed")]
+    [HttpGet("categories/uncategorized")]
     [HasPermission(Permissions.ManageProducts)]
     public async Task<IActionResult> ListUncategoriezedProducts(
         int page = 1,

@@ -6,11 +6,7 @@ public readonly record struct Result<T> : IResult
     private readonly T? _value = default;
     private readonly List<Error>? _errors = null;
 
-    public bool IsError { get; }
-
-    private static readonly Error NoErrors = Error.Unexpected(
-        code: "ErrorOr.NoErrors",
-        description: "Error list cannot be retrieved from a successful Result.");
+    public bool IsError { get; } = true;
 
     public T Value => _value!;
 
@@ -19,7 +15,7 @@ public readonly record struct Result<T> : IResult
         return errors;
     }
 
-    public List<Error> Errors => IsError ? _errors! : [NoErrors];
+    public List<Error> Errors => IsError ? _errors! : [Error.NoErrors];
 
     private Result(Error error)
     {

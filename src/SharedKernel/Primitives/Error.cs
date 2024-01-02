@@ -46,4 +46,8 @@ public readonly record struct Error
         string description) =>
         new(code, description, (ErrorType)type);
 
+    public static Error NoErrors = Error.Unexpected(
+       code: "ErrorOr.NoErrors",
+       description: "Error list cannot be retrieved from a successful Result.");
+
 }
