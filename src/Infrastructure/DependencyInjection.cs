@@ -83,6 +83,18 @@ public static class DependencyInjection
                                 .WithIntervalInHours(24)
                                 .OnEveryDay()
                                 .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 0))));
+
+            var productOffersJobKey = new JobKey(nameof(ProductOffersJob));
+            configure.AddJob<ProductOffersJob>(productOffersJobKey)
+                .AddTrigger(
+                    trigger => trigger
+                        .ForJob(manageOffersStatusJobKey)
+                        .StartNow()
+                        .WithDailyTimeIntervalSchedule(builder =>
+                            builder
+                                .WithIntervalInHours(24)
+                                .OnEveryDay()
+                                .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 30))));
         });
 
         services.AddQuartzHostedService();
@@ -96,6 +108,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddEFCore(this IServiceCollection services, IConfiguration configuration)
     {
+
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
@@ -121,6 +134,8 @@ public static class DependencyInjection
         services.AddScoped<IProductsRepository, ProductsRepository>();
 
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+
+        services.AddScoped<IOffersRepository, OffersRepository>();
 
         return services;
     }

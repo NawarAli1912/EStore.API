@@ -2,6 +2,7 @@
 using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Offers.Events;
+using Domain.Products.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
@@ -26,7 +27,7 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
             return Domain.Products.Errors.DomainError.Product.NotFound;
         }
 
-        if (product.Status != Domain.Products.Enums.ProductStatus.Active)
+        if (product.Status != ProductStatus.Active)
         {
             return Domain.Products.Errors.DomainError.Product.InvalidState(product.Name);
         }
@@ -34,6 +35,13 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
         if (await _context.Offers.Where(o => o.Type == OfferType.PercentageDiscountOffer)
             .Cast<PercentageDiscountOffer>()
             .AnyAsync(po => po.ProductId == request.ProductId, cancellationToken))
+        {
+            return DomainError.Offer.UnderAnotherOffer;
+        }
+
+        if (await _context.Offers.Where(o => o.Type == OfferType.BundleDiscountOffer)
+            .Cast<BundleDiscountOffer>()
+            .AnyAsync(po => po.BundleProductsIds.Contains(request.ProductId), cancellationToken))
         {
             return DomainError.Offer.UnderAnotherOffer;
         }
@@ -48,11 +56,13 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
 
         offer.RaiseDomainEvent(new OfferCreatedDominaEvent(offer));
 
+        product.AssociateOffer(offer.Id);
+        _context.Products.Update(product);
+
         await _context.Offers.AddAsync(offer, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 
         return offer;
-
     }
 }

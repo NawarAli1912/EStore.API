@@ -1,6 +1,6 @@
 ﻿using Application.Common.Data;
+using Application.Common.Repository;
 using Domain.Offers;
-using Domain.Offers.Enums;
 using Domain.Offers.Errors;
 using Domain.Offers.Events;
 using Domain.Products.Enums;
@@ -9,35 +9,43 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Offers.CreateBundleDiscountOffer;
-internal sealed class CreateBundleDiscountOfferCommandHandler(IApplicationDbContext context) : IRequestHandler<CreateBundleDiscountOfferCommand, Result<BundleDiscountOffer>>
+internal sealed class CreateBundleDiscountOfferCommandHandler(
+    IApplicationDbContext context,
+    IOffersRepository offersRepository) : IRequestHandler<CreateBundleDiscountOfferCommand, Result<BundleDiscountOffer>>
 {
     private readonly IApplicationDbContext _context = context;
+    private readonly IOffersRepository _offersRepository = offersRepository;
 
     public async Task<Result<BundleDiscountOffer>> Handle(CreateBundleDiscountOfferCommand request, CancellationToken cancellationToken)
     {
-        // check if all the products are not under other offer
         List<Error> errors = [];
-        if (await _context.Offers.Where(o => o.Type == OfferType.PercentageDiscountOffer)
-            .Cast<PercentageDiscountOffer>()
-            .AnyAsync(po => request.Products.Contains(po.ProductId), cancellationToken))
+
+        var products = await _context
+            .Products
+            .Where(p => request.Products.Contains(p.Id))
+            .ToListAsync(cancellationToken);
+
+        if (products.Count != request.Products.Count)
         {
-            errors.Add(DomainError.Offer.UnderAnotherOffer);
+            return Domain.Products.Errors.DomainError.Product.NotFound;
         }
 
-        // check if all the products are active and currently exists
-        if (!(await _context.Products
-                      .CountAsync(p => request
-                                   .Products
-                                   .Contains(p.Id) &&
-                                       p.Status == ProductStatus.Active, cancellationToken)
-               == request.Products.Count))
+        var productsOffers = products
+            .SelectMany(p => p.AssociatedOffers)
+            .ToHashSet();
+
+        var percentageOffers = await
+            _offersRepository
+            .ListPercentageDiscountOffers();
+
+        if (percentageOffers!.Any(o => productsOffers.Contains(o.ProductId)))
         {
-            errors.Add(DomainError.Offer.UnspportedProducts);
+            return DomainError.Offer.UnderAnotherOffer;
         }
 
-        if (errors.Count > 0)
+        if (products.Any(p => p.Status != ProductStatus.Active))
         {
-            return errors;
+            return DomainError.Offer.UnspportedProducts;
         }
 
         var offer = BundleDiscountOffer.Create(
@@ -49,6 +57,12 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(IApplicationDbCont
             request.EndDate);
 
         offer.RaiseDomainEvent(new OfferCreatedDominaEvent(offer));
+
+        foreach (var product in products)
+        {
+            product.AssociateOffer(offer.Id);
+            _context.Products.Update(product);
+        }
 
         await _context.Offers.AddAsync(offer, cancellationToken);
 

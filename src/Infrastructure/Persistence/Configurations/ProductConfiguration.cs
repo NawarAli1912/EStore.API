@@ -1,5 +1,6 @@
 ﻿using Domain.Products;
 using Domain.Products.Enums;
+using Infrastructure.Persistence.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Reflection;
@@ -43,5 +44,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .Property("_version")
             .HasColumnName("Version")
             .IsRowVersion();
+
+        builder.Property<List<Guid>>("_associatedOffers")
+            .HasColumnName("AssociatedOffers")
+            .HasListOfIdsConverter();
     }
 }

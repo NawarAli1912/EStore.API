@@ -6,6 +6,7 @@ using Quartz;
 
 namespace Infrastructure.BackgroundJobs;
 
+[DisallowConcurrentExecution]
 public sealed class ElasticSearchSyncJob(IApplicationDbContext dbcontext, IElasticClient elasticClient) : IJob
 {
     private readonly IApplicationDbContext _dbContext = dbcontext;

@@ -1,4 +1,5 @@
 ﻿using Application.Offers.CreateBundleDiscountOffer;
+using Application.Offers.CreatePercentageDiscountOffer;
 using Contracts.Offers;
 using MapsterMapper;
 using MediatR;
@@ -19,6 +20,16 @@ public sealed class OffersController(ISender sender, IMapper mapper) : ApiContro
         await Task.CompletedTask;
         var result =
             await _sender.Send(_mapper.Map<CreateBundleDiscountOfferCommand>(request));
+
+        return result.Match(Ok, Problem);
+    }
+
+    [HttpPost("percentage-discount")]
+    public async Task<IActionResult> CreatePercentageDiscountOffer(CreatePercentageDiscountOfferRequest request)
+    {
+        await Task.CompletedTask;
+        var result =
+            await _sender.Send(_mapper.Map<CreatePercentageDiscountOfferCommand>(request));
 
         return result.Match(Ok, Problem);
     }

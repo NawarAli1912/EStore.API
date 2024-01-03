@@ -21,6 +21,8 @@ public class Product : AggregateRoot
 
     private readonly HashSet<Rating> _ratings = [];
 
+    private readonly List<Guid> _associatedOffers = [];
+
     public string Name { get; private set; } = string.Empty;
 
     public string Description { get; private set; } = string.Empty;
@@ -38,6 +40,8 @@ public class Product : AggregateRoot
     public IReadOnlyCollection<Category> Categories => _categories;
 
     public IReadOnlyCollection<ProductReview> Reviews => _reviews;
+
+    public IReadOnlyList<Guid> AssociatedOffers => _associatedOffers;
 
     public double AverageRating => _ratings.Count > 0 ? _ratings.Select(r => r.Value).Sum() /
                             _ratings.Count : 0.0;
@@ -224,6 +228,16 @@ public class Product : AggregateRoot
         _ratings.Remove(oldRating);
 
         return Result.Updated;
+    }
+
+    public void AssociateOffer(Guid offerId)
+    {
+        _associatedOffers.Add(offerId);
+    }
+
+    public void UnassociateOffer(Guid offerId)
+    {
+        _associatedOffers.Remove(offerId);
     }
 
     private Product() : base(Guid.NewGuid())

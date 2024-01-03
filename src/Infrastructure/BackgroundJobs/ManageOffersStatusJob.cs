@@ -6,6 +6,7 @@ using Quartz;
 
 namespace Infrastructure.BackgroundJobs;
 
+[DisallowConcurrentExecution]
 public sealed class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
@@ -16,7 +17,7 @@ public sealed class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
             .Offers
             .Where(o => o.Status != OfferStatus.Expired);
 
-        int batchSize = 100; // Adjust the batch size based on your needs
+        int batchSize = 100;
         int totalCount = await query.CountAsync();
         int batches = (int)Math.Ceiling((double)totalCount / batchSize);
 
@@ -33,7 +34,7 @@ public sealed class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
         }
     }
 
-    private static void AdjustStauts(List<Offer> offers)
+    private void AdjustStauts(List<Offer> offers)
     {
         foreach (var offer in offers)
         {
