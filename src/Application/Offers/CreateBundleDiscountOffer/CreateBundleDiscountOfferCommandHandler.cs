@@ -2,6 +2,7 @@
 using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Offers.Errors;
+using Domain.Offers.Events;
 using Domain.Products.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(IApplicationDbCont
     {
         // check if all the products are not under other offer
         List<Error> errors = [];
-        if (await _context.Offers.Where(o => o.Type == OfferType.BundleDiscountOffer)
+        if (await _context.Offers.Where(o => o.Type == OfferType.PercentageDiscountOffer)
             .Cast<PercentageDiscountOffer>()
             .AnyAsync(po => request.Products.Contains(po.ProductId), cancellationToken))
         {
@@ -46,6 +47,8 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(IApplicationDbCont
             request.Discount,
             request.StartDate,
             request.EndDate);
+
+        offer.RaiseDomainEvent(new OfferCreatedDominaEvent(offer));
 
         await _context.Offers.AddAsync(offer, cancellationToken);
 

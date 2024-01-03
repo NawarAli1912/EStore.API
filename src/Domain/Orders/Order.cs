@@ -44,12 +44,13 @@ public sealed class Order : AggregateRoot, IAuditableEntity
 
     }
 
-    public void AddItems(Product product, int quantity)
+    public void AddItems(
+        Product product,
+        int quantity)
     {
         for (var i = 0; i < quantity; ++i)
         {
-            var lineItem = LineItem
-                .Create(
+            var lineItem = LineItem.Create(
                 Guid.NewGuid(),
                 product.Id,
                 Id,

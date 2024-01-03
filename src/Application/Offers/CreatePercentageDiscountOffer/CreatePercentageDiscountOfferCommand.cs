@@ -7,7 +7,7 @@ namespace Application.Offers.CreatePercentageDiscountOffer;
 public record CreatePercentageDiscountOfferCommand(
     string Name,
     string Description,
-    Guid Product,
+    Guid ProductId,
     decimal Discount,
     DateOnly StartDate,
     DateOnly EndDate

@@ -42,8 +42,6 @@ public class Product : AggregateRoot
     public double AverageRating => _ratings.Count > 0 ? _ratings.Select(r => r.Value).Sum() /
                             _ratings.Count : 0.0;
 
-
-
     public static Product Create(
         Guid id,
         string name,

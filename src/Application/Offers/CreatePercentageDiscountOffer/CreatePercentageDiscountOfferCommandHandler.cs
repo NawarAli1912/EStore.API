@@ -1,7 +1,11 @@
 ﻿using Application.Common.Data;
 using Domain.Offers;
+using Domain.Offers.Enums;
+using Domain.Offers.Events;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
+using DomainError = Domain.Offers.Errors.DomainError;
 
 namespace Application.Offers.CreatePercentageDiscountOffer;
 
@@ -10,8 +14,45 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
 {
     private readonly IApplicationDbContext _context = context;
 
-    public Task<Result<PercentageDiscountOffer>> Handle(CreatePercentageDiscountOfferCommand request, CancellationToken cancellationToken)
+    public async Task<Result<PercentageDiscountOffer>> Handle(
+        CreatePercentageDiscountOfferCommand request,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        List<Error> errors = [];
+        var product = await _context.Products.FindAsync(request.ProductId);
+
+        if (product is null)
+        {
+            return Domain.Products.Errors.DomainError.Product.NotFound;
+        }
+
+        if (product.Status != Domain.Products.Enums.ProductStatus.Active)
+        {
+            return Domain.Products.Errors.DomainError.Product.InvalidState(product.Name);
+        }
+
+        if (await _context.Offers.Where(o => o.Type == OfferType.PercentageDiscountOffer)
+            .Cast<PercentageDiscountOffer>()
+            .AnyAsync(po => po.ProductId == request.ProductId, cancellationToken))
+        {
+            return DomainError.Offer.UnderAnotherOffer;
+        }
+
+        var offer = PercentageDiscountOffer.Create(
+            request.Name,
+            request.Description,
+            request.ProductId,
+            request.Discount,
+            request.StartDate,
+            request.EndDate);
+
+        offer.RaiseDomainEvent(new OfferCreatedDominaEvent(offer));
+
+        await _context.Offers.AddAsync(offer, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return offer;
+
     }
 }

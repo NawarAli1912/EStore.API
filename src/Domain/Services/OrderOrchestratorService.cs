@@ -68,7 +68,6 @@ public static class OrderOrchestratorService
 
         if (errors.Count > 0)
         {
-
             return errors;
         }
 
@@ -96,15 +95,24 @@ public static class OrderOrchestratorService
     {
         List<Error> errors = [];
 
+        if (order.LineItems is null)
+        {
+            return Orders.Errors.DomainError.Order.EmptyLineItems;
+        }
+
         var lineItemsGroups = order
             .LineItems
             .GroupBy(li => li.ProductId);
 
         foreach (var group in lineItemsGroups)
         {
-            var product = productDict[group.Key];
+            if (!productDict.TryGetValue(group.Key, out var product))
+            {
+                errors.Add(DomainError.Product.NotPresentOnTheDictionary);
+                continue;
+            }
 
-            if (product.Status != ProductStatus.Active)
+            if (product!.Status != ProductStatus.Active)
             {
                 return product.Status switch
                 {

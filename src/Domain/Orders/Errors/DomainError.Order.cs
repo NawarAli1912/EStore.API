@@ -12,6 +12,9 @@ public static partial class DomainError
 
         public static Error InvalidStatus(OrderStatus status) =>
             Error.Validation("Order.InvalidStatus", $"Can't operate on the orders the status is {status}.");
+
+        public static Error EmptyLineItems => Error.Unexpected(
+            "Order.EmptyLineItems", "Can't operate on empty order.");
     }
 
     public static class LineItem

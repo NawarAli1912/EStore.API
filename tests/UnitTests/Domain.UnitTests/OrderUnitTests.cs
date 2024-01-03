@@ -3,33 +3,34 @@ using Domain.Orders;
 using Domain.Orders.Errors;
 using Domain.Orders.ValueObjects;
 using Domain.Products;
-using SharedKernel.Enums;
 
 namespace Domain.UnitTests;
 public sealed class OrderUnitTests
 {
-    private static readonly Customer customer = Customer
-            .Create(Guid.NewGuid());
+    private readonly Customer customer;
+    private readonly ShippingInfo shippingInfo;
 
-    private static readonly ShippingInfo shippingInfo = ShippingInfo
-        .Create(ShippingCompany.Alkadmous, "Location1", "+963992465535");
+    private readonly Product product1;
 
-    private static readonly Product product1 = Product.Create(
-        Guid.NewGuid(),
-        "Product1",
-        "Description1",
-        20,
-        99,
-        80);
+    private readonly Product product2;
 
-    private static readonly Product product2 = Product.Create(
-       Guid.NewGuid(),
-       "Product2",
-       "Description2",
-       12,
-       199,
-       150);
-
+    public OrderUnitTests()
+    {
+        customer = TestDataFactory.CreateCustomer();
+        shippingInfo = TestDataFactory.CreateShippingInfo();
+        product1 = TestDataFactory.CreateProduct(
+                    "Product1",
+                    "Description1",
+                    20,
+                    99,
+                    80);
+        product2 = TestDataFactory.CreateProduct(
+                   "Product2",
+                   "Description2",
+                   12,
+                   199,
+                   150);
+    }
 
     [Fact]
     public void AddItems_ValidProductAndQuantity_ItemsAddedToOrder()
@@ -53,6 +54,7 @@ public sealed class OrderUnitTests
         Assert.Equal(3, order.LineItems.Count(li => li.ProductId == product1.Id));
         Assert.Equal(2, order.LineItems.Count(li => li.ProductId == product2.Id));
     }
+
     [Fact]
     public void RemoveItems_QuantityExceedsAvailable_ReturnsErrorResult()
     {

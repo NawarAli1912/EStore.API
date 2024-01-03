@@ -1,5 +1,6 @@
 ﻿namespace Domain.Services;
-public static class OfferService
+
+public static class OffersService
 {
 
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Customers;
+using Domain.Orders.ValueObjects;
 using Domain.Products;
 using Domain.Products.Errors;
 using Domain.Services;
@@ -6,33 +7,44 @@ using Domain.Services;
 namespace Domain.UnitTests.Services;
 public class CartOperationServiceTests
 {
+    private readonly Customer customer;
+    private readonly ShippingInfo shippingInfo;
+    private readonly Dictionary<Guid, Product> productDict;
+    private readonly Product product1;
+    private readonly Product product2;
+
+    public CartOperationServiceTests()
+    {
+        customer = TestDataFactory.CreateCustomer();
+        shippingInfo = TestDataFactory.CreateShippingInfo();
+
+        product1 = TestDataFactory.CreateProduct();
+        product2 = TestDataFactory.CreateProduct();
+
+        productDict = new Dictionary<Guid, Product>
+        {
+            { product1.Id, product1 },
+            { product2.Id, product2 }
+        };
+    }
+
     [Fact]
     public void AddCartItem_ValidData_CorrectResult()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
-        var product = Product.Create(
-            Guid.NewGuid(),
-            "TestProduct",
-            "Description",
-            10,
-            100,
-            80);
-
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.AddCartItem(customer, product, requestedQuantity);
+        var result = CartOperationService.AddCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Equal(product.CustomerPrice * requestedQuantity, result.Value);
+        Assert.Equal(product1.CustomerPrice * requestedQuantity, result.Value);
         Assert.Equal(requestedQuantity, customer.Cart.CartItems.Single().Quantity);
     }
     [Fact]
     public void AddCartItem_NullProduct_ReturnsError()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
         Product? product = null;
         var requestedQuantity = 2;
 
@@ -48,18 +60,12 @@ public class CartOperationServiceTests
     {
         // Arrange
         Customer? customer = null;
-        var product = Product.Create(
-            Guid.NewGuid(),
-            "TestProduct",
-            "Description",
-            10,
-            100,
-            80);
+
         var requestedQuantity = 2;
 
         // Act
         var result = CartOperationService
-            .AddCartItem(customer, product, requestedQuantity);
+            .AddCartItem(customer, product1, requestedQuantity);
 
         // Assert
         Assert.Contains(Customers.Errors.DomainError.Customer.NotFound, result.Errors);
@@ -69,27 +75,19 @@ public class CartOperationServiceTests
     public void AddCartItem_SameProduct_CombineQuantities()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
-        var product = Product.Create(
-            Guid.NewGuid(),
-            "TestProduct",
-            "Description",
-            10,
-            100,
-            80);
-
         var initialQuantity = 3;
         var additionalQuantity = 2;
 
         // Act
         var firstAdditionResult = CartOperationService
-            .AddCartItem(customer, product, initialQuantity);
+            .AddCartItem(customer, product1, initialQuantity);
+
         var secondAdditionResult = CartOperationService
-            .AddCartItem(customer, product, additionalQuantity);
+            .AddCartItem(customer, product1, additionalQuantity);
 
         // Check that the product is in the cart
         var cartItem = customer.Cart.CartItems
-            .SingleOrDefault(ci => ci.ProductId == product.Id);
+            .SingleOrDefault(ci => ci.ProductId == product1.Id);
 
         Assert.NotNull(cartItem);
 
@@ -101,46 +99,29 @@ public class CartOperationServiceTests
     public void AddCartItem_InactiveProduct_ReturnsError()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
-        var product = Product.Create(
-            Guid.NewGuid(),
-            "TestProduct",
-            "Description",
-            10,
-            100,
-            80);
+        product1.MarkAsDeleted();
 
-        product.MarkAsDeleted(); // Mark product as deleted
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.AddCartItem(customer, product, requestedQuantity);
+        var result = CartOperationService.AddCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Contains(DomainError.Product.Deleted(product.Name), result.Errors);
+        Assert.Contains(DomainError.Product.Deleted(product1.Name), result.Errors);
     }
 
     [Fact]
     public void RemoveCartItem_ValidData_CorrectResult()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
-        var product = Product.Create(
-            Guid.NewGuid(),
-            "TestProduct",
-            "Description",
-            10,
-            100,
-            80);
-
-        customer.AddCartItem(product.Id, 3); // Add 3 items to cart
+        customer.AddCartItem(product1.Id, 3); // Add 3 items to cart
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.RemoveCartItem(customer, product, requestedQuantity);
+        var result = CartOperationService.RemoveCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Equal(-product.CustomerPrice * requestedQuantity, result.Value);
+        Assert.Equal(-product1.CustomerPrice * requestedQuantity, result.Value);
         Assert.Equal(1, customer.Cart.CartItems.Single().Quantity);
     }
 
@@ -149,18 +130,11 @@ public class CartOperationServiceTests
     {
         // Arrange
         Customer? customer = null;
-        var product = Product.Create(
-            Guid.NewGuid(),
-            "TestProduct",
-            "Description",
-            10,
-            100,
-            80);
 
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.RemoveCartItem(customer, product, requestedQuantity);
+        var result = CartOperationService.RemoveCartItem(customer, product1, requestedQuantity);
 
         // Assert
         Assert.Contains(Customers.Errors.DomainError.Customer.NotFound, result.Errors);
@@ -170,7 +144,6 @@ public class CartOperationServiceTests
     public void RemoveCartItem_NullProduct_ReturnsError()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
         Product? product = null;
         var requestedQuantity = 2;
 
@@ -185,12 +158,10 @@ public class CartOperationServiceTests
     public void RemoveCartItem_RemoveMoreItemsThanInCart_ReturnsError()
     {
         // Arrange
-        var customer = Customer.Create(Guid.NewGuid());
-        var product = Product.Create(Guid.NewGuid(), "TestProduct", "Description", 10, 100, 80);
-        customer.AddCartItem(product.Id, 2); // Add 2 items to cart
+        customer.AddCartItem(product1.Id, 2); // Add 2 items to cart
 
         // Act
-        var result = CartOperationService.RemoveCartItem(customer, product, 3);
+        var result = CartOperationService.RemoveCartItem(customer, product1, 3);
 
         // Assert
         Assert.Contains(Customers.Errors.DomainError.CartItem.NegativeQuantity, result.Errors);
