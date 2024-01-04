@@ -1,5 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
-using Domain.Customers.Errors;
+using Domain.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;

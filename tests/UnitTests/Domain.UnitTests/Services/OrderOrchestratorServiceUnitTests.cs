@@ -1,8 +1,8 @@
 ﻿using Domain.Customers;
+using Domain.Errors;
 using Domain.Orders.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
-using Domain.Products.Errors;
 using Domain.Services;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
@@ -106,7 +106,7 @@ public sealed class OrderOrchestratorServiceUnitTests
             phone);
 
         // Assert
-        Assert.Contains(Customers.Errors.DomainError.Cart.EmptyCart, result.Errors);
+        Assert.Contains(DomainError.Cart.EmptyCart, result.Errors);
     }
 
     [Fact]

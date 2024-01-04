@@ -1,6 +1,6 @@
 ﻿using SharedKernel.Primitives;
 
-namespace Domain.Offers.Errors;
+namespace Domain.Errors;
 
 public static partial class DomainError
 {

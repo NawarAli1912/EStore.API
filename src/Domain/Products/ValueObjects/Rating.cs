@@ -1,7 +1,8 @@
-﻿using Domain.Products.Errors;
+﻿using Domain.Errors;
 using SharedKernel.Primitives;
 
 namespace Domain.Products.ValueObjects;
+
 
 public sealed class Rating : ValueObject
 {

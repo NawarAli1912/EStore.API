@@ -1,7 +1,7 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Application.Common.Repository;
+using Domain.Errors;
 using Domain.Offers;
-using Domain.Offers.Errors;
 using Domain.Offers.Events;
 using Domain.Products.Enums;
 using MediatR;
@@ -27,7 +27,7 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
 
         if (products.Count != request.Products.Count)
         {
-            return Domain.Products.Errors.DomainError.Product.NotFound;
+            return DomainError.Product.NotFound;
         }
 
         var productsOffers = products

@@ -1,5 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
-using Domain.Customers.Errors;
+using Domain.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
@@ -12,6 +12,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
 
     public async Task<Result<CartResult>> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
+
         List<Error> errors = [];
         var customer = await _context
             .Customers
@@ -23,7 +24,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
         {
             return DomainError.Customer.NotFound;
         }
-        var productsIds = customer
+        var cartProductsIds = customer
             .Cart
             .CartItems
             .Select(c => c.ProductId)
@@ -31,7 +32,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
 
         var productPriceDict = await _context
             .Products
-            .Where(p => productsIds.Contains(p.Id))
+            .Where(p => cartProductsIds.Contains(p.Id))
             .Select(p => new
             {
                 Id = p.Id,
@@ -40,7 +41,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
             .ToDictionaryAsync(
                 p => p.Id,
                 p => p.CustomerPrice,
-                cancellationToken: cancellationToken);
+                cancellationToken);
 
         List<CartItemResult> items = [];
         var totalPrice = 0.0M;

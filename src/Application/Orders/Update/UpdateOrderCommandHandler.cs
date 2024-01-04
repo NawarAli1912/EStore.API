@@ -1,6 +1,6 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Domain.Errors;
 using Domain.Orders.Enums;
-using Domain.Products.Errors;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +30,7 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
 
         if (order.Status != OrderStatus.Pending)
         {
-            return Domain.Orders.Errors.DomainError.Order.InvalidStatus(order.Status);
+            return DomainError.Order.InvalidStatus(order.Status);
         }
 
         var productsIds = order.LineItems.Select(o => o.ProductId)

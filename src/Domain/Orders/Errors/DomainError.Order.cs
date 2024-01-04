@@ -1,7 +1,7 @@
 ﻿using Domain.Orders.Enums;
 using SharedKernel.Primitives;
 
-namespace Domain.Orders.Errors;
+namespace Domain.Errors;
 
 public static partial class DomainError
 {

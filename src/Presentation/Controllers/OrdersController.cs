@@ -1,5 +1,6 @@
 ﻿using Application.Common.Authentication.Models;
 using Application.Orders.Approve;
+using Application.Orders.Cancel;
 using Application.Orders.Get;
 using Application.Orders.GetCustomerOrders;
 using Application.Orders.List;
@@ -92,8 +93,17 @@ public sealed class OrdersController(ISender sender, IMapper mapper) : ApiContro
     [HasPermission(Permissions.ManageOrdersLite)]
     public async Task<IActionResult> Update(Guid id, UpdateOrderRequest request)
     {
-        var result = await _sender.Send(
+        _ = await _sender.Send(
             _mapper.Map<UpdateOrderCommand>((id, request)));
+
+        return Ok();
+    }
+
+    [HttpPatch("{id:guid}/cancel")]
+    [HasPermission(Permissions.ManageOrdersLite)]
+    public async Task<IActionResult> Cancel(Guid id)
+    {
+        _ = await _sender.Send(new CancelOrderCommand(id));
 
         return Ok();
     }

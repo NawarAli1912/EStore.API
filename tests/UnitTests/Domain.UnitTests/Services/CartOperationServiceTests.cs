@@ -1,7 +1,7 @@
 ﻿using Domain.Customers;
+using Domain.Errors;
 using Domain.Orders.ValueObjects;
 using Domain.Products;
-using Domain.Products.Errors;
 using Domain.Services;
 
 namespace Domain.UnitTests.Services;
@@ -70,7 +70,7 @@ public class CartOperationServiceTests
             .AddCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Contains(Customers.Errors.DomainError.Customer.NotFound, result.Errors);
+        Assert.Contains(DomainError.Customer.NotFound, result.Errors);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class CartOperationServiceTests
         var result = CartOperationService.RemoveCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Contains(Customers.Errors.DomainError.Customer.NotFound, result.Errors);
+        Assert.Contains(DomainError.Customer.NotFound, result.Errors);
     }
 
     [Fact]
@@ -166,6 +166,6 @@ public class CartOperationServiceTests
         var result = CartOperationService.RemoveCartItem(customer, product1, 3);
 
         // Assert
-        Assert.Contains(Customers.Errors.DomainError.CartItem.NegativeQuantity, result.Errors);
+        Assert.Contains(DomainError.CartItem.NegativeQuantity, result.Errors);
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Domain.Customers;
+using Domain.Errors;
 using Domain.Orders;
 using Domain.Products;
 using Domain.Products.Enums;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
-using DomainError = Domain.Products.Errors.DomainError;
 
 namespace Domain.Services;
 public static class OrderOrchestratorService
@@ -36,7 +36,7 @@ public static class OrderOrchestratorService
         var cartItems = customer.Cart.CartItems.ToList();
         if (customer.Cart.CartItems.Count == 0)
         {
-            return Customers.Errors.DomainError.Cart.EmptyCart;
+            return DomainError.Cart.EmptyCart;
         }
 
         var order = Order.Create(
@@ -101,7 +101,7 @@ public static class OrderOrchestratorService
 
         if (order.LineItems is null)
         {
-            return Orders.Errors.DomainError.Order.EmptyLineItems;
+            return DomainError.Order.EmptyLineItems;
         }
 
         var lineItemsGroups = order
@@ -172,6 +172,11 @@ public static class OrderOrchestratorService
         Dictionary<Guid, int> itemsToAddQuantities,
         Dictionary<Guid, int> itemsToDeleteQuantities)
     {
+        if (order.Status == Orders.Enums.OrderStatus.Canceled)
+        {
+            return DomainError.Order.InvalidStatus(order.Status);
+        }
+
         List<Error> errors = [];
         foreach (var productId in itemsToAddQuantities.Keys)
         {

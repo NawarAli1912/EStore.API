@@ -1,5 +1,5 @@
+using Domain.Errors;
 using Domain.Products.Enums;
-using Domain.Products.Errors;
 using SharedKernel.Primitives;
 
 namespace Domain.UnitTests;

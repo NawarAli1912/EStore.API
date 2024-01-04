@@ -1,7 +1,7 @@
 ﻿using Domain.Categories;
+using Domain.Errors;
 using Domain.Products.Entities;
 using Domain.Products.Enums;
-using Domain.Products.Errors;
 using Domain.Products.Events;
 using Domain.Products.ValueObjects;
 using SharedKernel.Primitives;

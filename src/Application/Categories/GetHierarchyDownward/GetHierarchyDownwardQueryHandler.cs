@@ -1,7 +1,7 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Dapper;
 using Domain.Categories;
-using Domain.Categories.Errors;
+using Domain.Errors;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using SharedKernel.Primitives;

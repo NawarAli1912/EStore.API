@@ -1,6 +1,6 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Domain.Errors;
 using Domain.Orders.Enums;
-using Domain.Products.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;

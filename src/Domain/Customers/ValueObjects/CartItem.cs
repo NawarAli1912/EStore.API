@@ -1,4 +1,4 @@
-﻿using Domain.Customers.Errors;
+﻿using Domain.Errors;
 using SharedKernel.Primitives;
 
 namespace Domain.Customers.ValueObjects;

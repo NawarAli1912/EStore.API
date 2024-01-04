@@ -1,4 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Offers.Events;
@@ -6,7 +7,6 @@ using Domain.Products.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
-using DomainError = Domain.Offers.Errors.DomainError;
 
 namespace Application.Offers.CreatePercentageDiscountOffer;
 
@@ -20,17 +20,18 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
         CancellationToken cancellationToken)
     {
         List<Error> errors = [];
-        var product = await _context.Products.FindAsync(request.ProductId);
+        var product = await _context.Products
+            .FindAsync(request.ProductId, cancellationToken);
 
 
         if (product is null)
         {
-            return Domain.Products.Errors.DomainError.Product.NotFound;
+            return DomainError.Product.NotFound;
         }
 
         if (product.Status != ProductStatus.Active)
         {
-            return Domain.Products.Errors.DomainError.Product.InvalidState(product.Name);
+            return DomainError.Product.InvalidState(product.Name);
         }
 
         if (await _context.Offers.Where(o => o.Type == OfferType.PercentageDiscountOffer)

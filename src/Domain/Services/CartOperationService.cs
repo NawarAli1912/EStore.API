@@ -1,12 +1,10 @@
 ﻿using Domain.Customers;
+using Domain.Errors;
 using Domain.Products;
 using Domain.Products.Enums;
-using Domain.Products.Errors;
 using SharedKernel.Primitives;
 
 namespace Domain.Services;
-
-using CustomerErrors = Customers.Errors.DomainError;
 
 public static class CartOperationService
 {
@@ -17,7 +15,7 @@ public static class CartOperationService
     {
         if (customer is null)
         {
-            return CustomerErrors.Customer.NotFound;
+            return DomainError.Customer.NotFound;
         }
 
         if (product is null)
@@ -62,7 +60,7 @@ public static class CartOperationService
     {
         if (customer is null)
         {
-            return CustomerErrors.Customer.NotFound;
+            return DomainError.Customer.NotFound;
         }
 
         if (product is null)

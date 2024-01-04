@@ -3,6 +3,7 @@ using Application.Common.Authentication.Jwt;
 using Application.Common.Authentication.Models;
 using Application.Common.DatabaseAbstraction;
 using Domain.Customers;
+using Domain.Errors;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using SharedKernel.Primitives;
@@ -24,7 +25,7 @@ internal sealed class RegisterCommandHandler(
     {
         if (await _userManager.FindByEmailAsync(request.Email) is not null)
         {
-            return Domain.Customers.Errors.DomainError.Customer.DuplicateEmail;
+            return DomainError.Customer.DuplicateEmail;
         }
 
         string token;

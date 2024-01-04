@@ -1,10 +1,9 @@
-﻿using Domain.Orders.Entities;
+﻿using Domain.Errors;
+using Domain.Orders.Entities;
 using Domain.Orders.Enums;
-using Domain.Orders.Errors;
 using Domain.Orders.ValueObjects;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
-
 namespace Domain.Orders;
 
 public sealed class Order : AggregateRoot, IAuditableEntity
@@ -105,6 +104,11 @@ public sealed class Order : AggregateRoot, IAuditableEntity
     public void Reject()
     {
         Status = OrderStatus.Rejected;
+    }
+
+    public void Cancel()
+    {
+        Status = OrderStatus.Canceled;
     }
 
     private Order() : base(Guid.NewGuid())
