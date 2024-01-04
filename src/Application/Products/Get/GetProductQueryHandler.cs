@@ -1,4 +1,4 @@
-﻿using Application.Common.Data;
+﻿using Application.Common.DatabaseAbstraction;
 using Domain.Products;
 using Domain.Products.Errors;
 using MediatR;

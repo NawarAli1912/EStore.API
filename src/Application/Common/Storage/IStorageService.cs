@@ -7,7 +7,7 @@ public interface IStorageService
 
     Task DeleteFiles(List<string> keys, FileSource source);
 
-    Task<List<Image>> ListFilesLinks(Guid id, FileSource source);
+    Task<List<File>> ListFilesLinks(Guid id, FileSource source);
 }
 
 public enum FileSource

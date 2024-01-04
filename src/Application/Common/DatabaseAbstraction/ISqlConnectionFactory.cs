@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 
-namespace Application.Common.Data;
+namespace Application.Common.DatabaseAbstraction;
 
 public interface ISqlConnectionFactory
 {

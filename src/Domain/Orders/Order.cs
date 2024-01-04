@@ -1,9 +1,7 @@
-﻿using Domain.Customers;
-using Domain.Orders.Entities;
+﻿using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Orders.Errors;
 using Domain.Orders.ValueObjects;
-using Domain.Products;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
@@ -28,51 +26,57 @@ public sealed class Order : AggregateRoot, IAuditableEntity
     public DateTime ModifiedAtUtc { get; set; }
 
     public static Order Create(
-        Customer customer,
-        ShippingInfo shippingInfo)
+        Guid customerId,
+        ShippingCompany shippingCompany,
+        string shippingCompanyAddress,
+        string phoneNumber)
     {
+        var shippingInfo = ShippingInfo.Create(
+            shippingCompany,
+            shippingCompanyAddress,
+            phoneNumber);
 
         var order = new Order
         {
             Id = Guid.NewGuid(),
-            CustomerId = customer.Id,
+            CustomerId = customerId,
             Status = OrderStatus.Pending,
             ShippingInfo = shippingInfo
         };
 
         return order;
-
     }
 
     public void AddItems(
-        Product product,
+        Guid productId,
+        decimal productPrice,
         int quantity)
     {
         for (var i = 0; i < quantity; ++i)
         {
             var lineItem = LineItem.Create(
                 Guid.NewGuid(),
-                product.Id,
+                productId,
                 Id,
-                product.CustomerPrice);
+                productPrice);
 
             _lineItems.Add(lineItem);
         }
 
-        TotalPrice += product.CustomerPrice * quantity;
+        TotalPrice += productPrice * quantity;
     }
 
-    public Result<Updated> RemoveItems(Product product, int Quantity)
+    public Result<Updated> RemoveItems(Guid productId, int Quantity)
     {
-        if (_lineItems.Count(li => li.ProductId == product.Id) < Quantity)
+        if (_lineItems.Count(li => li.ProductId == productId) < Quantity)
         {
-            return DomainError.LineItem.ExceedsAvailableQuantity(product.Id);
+            return DomainError.LineItem.ExceedsAvailableQuantity(productId);
         }
 
         for (var i = 0; i < Quantity; ++i)
         {
             var lineItem = _lineItems
-                .First(item => item.ProductId == product.Id);
+                .First(item => item.ProductId == productId);
 
             _lineItems.Remove(lineItem);
 

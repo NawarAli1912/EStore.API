@@ -5,7 +5,7 @@ using Domain.Orders;
 using Domain.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Common.Data;
+namespace Application.Common.DatabaseAbstraction;
 
 public interface IApplicationDbContext
 {

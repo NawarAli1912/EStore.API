@@ -1,26 +1,28 @@
 ﻿using Domain.Customers;
 using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
 using Domain.Products;
 using Domain.Products.Enums;
 using Domain.Products.Errors;
 using Domain.Services;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.UnitTests.Services;
 public sealed class OrderOrchestratorServiceUnitTests
 {
     private readonly Customer customer;
-    private readonly ShippingInfo shippingInfo;
     private readonly Dictionary<Guid, Product> productDict;
     private readonly Product product1;
     private readonly Product product2;
+
+    private readonly ShippingCompany shippingCompany = ShippingCompany.Alkadmous;
+    private readonly string shippingLocation = "Location1";
+    private readonly string phone = "963992465535";
 
 
     public OrderOrchestratorServiceUnitTests()
     {
         customer = TestDataFactory.CreateCustomer();
-        shippingInfo = TestDataFactory.CreateShippingInfo();
 
         product1 = TestDataFactory.CreateProduct();
         product2 = TestDataFactory.CreateProduct();
@@ -53,8 +55,12 @@ public sealed class OrderOrchestratorServiceUnitTests
 
 
         // Act
-        var result = OrderOrchestratorService
-            .CreateOrder(customer, productDict, shippingInfo);
+        var result = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -75,8 +81,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         product2.DecreaseQuantity(product2.Quantity);
 
         // Act
-        var result = OrderOrchestratorService
-            .CreateOrder(customer, productDict, shippingInfo);
+        var result = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone);
         // Assert
         Assert.Contains(DomainError.Product.Deleted(product1.Name), result.Errors);
         Assert.Contains(DomainError.Product.OutOfStock(product2.Name), result.Errors);
@@ -88,8 +98,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         customer.ClearCart();
 
         // Act
-        var result = OrderOrchestratorService
-            .CreateOrder(customer, productDict, shippingInfo);
+        var result = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone);
 
         // Assert
         Assert.Contains(Customers.Errors.DomainError.Cart.EmptyCart, result.Errors);
@@ -104,8 +118,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         customer.AddCartItem(Guid.NewGuid(), 1);
 
         // Act
-        var result = OrderOrchestratorService
-            .CreateOrder(customer, productDict, shippingInfo);
+        var result = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone);
 
         // Assert
         Assert.Contains(DomainError.Product.NotFound, result.Errors);
@@ -115,9 +133,13 @@ public sealed class OrderOrchestratorServiceUnitTests
     public void Approve_OrderWithInactiveProduct_ReturnsError()
     {
         customer.AddCartItem(product1.Id, 2);
-        var order = OrderOrchestratorService
-           .CreateOrder(customer, productDict, shippingInfo)
-           .Value;
+
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         product1.MarkAsDeleted();
         customer.ClearCart();
@@ -136,9 +158,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         customer.AddCartItem(product1.Id, 1);
         customer.AddCartItem(product2.Id, 2);
 
-        var order = OrderOrchestratorService
-           .CreateOrder(customer, productDict, shippingInfo)
-           .Value;
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         var itemsToAddQuantities = new Dictionary<Guid, int> { { product1.Id, 2 } };
         var itemsToDeleteQuantities = new Dictionary<Guid, int> { { product2.Id, 1 } };
@@ -163,9 +188,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         customer.AddCartItem(product1.Id, 2);
         customer.AddCartItem(product2.Id, 12);
 
-        var order = OrderOrchestratorService
-           .CreateOrder(customer, productDict, shippingInfo)
-           .Value;
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         var itemsToAddQuantities = new Dictionary<Guid, int> { { Guid.NewGuid(), 1 } };
         var itemsToDeleteQuantities = new Dictionary<Guid, int>();
@@ -186,9 +214,12 @@ public sealed class OrderOrchestratorServiceUnitTests
             customer.AddCartItem(product.Id, 1);
         }
 
-        var order = OrderOrchestratorService
-           .CreateOrder(customer, productDict, shippingInfo)
-           .Value;
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         var initialQuantities = productDict.Values.ToDictionary(product => product.Id, product => product.Quantity);
 
@@ -210,10 +241,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         // Arrange
         customer.AddCartItem(product1.Id, product1.Quantity);
 
-        var order = OrderOrchestratorService
-           .CreateOrder(customer, productDict, shippingInfo)
-           .Value;
-
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         // Act
         var result = OrderOrchestratorService.Approve(order, productDict);
@@ -231,9 +264,12 @@ public sealed class OrderOrchestratorServiceUnitTests
         customer.AddCartItem(product.Id, 2);
 
 
-        var order = OrderOrchestratorService
-           .CreateOrder(customer, productDict, shippingInfo)
-           .Value;
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         // Act
         var result = OrderOrchestratorService.Approve(order, productDict);
@@ -248,9 +284,12 @@ public sealed class OrderOrchestratorServiceUnitTests
     {
         // Arrange
         customer.AddCartItem(product1.Id, 2);
-        var order = OrderOrchestratorService
-            .CreateOrder(customer, productDict, shippingInfo)
-            .Value;
+        var order = OrderOrchestratorService.CreateOrder(
+            customer,
+            productDict,
+            shippingCompany,
+            shippingLocation,
+            phone).Value;
 
         // Act
         var result = OrderOrchestratorService.Approve(order, []);

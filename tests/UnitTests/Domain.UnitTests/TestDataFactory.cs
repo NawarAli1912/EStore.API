@@ -1,7 +1,6 @@
 ﻿using Domain.Categories;
 using Domain.Customers;
 using Domain.Orders;
-using Domain.Orders.ValueObjects;
 using Domain.Products;
 using SharedKernel.Enums;
 
@@ -10,9 +9,6 @@ internal static class TestDataFactory
 {
     public static Customer CreateCustomer() =>
         Customer.Create(Guid.NewGuid());
-
-    public static ShippingInfo CreateShippingInfo() =>
-        ShippingInfo.Create(ShippingCompany.Alkadmous, "Location1", "+963992465535");
 
     public static Product CreateProduct(
         string name = "TestProduct",
@@ -30,7 +26,6 @@ internal static class TestDataFactory
         purchasePrice,
         categories);
 
-
     private static List<Category> GeneratesubCategories(Guid parentId)
     {
         return Enumerable.Range(1, 3)
@@ -45,8 +40,14 @@ internal static class TestDataFactory
         return Category.Create(id, name, null, null, GeneratesubCategories(id));
     }
 
-    public static Order CreateOrder()
+    public static Order CreateOrder(Customer? customer = null)
     {
-        return Order.Create(CreateCustomer(), CreateShippingInfo());
+        customer ??= CreateCustomer();
+
+        return Order.Create(
+            customer.Id,
+            ShippingCompany.Alkadmous,
+            "Location1",
+            "+963992465535");
     }
 }

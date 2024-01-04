@@ -1,15 +1,16 @@
-﻿using Domain.Offers.Enums;
+﻿using Application.Common;
+using Domain.Offers.Enums;
 using Domain.Offers.Events;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Application.Common.Events;
+namespace Application.Offers.EventsHandlers;
 public sealed class OfferCreatedDomainEventHandler(IMemoryCache memoryCache)
-        : INotificationHandler<OfferCreatedDominaEvent>
+        : INotificationHandler<OfferCreatedDomainEvent>
 {
     private readonly IMemoryCache _memoryCache = memoryCache;
 
-    public async Task Handle(OfferCreatedDominaEvent notification,
+    public async Task Handle(OfferCreatedDomainEvent notification,
         CancellationToken cancellationToken)
     {
         await Task.Run(() =>

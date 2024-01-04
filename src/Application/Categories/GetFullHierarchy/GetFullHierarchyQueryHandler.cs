@@ -1,4 +1,4 @@
-﻿using Application.Common.Data;
+﻿using Application.Common.DatabaseAbstraction;
 using Dapper;
 using Domain.Categories;
 using MediatR;

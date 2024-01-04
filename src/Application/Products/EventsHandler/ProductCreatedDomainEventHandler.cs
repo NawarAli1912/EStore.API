@@ -1,10 +1,11 @@
 ﻿using Application.Common.ElasticSearch;
+using Domain.ModelsSnapshots;
 using Domain.Products.Events;
 using MediatR;
 using Nest;
 using Serilog;
 
-namespace Application.Common.Events;
+namespace Application.Products.EventsHandler;
 
 public sealed class ProductCreatedDomainEventHandler(IElasticClient elasticClient)
     : INotificationHandler<ProductCreatedDomainEvent>
@@ -13,7 +14,7 @@ public sealed class ProductCreatedDomainEventHandler(IElasticClient elasticClien
 
     public async Task Handle(ProductCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var productSnapshot = notification.Product;
+        var productSnapshot = ProductSnapshot.Snapshot(notification.Product);
 
         try
         {

@@ -2,7 +2,8 @@
 using SharedKernel.Primitives;
 
 namespace Domain.Orders.ValueObjects;
-public class ShippingInfo : ValueObject
+
+public sealed class ShippingInfo : ValueObject
 {
     public ShippingCompany ShippingCompany { get; private set; }
 

@@ -34,7 +34,7 @@ public sealed class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
         }
     }
 
-    private void AdjustStauts(List<Offer> offers)
+    private static void AdjustStauts(List<Offer> offers)
     {
         foreach (var offer in offers)
         {

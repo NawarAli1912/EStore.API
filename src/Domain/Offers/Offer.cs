@@ -1,4 +1,5 @@
 ﻿using Domain.Offers.Enums;
+using Domain.Offers.Events;
 using SharedKernel.Primitives;
 
 namespace Domain.Offers;
@@ -39,6 +40,11 @@ public abstract class Offer : AggregateRoot
         else
         {
             Status = OfferStatus.Draft;
+        }
+
+        if (Status == OfferStatus.Expired)
+        {
+            RaiseDomainEvent(new OfferExpiredDomainEvent(this));
         }
     }
 }

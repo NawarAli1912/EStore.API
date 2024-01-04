@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nest;
 using Serilog;
 
-namespace Application.Common.Events;
+namespace Application.Products.EventsHandler;
 public sealed class ProductUpdatedDomainEventHandler(
             IElasticClient elasticClient,
             ILogger<ProductUpdatedDomainEventHandler> logger)
@@ -17,10 +17,11 @@ public sealed class ProductUpdatedDomainEventHandler(
 
     public async Task Handle(ProductUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
+        var productSnapshot = ProductSnapshot.Snapshot(notification.Product);
         try
         {
             await _elasticClient.UpdateAsync<ProductSnapshot>(notification.Product.Id, u => u.Index(ElasticSearchSettings.DefaultIndex)
-                .Doc(notification.Product)
+                .Doc(productSnapshot)
                 .Refresh(Elasticsearch.Net.Refresh.True), cancellationToken);
 
         }

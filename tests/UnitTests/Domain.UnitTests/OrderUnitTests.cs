@@ -1,5 +1,4 @@
 ﻿using Domain.Customers;
-using Domain.Orders;
 using Domain.Orders.Errors;
 using Domain.Orders.ValueObjects;
 using Domain.Products;
@@ -17,7 +16,6 @@ public sealed class OrderUnitTests
     public OrderUnitTests()
     {
         customer = TestDataFactory.CreateCustomer();
-        shippingInfo = TestDataFactory.CreateShippingInfo();
         product1 = TestDataFactory.CreateProduct(
                     "Product1",
                     "Description1",
@@ -36,13 +34,14 @@ public sealed class OrderUnitTests
     public void AddItems_ValidProductAndQuantity_ItemsAddedToOrder()
     {
         // Arrange
-        var order = Order.Create(customer, shippingInfo);
+        var order = TestDataFactory.CreateOrder();
+
         var initialItemCount = order.LineItems.Count;
         var initialTotalPrice = order.TotalPrice;
 
         // Act
-        order.AddItems(product1, 3);
-        order.AddItems(product2, 2);
+        order.AddItems(product1.Id, product1.CustomerPrice, 3);
+        order.AddItems(product2.Id, product2.CustomerPrice, 2);
 
         // Assert
         Assert.Equal(initialItemCount + 5, order.LineItems.Count);
@@ -59,13 +58,14 @@ public sealed class OrderUnitTests
     public void RemoveItems_QuantityExceedsAvailable_ReturnsErrorResult()
     {
         // Arrange
-        var order = Order.Create(customer, shippingInfo);
-        order.AddItems(product1, 1);
+        var order = TestDataFactory.CreateOrder();
+
+        order.AddItems(product1.Id, product1.CustomerPrice, 1);
 
         var initialItemCount = order.LineItems.Count;
 
         // Act
-        var result = order.RemoveItems(product1, 2);
+        var result = order.RemoveItems(product1.Id, 2);
 
         // Assert
         Assert.Contains(DomainError.LineItem.ExceedsAvailableQuantity(product1.Id), result.Errors);
@@ -76,16 +76,17 @@ public sealed class OrderUnitTests
     public void RemoveItems_ValidProductAndQuantity_ItemsRemovedFromOrder()
     {
         // Arrange
-        var order = Order.Create(customer, shippingInfo);
-        order.AddItems(product1, 1);
-        order.AddItems(product2, 3);
+        var order = TestDataFactory.CreateOrder();
+
+        order.AddItems(product1.Id, product1.CustomerPrice, 1);
+        order.AddItems(product2.Id, product2.CustomerPrice, 3);
 
         var initialItemCount = order.LineItems.Count;
         var initialToatalPrice = order.TotalPrice;
 
         // Act
-        order.RemoveItems(product1, 1);
-        order.RemoveItems(product2, 2);
+        order.RemoveItems(product1.Id, 1);
+        order.RemoveItems(product2.Id, 2);
 
         // Assert
         Assert.Equal(initialItemCount - 3, order.LineItems.Count);

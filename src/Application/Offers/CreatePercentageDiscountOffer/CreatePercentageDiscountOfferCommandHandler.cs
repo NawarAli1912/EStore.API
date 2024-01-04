@@ -1,4 +1,4 @@
-﻿using Application.Common.Data;
+﻿using Application.Common.DatabaseAbstraction;
 using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Offers.Events;
@@ -22,6 +22,7 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
         List<Error> errors = [];
         var product = await _context.Products.FindAsync(request.ProductId);
 
+
         if (product is null)
         {
             return Domain.Products.Errors.DomainError.Product.NotFound;
@@ -41,7 +42,7 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
 
         if (await _context.Offers.Where(o => o.Type == OfferType.BundleDiscountOffer)
             .Cast<BundleDiscountOffer>()
-            .AnyAsync(po => po.BundleProductsIds.Contains(request.ProductId), cancellationToken))
+            .AnyAsync(o => product.AssociatedOffers.Contains(o.Id), cancellationToken))
         {
             return DomainError.Offer.UnderAnotherOffer;
         }
@@ -54,7 +55,7 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
             request.StartDate,
             request.EndDate);
 
-        offer.RaiseDomainEvent(new OfferCreatedDominaEvent(offer));
+        offer.RaiseDomainEvent(new OfferCreatedDomainEvent(offer));
 
         product.AssociateOffer(offer.Id);
         _context.Products.Update(product);

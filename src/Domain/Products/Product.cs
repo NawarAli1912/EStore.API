@@ -1,6 +1,4 @@
 ﻿using Domain.Categories;
-using Domain.Customers;
-using Domain.ModelsSnapshots;
 using Domain.Products.Entities;
 using Domain.Products.Enums;
 using Domain.Products.Errors;
@@ -78,7 +76,7 @@ public class Product : AggregateRoot
         }
 
         product.RaiseDomainEvent(
-            new ProductCreatedDomainEvent(ProductSnapshot.Snapshot(product)));
+            new ProductCreatedDomainEvent(product));
 
         return product;
     }
@@ -94,7 +92,7 @@ public class Product : AggregateRoot
         }
 
         RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+            new ProductUpdatedDomainEvent(this));
     }
 
     public void UnassignCategories(IEnumerable<Category> categories)
@@ -110,7 +108,7 @@ public class Product : AggregateRoot
         }
 
         RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+            new ProductUpdatedDomainEvent(this));
     }
 
     public Result<Product> Update(
@@ -133,7 +131,7 @@ public class Product : AggregateRoot
         Status = quantity == 0 ? ProductStatus.OutOfStock : Status;
 
         RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+            new ProductUpdatedDomainEvent(this));
 
 
         return this;
@@ -154,7 +152,7 @@ public class Product : AggregateRoot
         }
 
         RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+            new ProductUpdatedDomainEvent(this));
 
         return Result.Updated;
     }
@@ -163,7 +161,7 @@ public class Product : AggregateRoot
     {
         Quantity += value;
         RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
+            new ProductUpdatedDomainEvent(this));
 
     }
 
@@ -171,63 +169,7 @@ public class Product : AggregateRoot
     {
         Status = ProductStatus.Deleted;
         RaiseDomainEvent(
-            new ProductUpdatedDomainEvent(ProductSnapshot.Snapshot(this)));
-    }
-
-    public void AddReview(ProductReview review)
-    {
-        _reviews.Add(review);
-    }
-
-    public void RemoveReview(Guid reviewId)
-    {
-        var productReview = ProductReview.Create(reviewId);
-
-        _reviews.Remove(productReview);
-    }
-
-    public void UpdateReview(Guid reviewId, ProductReview newReview)
-    {
-        var oldReview = ProductReview
-            .Create(reviewId);
-
-        if (!_reviews.TryGetValue(oldReview, out oldReview))
-        {
-            return;
-        }
-
-        oldReview.UpdateComment(newReview.Comment);
-    }
-
-    public Result<Updated> AddRating(Customer customer, int rating)
-    {
-        var customerRating = Rating.Create(customer.Id, rating);
-
-        if (customerRating.IsError)
-        {
-            return customerRating.Errors;
-        }
-
-        _ratings.Add(customerRating.Value);
-
-        return Result.Updated;
-    }
-
-    public Result<Updated> RemoveRating(Customer customer, int rating)
-    {
-        var customerRating = Rating.Create(customer.Id, rating);
-
-        if (customerRating.IsError)
-            return customerRating.Errors;
-
-        if (!_ratings.TryGetValue(customerRating.Value, out var oldRating))
-        {
-            return DomainError.Rating.NotFound;
-        }
-
-        _ratings.Remove(oldRating);
-
-        return Result.Updated;
+            new ProductUpdatedDomainEvent(this));
     }
 
     public void AssociateOffer(Guid offerId)

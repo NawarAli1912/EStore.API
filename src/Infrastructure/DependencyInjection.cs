@@ -2,7 +2,7 @@
 using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Cache;
-using Application.Common.Data;
+using Application.Common.DatabaseAbstraction;
 using Application.Common.Idempotency;
 using Application.Common.Repository;
 using Application.Common.Storage;
@@ -83,18 +83,6 @@ public static class DependencyInjection
                                 .WithIntervalInHours(24)
                                 .OnEveryDay()
                                 .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 0))));
-
-            var productOffersJobKey = new JobKey(nameof(ProductOffersJob));
-            configure.AddJob<ProductOffersJob>(productOffersJobKey)
-                .AddTrigger(
-                    trigger => trigger
-                        .ForJob(manageOffersStatusJobKey)
-                        .StartNow()
-                        .WithDailyTimeIntervalSchedule(builder =>
-                            builder
-                                .WithIntervalInHours(24)
-                                .OnEveryDay()
-                                .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 30))));
         });
 
         services.AddQuartzHostedService();

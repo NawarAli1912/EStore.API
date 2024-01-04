@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Persistence;
-using Infrastructure.Persistence.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -24,7 +23,7 @@ public sealed class ProcessOutboxMessagesJob(
     public async Task Execute(IJobExecutionContext context)
     {
         var messages = await _dbContext
-                        .Set<OutboxMessage>()
+                        .OutboxMessages
                         .Where(m => m.ProcessedOnUtc == null)
                         .OrderBy(m => m.Id)
                         .Take(20)
@@ -45,6 +44,11 @@ public sealed class ProcessOutboxMessagesJob(
 
             try
             {
+                if (message.RetryCount > MaxRetries)
+                {
+                    continue;
+                }
+
                 await _publisher.Publish(domainEvent, context.CancellationToken);
                 message.ProcessedOnUtc = DateTime.UtcNow;
             }
@@ -52,7 +56,7 @@ public sealed class ProcessOutboxMessagesJob(
             {
                 _logger.LogError($"Failed to process domain event {message.Type}");
                 message.RetryCount++;
-                if (message.RetryCount >= MaxRetries)
+                if (message.RetryCount == MaxRetries)
                 {
                     message.Error = ex.Message.ToString();
                 }
@@ -60,6 +64,5 @@ public sealed class ProcessOutboxMessagesJob(
         }
 
         await _dbContext.SaveChangesAsync();
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Application.Authentication.Common;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Authentication.Models;
-using Application.Common.Data;
+using Application.Common.DatabaseAbstraction;
 using Domain.Customers;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

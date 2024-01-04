@@ -1,4 +1,4 @@
-﻿using Application.Common.Data;
+﻿using Application.Common.DatabaseAbstraction;
 using Application.Products.List;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

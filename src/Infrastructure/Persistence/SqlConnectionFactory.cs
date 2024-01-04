@@ -1,4 +1,4 @@
-﻿using Application.Common.Data;
+﻿using Application.Common.DatabaseAbstraction;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 

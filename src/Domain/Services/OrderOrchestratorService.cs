@@ -1,8 +1,8 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
-using Domain.Orders.ValueObjects;
 using Domain.Products;
 using Domain.Products.Enums;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 using DomainError = Domain.Products.Errors.DomainError;
 
@@ -28,7 +28,9 @@ public static class OrderOrchestratorService
     public static Result<Order> CreateOrder(
         Customer customer,
         Dictionary<Guid, Product> productDict,
-        ShippingInfo shippingInfo
+        ShippingCompany shippingCompany,
+        string shippingCompanyAddress,
+        string phoneNumber
         )
     {
         var cartItems = customer.Cart.CartItems.ToList();
@@ -38,8 +40,10 @@ public static class OrderOrchestratorService
         }
 
         var order = Order.Create(
-            customer,
-            shippingInfo);
+            customer.Id,
+            shippingCompany,
+            shippingCompanyAddress,
+            phoneNumber);
 
         List<Error> errors = [];
         foreach (var item in cartItems)
@@ -63,7 +67,7 @@ public static class OrderOrchestratorService
                 });
             }
 
-            order.AddItems(product, item.Quantity);
+            order.AddItems(product.Id, product.CustomerPrice, item.Quantity);
         }
 
         if (errors.Count > 0)
@@ -184,7 +188,10 @@ public static class OrderOrchestratorService
                 continue;
             }
 
-            order.AddItems(product, itemsToAddQuantities[productId]);
+            order.AddItems(
+                product.Id,
+                product.CustomerPrice,
+                itemsToAddQuantities[productId]);
         }
 
         foreach (var productId in itemsToDeleteQuantities.Keys)
@@ -196,7 +203,7 @@ public static class OrderOrchestratorService
             }
 
             product.IncreaseQuantity(itemsToDeleteQuantities[productId]);
-            order.RemoveItems(product, itemsToDeleteQuantities[productId]);
+            order.RemoveItems(product.Id, itemsToDeleteQuantities[productId]);
         }
 
         if (errors.Count > 0)

@@ -54,7 +54,7 @@ public sealed class StorageService(IAmazonS3 amazonS3, IOptions<StorageSettings>
         await Task.WhenAll(deleteTasks);
     }
 
-    public async Task<List<Image>> ListFilesLinks(Guid id, FileSource source)
+    public async Task<List<Application.Common.Storage.File>> ListFilesLinks(Guid id, FileSource source)
     {
         string bucketName = GetBuketName(source);
 
@@ -100,10 +100,10 @@ public sealed class StorageService(IAmazonS3 amazonS3, IOptions<StorageSettings>
 
         await Task.WhenAll(keyToDownloadLinks.Values);
 
-        List<Image> result = [];
+        List<Application.Common.Storage.File> result = [];
         foreach (var key in keys)
         {
-            result.Add(new Image
+            result.Add(new Application.Common.Storage.File
             {
                 Key = key,
                 DownloadLink = keyToDownloadLinks[key].Result

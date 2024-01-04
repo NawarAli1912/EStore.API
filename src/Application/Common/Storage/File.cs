@@ -1,5 +1,5 @@
 ﻿namespace Application.Common.Storage;
-public sealed class Image
+public sealed class File
 {
     public string Key { get; set; } = default!;
 

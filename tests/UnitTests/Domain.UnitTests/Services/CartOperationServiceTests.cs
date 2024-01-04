@@ -16,7 +16,6 @@ public class CartOperationServiceTests
     public CartOperationServiceTests()
     {
         customer = TestDataFactory.CreateCustomer();
-        shippingInfo = TestDataFactory.CreateShippingInfo();
 
         product1 = TestDataFactory.CreateProduct();
         product2 = TestDataFactory.CreateProduct();
@@ -35,7 +34,10 @@ public class CartOperationServiceTests
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.AddCartItem(customer, product1, requestedQuantity);
+        var result = CartOperationService.AddCartItem(
+            customer,
+            product1,
+            requestedQuantity);
 
         // Assert
         Assert.Equal(product1.CustomerPrice * requestedQuantity, result.Value);

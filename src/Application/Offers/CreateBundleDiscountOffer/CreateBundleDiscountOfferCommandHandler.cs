@@ -1,4 +1,4 @@
-﻿using Application.Common.Data;
+﻿using Application.Common.DatabaseAbstraction;
 using Application.Common.Repository;
 using Domain.Offers;
 using Domain.Offers.Errors;
@@ -56,7 +56,7 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
             request.StartDate,
             request.EndDate);
 
-        offer.RaiseDomainEvent(new OfferCreatedDominaEvent(offer));
+        offer.RaiseDomainEvent(new OfferCreatedDomainEvent(offer));
 
         foreach (var product in products)
         {
