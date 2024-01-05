@@ -19,13 +19,14 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
             .Customers
             .Include(c => c.Cart)
             .ThenInclude(c => c.CartItems)
-            .FirstOrDefaultAsync(c => c.Id == request.CustomerId, cancellationToken: cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == request.CustomerId, cancellationToken);
 
         var product = await _context
             .Products
-            .FindAsync(request.ProductId, cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == request.ProductId, cancellationToken);
 
-        var result = CartOperationService.AddCartItem(customer, product, request.Quantity);
+        var result = CartOperationService.
+            AddCartItem(customer, product, request.Quantity);
 
         if (result.IsError)
         {

@@ -12,6 +12,22 @@ public sealed class OffersRepository(ApplicationDbContext context, IMemoryCache 
     private readonly IMemoryCache _memoryCache = memoryCache;
 
 
+
+    public Task<List<Offer>?> List()
+    {
+        string key = CacheKeys.OffersCacheKey;
+
+        return _memoryCache.GetOrCreateAsync(
+            key,
+            entry =>
+            {
+                entry.SetAbsoluteExpiration(TimeSpan.FromHours(48));
+                return _context
+                        .Offers
+                        .ToListAsync();
+            });
+    }
+
     public Task<List<BundleDiscountOffer>?> ListBundleDiscountOffers()
     {
         string key = CacheKeys.BundleOffersCacheKey;
@@ -20,7 +36,7 @@ public sealed class OffersRepository(ApplicationDbContext context, IMemoryCache 
             key,
             entry =>
                 {
-                    entry.SetAbsoluteExpiration(TimeSpan.FromHours(12));
+                    entry.SetAbsoluteExpiration(TimeSpan.FromHours(48));
                     return _context
                         .Offers.Where(o => o.Type == Domain.Offers.Enums.OfferType.BundleDiscountOffer)
                         .Cast<BundleDiscountOffer>()
@@ -37,7 +53,7 @@ public sealed class OffersRepository(ApplicationDbContext context, IMemoryCache 
             key,
                 entry =>
                 {
-                    entry.SetAbsoluteExpiration(TimeSpan.FromHours(12));
+                    entry.SetAbsoluteExpiration(TimeSpan.FromHours(48));
                     return _context
                         .Offers.Where(o => o.Type == Domain.Offers.Enums.OfferType.PercentageDiscountOffer)
                         .Cast<PercentageDiscountOffer>()

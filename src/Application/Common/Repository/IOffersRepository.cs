@@ -4,7 +4,5 @@ namespace Application.Common.Repository;
 
 public interface IOffersRepository
 {
-    Task<List<BundleDiscountOffer>?> ListBundleDiscountOffers();
-
-    Task<List<PercentageDiscountOffer>?> ListPercentageDiscountOffers();
+    Task<List<Offer>?> List();
 }

@@ -31,8 +31,7 @@ public static class CartOperationService
                     DomainError.Products.Deleted(product.Name),
                 ProductStatus.OutOfStock =>
                     DomainError.Products.OutOfStock(product.Name),
-                _ =>
-                    DomainError.Products.InvalidState(product.Name)
+                _ => DomainError.Products.InvalidState(product.Name)
             };
         }
 

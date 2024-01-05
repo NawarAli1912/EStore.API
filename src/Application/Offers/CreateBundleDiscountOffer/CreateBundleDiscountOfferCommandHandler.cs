@@ -1,11 +1,7 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Application.Common.Repository;
-using Domain.Errors;
 using Domain.Offers;
-using Domain.Offers.Events;
-using Domain.Products.Enums;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Offers.CreateBundleDiscountOffer;
@@ -20,7 +16,8 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
     {
         List<Error> errors = [];
 
-        var products = await _context
+        throw new NotImplementedException();
+        /*var products = await _context
             .Products
             .Where(p => request.Products.Contains(p.Id))
             .ToListAsync(cancellationToken);
@@ -68,6 +65,6 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return offer;
+        return offer;*/
     }
 }
