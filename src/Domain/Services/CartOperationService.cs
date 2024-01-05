@@ -36,13 +36,6 @@ public static class CartOperationService
             };
         }
 
-        var decreaseQuantityResult = product
-            .DecreaseQuantity(requestedQuantity);
-        if (decreaseQuantityResult.IsError)
-        {
-            return decreaseQuantityResult.Errors;
-        }
-
         var result = customer.AddCartItem(product.Id, requestedQuantity);
 
         if (result.IsError)

@@ -30,8 +30,7 @@ public static class OrderOrchestratorService
         Dictionary<Guid, Product> productDict,
         ShippingCompany shippingCompany,
         string shippingCompanyAddress,
-        string phoneNumber
-        )
+        string phoneNumber)
     {
         var cartItems = customer.Cart.CartItems.ToList();
         if (customer.Cart.CartItems.Count == 0)
