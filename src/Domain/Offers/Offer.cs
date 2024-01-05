@@ -47,4 +47,6 @@ public abstract class Offer : AggregateRoot
             RaiseDomainEvent(new OfferExpiredDomainEvent(this));
         }
     }
+
+    public abstract decimal CalculatePrice(Dictionary<Guid, decimal> products);
 }

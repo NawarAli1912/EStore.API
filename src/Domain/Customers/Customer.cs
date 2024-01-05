@@ -25,9 +25,10 @@ public sealed class Customer : AggregateRoot
         return customer;
     }
 
-    public Result<Updated> AddCartItem(Guid productId, int quantity)
+    public Result<Updated> AddCartItem(Guid itemId, int quantity)
     {
-        var cartItem = CartItem.Create(Cart.Id, productId, quantity);
+        var cartItem = CartItem
+            .Create(Cart.Id, itemId, quantity);
 
         if (cartItem.IsError)
         {
@@ -44,9 +45,9 @@ public sealed class Customer : AggregateRoot
         return addResult.Value;
     }
 
-    public Result<Updated> RemoveCartItem(Guid productId, int quantity)
+    public Result<Updated> RemoveCartItem(Guid itemId, int quantity)
     {
-        var cartItemResult = CartItem.Create(Cart.Id, productId, quantity);
+        var cartItemResult = CartItem.Create(Cart.Id, itemId, quantity);
 
         if (cartItemResult.IsError)
         {

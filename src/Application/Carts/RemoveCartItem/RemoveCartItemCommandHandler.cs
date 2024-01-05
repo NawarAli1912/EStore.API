@@ -1,5 +1,6 @@
 ﻿using Application.Carts.Common;
 using Application.Common.DatabaseAbstraction;
+using Domain.Errors;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +23,19 @@ internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context
                 c => c.Id == request.CustomerId,
                 cancellationToken: cancellationToken);
 
+        if (customer is null)
+        {
+            return DomainError.Customers.NotFound;
+        }
+
         var product = await _context
             .Products
-            .FindAsync(request.ProductId, cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == request.ProductId, cancellationToken);
+
+        if (product is null)
+        {
+            return DomainError.Products.NotFound;
+        }
 
         var result = CartOperationService.RemoveCartItem(customer, product, request.Quantity);
 

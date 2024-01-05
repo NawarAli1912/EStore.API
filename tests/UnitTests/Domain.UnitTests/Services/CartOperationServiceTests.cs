@@ -34,7 +34,7 @@ public class CartOperationServiceTests
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.AddCartItem(
+        var result = CartOperationService.AddProductItem(
             customer,
             product1,
             requestedQuantity);
@@ -51,7 +51,7 @@ public class CartOperationServiceTests
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.AddCartItem(customer, product, requestedQuantity);
+        var result = CartOperationService.AddProductItem(customer, product, requestedQuantity);
 
         // Assert
         Assert.Contains(DomainError.Products.NotFound, result.Errors);
@@ -67,7 +67,7 @@ public class CartOperationServiceTests
 
         // Act
         var result = CartOperationService
-            .AddCartItem(customer, product1, requestedQuantity);
+            .AddProductItem(customer, product1, requestedQuantity);
 
         // Assert
         Assert.Contains(DomainError.Customers.NotFound, result.Errors);
@@ -82,14 +82,14 @@ public class CartOperationServiceTests
 
         // Act
         var firstAdditionResult = CartOperationService
-            .AddCartItem(customer, product1, initialQuantity);
+            .AddProductItem(customer, product1, initialQuantity);
 
         var secondAdditionResult = CartOperationService
-            .AddCartItem(customer, product1, additionalQuantity);
+            .AddProductItem(customer, product1, additionalQuantity);
 
         // Check that the product is in the cart
         var cartItem = customer.Cart.CartItems
-            .SingleOrDefault(ci => ci.ProductId == product1.Id);
+            .SingleOrDefault(ci => ci.ItemId == product1.Id);
 
         Assert.NotNull(cartItem);
 
@@ -106,7 +106,7 @@ public class CartOperationServiceTests
         var requestedQuantity = 2;
 
         // Act
-        var result = CartOperationService.AddCartItem(customer, product1, requestedQuantity);
+        var result = CartOperationService.AddProductItem(customer, product1, requestedQuantity);
 
         // Assert
         Assert.Contains(DomainError.Products.Deleted(product1.Name), result.Errors);

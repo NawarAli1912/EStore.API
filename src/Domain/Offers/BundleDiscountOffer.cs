@@ -44,6 +44,20 @@ public sealed class BundleDiscountOffer : Offer
         _bundleProductsIds.Add(productId);
     }
 
+    public override decimal CalculatePrice(Dictionary<Guid, decimal> products)
+    {
+        var discountFactor = 1.0M - Discount;
+        var price = 0.0M;
+        foreach (var id in _bundleProductsIds)
+        {
+            var productPrice = products[id];
+
+            price *= productPrice * discountFactor;
+        }
+
+        return price;
+    }
+
     private BundleDiscountOffer() : base(Guid.NewGuid())
     {
     }

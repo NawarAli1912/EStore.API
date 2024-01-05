@@ -47,7 +47,7 @@ public static class OrderOrchestratorService
         List<Error> errors = [];
         foreach (var item in cartItems)
         {
-            if (!productDict.TryGetValue(item.ProductId, out var product))
+            if (!productDict.TryGetValue(item.ItemId, out var product))
             {
                 errors.Add(DomainError.Products.NotFound);
                 continue;

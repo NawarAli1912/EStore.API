@@ -7,18 +7,18 @@ public sealed class CartItem : ValueObject
 {
     public Guid CartId { get; init; }
 
-    public Guid ProductId { get; init; }
+    public Guid ItemId { get; init; }
 
     public int Quantity { get; init; }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
-        yield return ProductId;
+        yield return ItemId;
     }
 
     internal static Result<CartItem> Create(
-        Guid cartId,
-        Guid productId,
+        Guid id,
+        Guid ItemId,
         int quantity)
     {
         if (quantity < 0)
@@ -28,8 +28,8 @@ public sealed class CartItem : ValueObject
 
         return new CartItem
         {
-            CartId = cartId,
-            ProductId = productId,
+            CartId = id,
+            ItemId = ItemId,
             Quantity = quantity
         };
     }

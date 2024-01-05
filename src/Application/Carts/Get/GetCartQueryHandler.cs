@@ -27,7 +27,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
         var cartProductsIds = customer
             .Cart
             .CartItems
-            .Select(c => c.ProductId)
+            .Select(c => c.ItemId)
             .ToHashSet();
 
         var productPriceDict = await _context
@@ -48,10 +48,10 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
         foreach (var item in customer.Cart.CartItems)
         {
             var itemPrice =
-                productPriceDict[item.ProductId]! * item.Quantity;
+                productPriceDict[item.ItemId]! * item.Quantity;
 
             items.Add(new CartItemResult(
-                    item.ProductId,
+                    item.ItemId,
                     item.Quantity,
                     itemPrice));
 

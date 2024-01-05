@@ -39,7 +39,7 @@ internal sealed class CheckoutCommandHandler(
         var cartProductsIds = customer
             .Cart
             .CartItems
-            .Select(ci => ci.ProductId)
+            .Select(ci => ci.ItemId)
             .ToHashSet();
 
         var cartProductsDict = await _context

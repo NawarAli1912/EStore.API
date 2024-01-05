@@ -16,7 +16,7 @@ public sealed class CustomerUnitTests
 
         // Assert
         Assert.Equal(Result.Updated, result);
-        var cartItem = customer.Cart.CartItems.FirstOrDefault(item => item.ProductId == productId);
+        var cartItem = customer.Cart.CartItems.FirstOrDefault(item => item.ItemId == productId);
         Assert.NotNull(cartItem);
         Assert.Equal(quantity, cartItem.Quantity);
     }
@@ -36,7 +36,7 @@ public sealed class CustomerUnitTests
 
         // Assert
         Assert.Equal(Result.Updated, result);
-        var cartItem = customer.Cart.CartItems.FirstOrDefault(item => item.ProductId == productId);
+        var cartItem = customer.Cart.CartItems.FirstOrDefault(item => item.ItemId == productId);
         Assert.NotNull(cartItem);
         Assert.Equal(addQuantity - removeQuantity, cartItem.Quantity);
     }
@@ -56,7 +56,7 @@ public sealed class CustomerUnitTests
 
         // Assert
         Assert.Equal(Result.Updated, result);
-        var cartItem = customer.Cart.CartItems.FirstOrDefault(item => item.ProductId == productId);
+        var cartItem = customer.Cart.CartItems.FirstOrDefault(item => item.ItemId == productId);
         Assert.Null(cartItem);
     }
 
