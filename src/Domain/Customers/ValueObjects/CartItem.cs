@@ -1,4 +1,5 @@
-﻿using Domain.Errors;
+﻿using Domain.Customers.Enums;
+using Domain.Errors;
 using SharedKernel.Primitives;
 
 namespace Domain.Customers.ValueObjects;
@@ -11,6 +12,8 @@ public sealed class CartItem : ValueObject
 
     public int Quantity { get; init; }
 
+    public ItemType Type { get; init; } = ItemType.Product;
+
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return ItemId;
@@ -19,7 +22,8 @@ public sealed class CartItem : ValueObject
     internal static Result<CartItem> Create(
         Guid id,
         Guid ItemId,
-        int quantity)
+        int quantity,
+        ItemType type = ItemType.Product)
     {
         if (quantity < 0)
         {
@@ -30,7 +34,8 @@ public sealed class CartItem : ValueObject
         {
             CartId = id,
             ItemId = ItemId,
-            Quantity = quantity
+            Quantity = quantity,
+            Type = type
         };
     }
 }

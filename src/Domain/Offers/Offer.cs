@@ -48,5 +48,7 @@ public abstract class Offer : AggregateRoot
         }
     }
 
-    public abstract decimal CalculatePrice(Dictionary<Guid, decimal> products);
+    public abstract decimal CalculatePrice(Dictionary<Guid, decimal> productsDict);
+
+    public abstract List<Guid> ListRelatedProductsIds();
 }

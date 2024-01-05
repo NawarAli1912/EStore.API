@@ -41,6 +41,10 @@ public sealed class PercentageDiscountOffer : Offer
         return products[ProductId] * discountFactor;
     }
 
+    public override List<Guid> ListRelatedProductsIds()
+    {
+        return [ProductId];
+    }
 
     private PercentageDiscountOffer() : base(Guid.NewGuid())
     {

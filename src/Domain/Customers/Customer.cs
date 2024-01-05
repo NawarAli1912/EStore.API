@@ -25,17 +25,17 @@ public sealed class Customer : AggregateRoot
         return customer;
     }
 
-    public Result<Updated> AddCartItem(Guid itemId, int quantity)
+    public Result<Updated> AddCartItem(Guid itemId, int quantity, ItemType type = ItemType.Product)
     {
         var cartItem = CartItem
-            .Create(Cart.Id, itemId, quantity);
+            .Create(Cart.Id, itemId, quantity, type);
 
         if (cartItem.IsError)
         {
             return cartItem.Errors;
         }
 
-        var addResult = Cart.AddItem(cartItem.Value);
+        var addResult = Cart.AddItem(cartItem.Value, type);
 
         if (addResult.IsError)
         {
@@ -45,16 +45,16 @@ public sealed class Customer : AggregateRoot
         return addResult.Value;
     }
 
-    public Result<Updated> RemoveCartItem(Guid itemId, int quantity)
+    public Result<Updated> RemoveCartItem(Guid itemId, int quantity, ItemType type = ItemType.Product)
     {
-        var cartItemResult = CartItem.Create(Cart.Id, itemId, quantity);
+        var cartItemResult = CartItem.Create(Cart.Id, itemId, quantity, type);
 
         if (cartItemResult.IsError)
         {
             return cartItemResult.Errors;
         }
 
-        var removeResult = Cart.RemoveItem(cartItemResult.Value);
+        var removeResult = Cart.RemoveItem(cartItemResult.Value, type);
 
         if (removeResult.IsError)
         {

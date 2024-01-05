@@ -52,13 +52,19 @@ public sealed class BundleDiscountOffer : Offer
         {
             var productPrice = products[id];
 
-            price *= productPrice * discountFactor;
+            price += productPrice * discountFactor;
         }
 
         return price;
     }
 
+    public override List<Guid> ListRelatedProductsIds()
+    {
+        return [.. _bundleProductsIds];
+    }
+
     private BundleDiscountOffer() : base(Guid.NewGuid())
     {
+
     }
 }

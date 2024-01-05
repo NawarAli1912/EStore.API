@@ -1,4 +1,5 @@
-﻿using Domain.Customers.ValueObjects;
+﻿using Domain.Customers.Enums;
+using Domain.Customers.ValueObjects;
 using Domain.Errors;
 using SharedKernel.Primitives;
 
@@ -24,7 +25,7 @@ public sealed class Cart : Entity
     {
     }
 
-    internal Result<Updated> AddItem(CartItem item)
+    internal Result<Updated> AddItem(CartItem item, ItemType type = ItemType.Product)
     {
         if (!_cartItems.TryGetValue(item,
                 out var oldItem))
@@ -39,7 +40,8 @@ public sealed class Cart : Entity
         var newItemResult = CartItem.Create(
             Id,
             item.ItemId,
-            item.Quantity + oldItem.Quantity);
+            item.Quantity + oldItem.Quantity,
+            type);
 
         if (newItemResult.IsError)
         {
@@ -51,7 +53,7 @@ public sealed class Cart : Entity
         return Result.Updated;
     }
 
-    internal Result<Updated> RemoveItem(CartItem item)
+    internal Result<Updated> RemoveItem(CartItem item, ItemType type = ItemType.Product)
     {
         if (!_cartItems.TryGetValue(item, out var oldItem))
         {
@@ -61,7 +63,7 @@ public sealed class Cart : Entity
         _cartItems.Remove(oldItem);
 
         var newItemResult = CartItem
-            .Create(Id, item.ItemId, oldItem.Quantity - item.Quantity);
+            .Create(Id, item.ItemId, oldItem.Quantity - item.Quantity, type);
 
         if (newItemResult.IsError)
         {

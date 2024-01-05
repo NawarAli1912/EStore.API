@@ -1,4 +1,5 @@
 ﻿using Domain.Customers;
+using Domain.Customers.Enums;
 using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Enums;
@@ -43,11 +44,11 @@ public static class CartOperationService
             return errors;
         }
 
-        var result = customer.AddCartItem(offer.Id, requestedQuantity);
+        var result = customer.AddCartItem(offer.Id, requestedQuantity, ItemType.Offer);
 
         return result.IsError ?
             result.Errors :
-            offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice));
+            offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
     }
 
     public static Result<decimal> AddProductItem(
