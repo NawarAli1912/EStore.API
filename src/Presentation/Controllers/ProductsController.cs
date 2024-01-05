@@ -53,6 +53,8 @@ public sealed class ProductsController(
             page,
             pageSize));
 
+        var products = result.Value.Products.Where(p => p.AssociatedOffers.Count > 0).ToList();
+
         return result.Match(
             value => Ok(PagedList<ProductResponse>.Create(
                                     _mapper.Map<List<ProductResponse>>(value.Products),

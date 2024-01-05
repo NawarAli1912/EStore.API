@@ -61,7 +61,7 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
 
         foreach (var product in products)
         {
-            product.AssociateOffer(offer.Id);
+            product.AssociateOffers([offer.Id]);
             _context.Products.Update(product);
         }
 

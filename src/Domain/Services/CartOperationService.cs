@@ -1,10 +1,10 @@
 ﻿using Domain.Customers;
-using Domain.Customers.Enums;
 using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.Services;

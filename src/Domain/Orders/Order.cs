@@ -10,6 +10,8 @@ public sealed class Order : AggregateRoot, IAuditableEntity
 {
     private readonly HashSet<LineItem> _lineItems = [];
 
+    private readonly List<Guid> _requestedOffers = [];
+
     public Guid CustomerId { get; private set; }
 
     public OrderStatus Status { get; private set; }
@@ -19,6 +21,8 @@ public sealed class Order : AggregateRoot, IAuditableEntity
     public decimal TotalPrice { get; private set; }
 
     public IReadOnlySet<LineItem> LineItems => _lineItems;
+
+    public IReadOnlyList<Guid> RequestedOffers => _requestedOffers;
 
     public DateTime CreatedAtUtc { get; set; }
 
@@ -46,23 +50,34 @@ public sealed class Order : AggregateRoot, IAuditableEntity
         return order;
     }
 
-    public void AddItems(
+    public Result<Updated> AddItems(
         Guid productId,
         decimal productPrice,
-        int quantity)
+        int quantity,
+        ItemType type = ItemType.Product,
+        Guid? relatedOfferId = default)
     {
         for (var i = 0; i < quantity; ++i)
         {
-            var lineItem = LineItem.Create(
+            var lineItemResult = LineItem.Create(
                 Guid.NewGuid(),
                 productId,
                 Id,
-                productPrice);
+                productPrice,
+                type,
+                relatedOfferId);
 
-            _lineItems.Add(lineItem);
+            if (lineItemResult.IsError)
+            {
+                return lineItemResult.Errors;
+            }
+
+            _lineItems.Add(lineItemResult.Value);
         }
 
         TotalPrice += productPrice * quantity;
+
+        return Result.Updated;
     }
 
     public Result<Updated> RemoveItems(Guid productId, int Quantity)
@@ -109,6 +124,11 @@ public sealed class Order : AggregateRoot, IAuditableEntity
     public void Cancel()
     {
         Status = OrderStatus.Canceled;
+    }
+
+    internal void AddRequestedOffer(Guid itemId)
+    {
+        _requestedOffers.Add(itemId);
     }
 
     private Order() : base(Guid.NewGuid())

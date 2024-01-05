@@ -20,7 +20,6 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
         var order = await _context
             .Orders
             .Include(o => o.LineItems)
-            .Include(o => o.ShippingInfo)
             .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
         if (order is null)

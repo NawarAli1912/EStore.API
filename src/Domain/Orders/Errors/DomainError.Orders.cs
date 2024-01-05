@@ -22,5 +22,8 @@ public static partial class DomainError
         public static Error ExceedsAvailableQuantity(Guid id) => Error.Validation(
             "LineItem.ExceedsAvailableQuantity",
             $"Requested quantity to remove of product {id} exceeds the available quantity in order.");
+
+        public static Error InvalidCreationData => Error.Unexpected(
+            "Order.InvalidCreationData", "Can't create order item with the provided data.");
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Application.Carts.Common;
 using Application.Common.DatabaseAbstraction;
-using Domain.Customers.Enums;
 using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Enums;
@@ -8,6 +7,7 @@ using Domain.Products;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.RemoveCartItem;

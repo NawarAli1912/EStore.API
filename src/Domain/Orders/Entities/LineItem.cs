@@ -1,33 +1,58 @@
-﻿using SharedKernel.Primitives;
+﻿using Domain.Errors;
+using SharedKernel.Enums;
+using SharedKernel.Primitives;
 
 namespace Domain.Orders.Entities;
 
 public sealed class LineItem : Entity
 {
-    private LineItem(
-        Guid id,
-        Guid productId,
-        Guid orderId,
-        decimal price) : base(id)
-    {
-        ProductId = productId;
-        OrderId = orderId;
-        Price = price;
-    }
-
     public Guid ProductId { get; private set; }
 
     public Guid OrderId { get; private set; }
 
     public decimal Price { get; private set; } = default!;
 
-    internal static LineItem Create(
+    public ItemType Type { get; private set; } = ItemType.Product;
+
+    public Guid? RelatedOfferId { get; private set; }
+
+    internal static Result<LineItem> Create(
         Guid id,
         Guid productId,
         Guid orderId,
-        decimal price)
+        decimal price,
+        ItemType type = ItemType.Product,
+        Guid? relatedOfferId = default)
     {
-        return new LineItem(id, productId, orderId, price);
+        if (type == ItemType.Product &&
+            relatedOfferId.HasValue)
+        {
+            return DomainError.LineItem.InvalidCreationData;
+        }
+
+        return new LineItem(
+            id,
+            productId,
+            orderId,
+            price,
+            type,
+            relatedOfferId
+            );
+    }
+
+    private LineItem(
+        Guid id,
+        Guid productId,
+        Guid orderId,
+        decimal price,
+        ItemType type,
+        Guid? relatedOfferId) : base(id)
+    {
+        ProductId = productId;
+        OrderId = orderId;
+        Price = price;
+        Type = type;
+        RelatedOfferId = relatedOfferId;
     }
 
     private LineItem() : base(Guid.NewGuid())

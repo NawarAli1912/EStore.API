@@ -16,7 +16,6 @@ internal sealed class ListOrdersQueryHandler(IApplicationDbContext context)
     {
         IQueryable<Order> ordersQuery = _context
             .Orders
-            .Include(o => o.ShippingInfo)
             .Include(o => o.LineItems)
             .Where(o => request.Filter.Status.Contains(o.Status))
             .Where(o => o.ModifiedAtUtc >= request.Filter.ModifiedFrom)

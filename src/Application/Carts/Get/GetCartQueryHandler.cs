@@ -1,9 +1,9 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Application.Common.Repository;
-using Domain.Customers.Enums;
 using Domain.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.Get;
@@ -46,14 +46,13 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
             .Union(offersDict.Values.SelectMany(o => o.ListRelatedProductsIds()))
             .ToHashSet();
 
-        var productDict = await _context
+        var productToPriceDict = await _context
             .Products
             .Where(p => productIds.Contains(p.Id))
             .ToDictionaryAsync(
                 p => p.Id,
-                p => p,
+                p => p.CustomerPrice,
                 cancellationToken);
-
 
         List<CartItemResult> items = [];
         var totalPrice = 0.0M;
@@ -62,7 +61,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
             decimal itemPrice = 0.0M;
             if (cartItem.Type == ItemType.Product)
             {
-                itemPrice = productDict[cartItem.ItemId]!.CustomerPrice * cartItem.Quantity;
+                itemPrice = productToPriceDict[cartItem.ItemId]! * cartItem.Quantity;
 
                 items.Add(new CartItemResult(
                     cartItem.ItemId,
@@ -76,11 +75,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
 
             var offer = offersDict[cartItem.ItemId];
 
-            var relatedProductIds = offer.ListRelatedProductsIds();
-            var relatedProductsToPrice = productDict.Where(p => relatedProductIds.Contains(p.Key))
-                .ToDictionary(p => p.Key, p => p.Value.CustomerPrice);
-
-            itemPrice = offer.CalculatePrice(relatedProductsToPrice) * cartItem.Quantity;
+            itemPrice = offer.CalculatePrice(productToPriceDict) * cartItem.Quantity;
 
             items.Add(new CartItemResult(
                     cartItem.ItemId,

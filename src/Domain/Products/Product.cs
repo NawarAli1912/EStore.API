@@ -51,7 +51,8 @@ public class Product : AggregateRoot
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
-        IEnumerable<Category>? categories = default)
+        IEnumerable<Category>? categories = default,
+        IEnumerable<Guid>? associatedOffers = default)
     {
         List<Error> errors = [];
 
@@ -68,6 +69,7 @@ public class Product : AggregateRoot
 
         product.AssignCategories(categories ?? Array.Empty<Category>());
 
+        product.AssociateOffers(associatedOffers ?? Array.Empty<Guid>());
 
         product.Status = ProductStatus.Active;
         if (product.Quantity == 0)
@@ -172,14 +174,22 @@ public class Product : AggregateRoot
             new ProductUpdatedDomainEvent(this));
     }
 
-    public void AssociateOffer(Guid offerId)
+    public void AssociateOffers(IEnumerable<Guid> offerIds)
     {
-        _associatedOffers.Add(offerId);
+        foreach (var offerId in offerIds)
+        {
+            _associatedOffers.Add(offerId);
+        }
+        RaiseDomainEvent(new ProductUpdatedDomainEvent(this));
     }
 
-    public void UnassociateOffer(Guid offerId)
+    public void UnassociateOffers(IEnumerable<Guid> offerIds)
     {
-        _associatedOffers.Remove(offerId);
+        foreach (var offerId in offerIds)
+        {
+            _associatedOffers.Remove(offerId);
+        }
+        RaiseDomainEvent(new ProductUpdatedDomainEvent(this));
     }
 
     private Product() : base(Guid.NewGuid())

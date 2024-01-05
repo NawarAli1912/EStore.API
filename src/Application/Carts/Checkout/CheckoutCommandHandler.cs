@@ -4,6 +4,7 @@ using Domain.Errors;
 using Domain.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.Checkout;
@@ -36,20 +37,41 @@ internal sealed class CheckoutCommandHandler(
             return DomainError.Carts.EmptyCart;
         }
 
-        var cartProductsIds = customer
+        var allOffers = await _offersRepository.List();
+        var cartOffersIds = customer
             .Cart
             .CartItems
-            .Select(ci => ci.ItemId)
+            .Where(c => c.Type == ItemType.Offer)
+            .Select(c => c.ItemId)
             .ToHashSet();
 
-        var cartProductsDict = await _context
+        var cartOffers = allOffers!
+            .Where(o => cartOffersIds.Contains(o.Id))
+            .ToDictionary(o => o.Id, o => o);
+
+        var productIds = customer.Cart.CartItems
+            .Where(c => c.Type == ItemType.Product)
+            .Select(c => c.ItemId)
+            .Union(cartOffers.Values.SelectMany(o => o.ListRelatedProductsIds()))
+            .ToHashSet();
+
+        var productDict = await _context
             .Products
-            .Where(p => cartProductsIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
+            .Where(p => productIds.Contains(p.Id))
+            .ToDictionaryAsync(
+                p => p.Id,
+                p => p,
+                cancellationToken);
+
+        if (productDict.Count != productIds.Count)
+        {
+            return DomainError.Products.NotFound;
+        }
 
         var orderResult = OrderOrchestratorService.CreateOrder(
             customer,
-            cartProductsDict,
+            productDict,
+            cartOffers,
             request.ShippingCompany,
             request.ShippingCompanyLocation,
             request.PhoneNumber);

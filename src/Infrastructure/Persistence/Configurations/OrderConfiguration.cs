@@ -1,5 +1,6 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
+using Infrastructure.Persistence.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,5 +30,9 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.TotalPrice)
             .HasPrecision(12, 2);
+
+        builder.Property<List<Guid>>("_requestedOffers")
+            .HasColumnName("RequestedOffers")
+            .HasListOfIdsConverter();
     }
 }

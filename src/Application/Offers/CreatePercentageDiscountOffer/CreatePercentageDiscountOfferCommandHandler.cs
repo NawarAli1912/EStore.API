@@ -58,7 +58,7 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
 
         offer.RaiseDomainEvent(new OfferCreatedDomainEvent(offer));
 
-        product.AssociateOffer(offer.Id);
+        product.AssociateOffers([offer.Id]);
         _context.Products.Update(product);
 
         await _context.Offers.AddAsync(offer, cancellationToken);

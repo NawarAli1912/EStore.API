@@ -1,4 +1,4 @@
-﻿namespace Domain.Customers.Enums;
+﻿namespace SharedKernel.Enums;
 
 public enum ItemType
 {

@@ -1,6 +1,7 @@
 ﻿using Domain.Customers.Entities;
 using Domain.Customers.Enums;
 using Domain.Customers.ValueObjects;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.Customers;

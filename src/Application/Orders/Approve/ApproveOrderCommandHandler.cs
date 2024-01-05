@@ -19,7 +19,6 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
         var order = await _context
              .Orders
              .Include(o => o.LineItems)
-             .Include(o => o.ShippingInfo)
              .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
         if (order is null)
@@ -36,6 +35,11 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
             .Products
             .Where(p => productsIds.Contains(p.Id))
             .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
+
+        if (productsIds.Count != productsDict.Count)
+        {
+            return DomainError.Products.NotFound;
+        }
 
         var result = OrderOrchestratorService.Approve(order, productsDict);
 

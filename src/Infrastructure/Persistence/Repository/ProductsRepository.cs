@@ -87,6 +87,7 @@ public sealed class ProductsRepository(
                     productSnap.PurchasePrice);
 
                 product.AssignCategories([category]);
+                product.AssociateOffers([.. productSnap.AssociatedOffers]);
                 productDict.Add(productSnap.Id, product);
                 return product;
             },
@@ -195,7 +196,8 @@ public sealed class ProductsRepository(
                     hit.Source.Quantity,
                     hit.Source.CustomerPrice,
                     hit.Source.PurchasePrice,
-                    categoriesDict.GetValueOrDefault(hit.Source.Id))));
+                    categoriesDict.GetValueOrDefault(hit.Source.Id),
+                    hit.Source.AssociatedOffers)));
 
         return (result, (int)products.Total);
     }

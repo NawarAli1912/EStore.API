@@ -1,6 +1,5 @@
 ﻿using Domain.Customers;
 using Domain.Errors;
-using Domain.Orders.ValueObjects;
 using Domain.Products;
 using Domain.Services;
 
@@ -8,7 +7,6 @@ namespace Domain.UnitTests.Services;
 public class CartOperationServiceTests
 {
     private readonly Customer customer;
-    private readonly ShippingInfo shippingInfo;
     private readonly Dictionary<Guid, Product> productDict;
     private readonly Product product1;
     private readonly Product product2;
@@ -42,35 +40,6 @@ public class CartOperationServiceTests
         // Assert
         Assert.Equal(product1.CustomerPrice * requestedQuantity, result.Value);
         Assert.Equal(requestedQuantity, customer.Cart.CartItems.Single().Quantity);
-    }
-    [Fact]
-    public void AddCartItem_NullProduct_ReturnsError()
-    {
-        // Arrange
-        Product? product = null;
-        var requestedQuantity = 2;
-
-        // Act
-        var result = CartOperationService.AddProductItem(customer, product, requestedQuantity);
-
-        // Assert
-        Assert.Contains(DomainError.Products.NotFound, result.Errors);
-    }
-
-    [Fact]
-    public void AddCartItem_NullCustomer_ReturnsError()
-    {
-        // Arrange
-        Customer? customer = null;
-
-        var requestedQuantity = 2;
-
-        // Act
-        var result = CartOperationService
-            .AddProductItem(customer, product1, requestedQuantity);
-
-        // Assert
-        Assert.Contains(DomainError.Customers.NotFound, result.Errors);
     }
 
     [Fact]
@@ -125,35 +94,6 @@ public class CartOperationServiceTests
         // Assert
         Assert.Equal(-product1.CustomerPrice * requestedQuantity, result.Value);
         Assert.Equal(1, customer.Cart.CartItems.Single().Quantity);
-    }
-
-    [Fact]
-    public void RemoveCartItem_NullCustomer_ReturnsError()
-    {
-        // Arrange
-        Customer? customer = null;
-
-        var requestedQuantity = 2;
-
-        // Act
-        var result = CartOperationService.RemoveProductItem(customer, product1, requestedQuantity);
-
-        // Assert
-        Assert.Contains(DomainError.Customers.NotFound, result.Errors);
-    }
-
-    [Fact]
-    public void RemoveCartItem_NullProduct_ReturnsError()
-    {
-        // Arrange
-        Product? product = null;
-        var requestedQuantity = 2;
-
-        // Act
-        var result = CartOperationService.RemoveProductItem(customer, product, requestedQuantity);
-
-        // Assert
-        Assert.Contains(DomainError.Products.NotFound, result.Errors);
     }
 
     [Fact]

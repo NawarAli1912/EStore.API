@@ -1,4 +1,4 @@
-﻿using Domain.Customers.Enums;
+﻿using SharedKernel.Enums;
 
 namespace Application.Carts.Get;
 

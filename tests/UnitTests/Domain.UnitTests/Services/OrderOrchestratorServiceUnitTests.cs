@@ -58,6 +58,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var result = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone);
@@ -84,6 +85,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var result = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone);
@@ -101,6 +103,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var result = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone);
@@ -115,18 +118,22 @@ public sealed class OrderOrchestratorServiceUnitTests
         product1.MarkAsDeleted();
         product2.DecreaseQuantity(product2.Quantity);
 
-        customer.AddCartItem(Guid.NewGuid(), 1);
+        customer.AddCartItem(product1.Id, 2);
+        customer.AddCartItem(product2.Id, 2);
 
         // Act
         var result = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone);
 
         // Assert
-        Assert.Contains(DomainError.Products.NotFound, result.Errors);
+        Assert.Contains(
+            DomainError.Products.OutOfStock(product2.Name),
+            result.Errors);
     }
 
     [Fact]
@@ -137,6 +144,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;
@@ -161,6 +169,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;
@@ -191,6 +200,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;
@@ -217,6 +227,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;
@@ -244,6 +255,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;
@@ -267,6 +279,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;
@@ -287,6 +300,7 @@ public sealed class OrderOrchestratorServiceUnitTests
         var order = OrderOrchestratorService.CreateOrder(
             customer,
             productDict,
+            [],
             shippingCompany,
             shippingLocation,
             phone).Value;

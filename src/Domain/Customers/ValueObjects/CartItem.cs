@@ -1,5 +1,5 @@
-﻿using Domain.Customers.Enums;
-using Domain.Errors;
+﻿using Domain.Errors;
+using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.Customers.ValueObjects;

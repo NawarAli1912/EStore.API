@@ -33,7 +33,7 @@ public sealed class OfferExpiredDomainEventHandler(IApplicationDbContext context
 
         foreach (var product in relatedProducts)
         {
-            product.UnassociateOffer(notification.ExpiredOffer.Id);
+            product.UnassociateOffers([notification.ExpiredOffer.Id]);
         }
 
         _context.Products.UpdateRange(relatedProducts);
