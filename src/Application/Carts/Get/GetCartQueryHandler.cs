@@ -82,6 +82,12 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
 
             itemPrice = offer.CalculatePrice(relatedProductsToPrice) * cartItem.Quantity;
 
+            items.Add(new CartItemResult(
+                    cartItem.ItemId,
+                    cartItem.Type,
+                    cartItem.Quantity,
+                    itemPrice));
+
             totalPrice += itemPrice;
         }
 

@@ -6,5 +6,5 @@ namespace Application.Carts.RemoveCartItem;
 
 public record RemoveCartItemCommand(
     Guid CustomerId,
-    Guid ProductId,
+    Guid ItemId,
     int Quantity) : IRequest<Result<AddRemoveCartItemResult>>;

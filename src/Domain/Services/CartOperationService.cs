@@ -51,6 +51,25 @@ public static class CartOperationService
             offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
     }
 
+    public static Result<decimal> RemoveOfferItem(
+        Customer customer,
+        Offer offer,
+        List<Product> offerProducts,
+        int requestedQuantity)
+    {
+        var result = customer
+            .RemoveCartItem(offer.Id, requestedQuantity, ItemType.Offer);
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.IsError ?
+           result.Errors :
+           offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
+    }
+
     public static Result<decimal> AddProductItem(
         Customer customer,
         Product product,
@@ -78,7 +97,7 @@ public static class CartOperationService
         return product.CustomerPrice * requestedQuantity;
     }
 
-    public static Result<decimal> RemoveCartItem(
+    public static Result<decimal> RemoveProductItem(
         Customer customer,
         Product product,
         int requestedQuantity)
@@ -92,4 +111,6 @@ public static class CartOperationService
 
         return -product.CustomerPrice * requestedQuantity;
     }
+
+
 }

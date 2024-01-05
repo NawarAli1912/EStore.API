@@ -35,7 +35,7 @@ public sealed class CartsContorller(ISender sender, IMapper mapper) : ApiControl
 
     [HttpPatch("add-item")]
     [HasPermission(Permissions.ManageCarts)]
-    public async Task<IActionResult> AddItem(AddRemoveCartItemRequest request)
+    public async Task<IActionResult> AddItem(AddCartItemRequest request)
     {
         string customerId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
@@ -50,7 +50,7 @@ public sealed class CartsContorller(ISender sender, IMapper mapper) : ApiControl
 
     [HttpPatch("remove-item")]
     [HasPermission(Permissions.ManageCarts)]
-    public async Task<IActionResult> RemoveItem(AddRemoveCartItemRequest request)
+    public async Task<IActionResult> RemoveItem(RemoveCartItemRequest request)
     {
         string customerId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 

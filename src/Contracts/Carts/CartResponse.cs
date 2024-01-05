@@ -5,6 +5,6 @@ public record CartResponse(
 
 public record CartItemResponse(
     Guid ProductId,
-    ItemType type,
+    ItemType Type,
     int Quantity,
     decimal Price);

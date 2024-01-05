@@ -11,11 +11,11 @@ public class CartsMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<(Guid, AddRemoveCartItemRequest), AddCartItemCommand>()
+        config.NewConfig<(Guid, AddCartItemRequest), AddCartItemCommand>()
             .Map(dest => dest.CustomerId, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
 
-        config.NewConfig<(Guid, AddRemoveCartItemRequest), RemoveCartItemCommand>()
+        config.NewConfig<(Guid, RemoveCartItemRequest), RemoveCartItemCommand>()
             .Map(dest => dest.CustomerId, src => src.Item1)
             .Map(dest => dest, src => src.Item2);
 
