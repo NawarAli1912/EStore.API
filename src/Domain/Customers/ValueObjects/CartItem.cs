@@ -23,7 +23,7 @@ public sealed class CartItem : ValueObject
     {
         if (quantity < 0)
         {
-            return DomainError.CartItem.NegativeQuantity;
+            return DomainError.CartItems.NegativeQuantity;
         }
 
         return new CartItem

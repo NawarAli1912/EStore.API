@@ -27,7 +27,7 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
 
         if (products.Count != request.Products.Count)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         var productsOffers = products
@@ -40,12 +40,12 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
 
         if (percentageOffers!.Any(o => productsOffers.Contains(o.ProductId)))
         {
-            return DomainError.Offer.UnderAnotherOffer;
+            return DomainError.Offers.UnderAnotherOffer;
         }
 
         if (products.Any(p => p.Status != ProductStatus.Active))
         {
-            return DomainError.Offer.UnspportedProducts;
+            return DomainError.Offers.UnspportedProducts;
         }
 
         var offer = BundleDiscountOffer.Create(

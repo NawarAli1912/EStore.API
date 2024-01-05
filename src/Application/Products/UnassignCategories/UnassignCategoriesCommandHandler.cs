@@ -20,7 +20,7 @@ internal sealed class UnassignCategoriesCommandHandler(IApplicationDbContext con
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         var categoriesDict = product
@@ -33,7 +33,7 @@ internal sealed class UnassignCategoriesCommandHandler(IApplicationDbContext con
         {
             if (!categoriesDict.TryGetValue(categoryId, out var category))
             {
-                errors.Add(DomainError.Product.UnassignedCategory(product.Name, categoryId));
+                errors.Add(DomainError.Products.UnassignedCategory(product.Name, categoryId));
                 continue;
             }
             categories.Add(category);

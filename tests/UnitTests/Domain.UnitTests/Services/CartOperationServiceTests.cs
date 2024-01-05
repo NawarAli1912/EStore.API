@@ -54,7 +54,7 @@ public class CartOperationServiceTests
         var result = CartOperationService.AddCartItem(customer, product, requestedQuantity);
 
         // Assert
-        Assert.Contains(DomainError.Product.NotFound, result.Errors);
+        Assert.Contains(DomainError.Products.NotFound, result.Errors);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class CartOperationServiceTests
             .AddCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Contains(DomainError.Customer.NotFound, result.Errors);
+        Assert.Contains(DomainError.Customers.NotFound, result.Errors);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class CartOperationServiceTests
         var result = CartOperationService.AddCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Contains(DomainError.Product.Deleted(product1.Name), result.Errors);
+        Assert.Contains(DomainError.Products.Deleted(product1.Name), result.Errors);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class CartOperationServiceTests
         var result = CartOperationService.RemoveCartItem(customer, product1, requestedQuantity);
 
         // Assert
-        Assert.Contains(DomainError.Customer.NotFound, result.Errors);
+        Assert.Contains(DomainError.Customers.NotFound, result.Errors);
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class CartOperationServiceTests
         var result = CartOperationService.RemoveCartItem(customer, product, requestedQuantity);
 
         // Assert
-        Assert.Contains(DomainError.Product.NotFound, result.Errors);
+        Assert.Contains(DomainError.Products.NotFound, result.Errors);
     }
 
     [Fact]
@@ -166,6 +166,6 @@ public class CartOperationServiceTests
         var result = CartOperationService.RemoveCartItem(customer, product1, 3);
 
         // Assert
-        Assert.Contains(DomainError.CartItem.NegativeQuantity, result.Errors);
+        Assert.Contains(DomainError.CartItems.NegativeQuantity, result.Errors);
     }
 }

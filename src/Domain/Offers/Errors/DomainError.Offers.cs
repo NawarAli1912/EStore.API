@@ -4,7 +4,7 @@ namespace Domain.Errors;
 
 public static partial class DomainError
 {
-    public static class Offer
+    public static class Offers
     {
         public static Error UnderAnotherOffer =>
             Error.Validation("Offer.UnderAnotherOffer", "Some products are already under another offer.");

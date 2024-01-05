@@ -19,12 +19,12 @@ internal sealed class CancelOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return DomainError.Order.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         if (order.Status != OrderStatus.Pending)
         {
-            return DomainError.Order.InvalidStatus(order.Status);
+            return DomainError.Orders.InvalidStatus(order.Status);
         }
 
         order.Cancel();

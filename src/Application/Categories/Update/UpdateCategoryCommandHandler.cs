@@ -23,7 +23,7 @@ internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext context
 
         if (category is null)
         {
-            return DomainError.Category.NotFound;
+            return DomainError.Categories.NotFound;
         }
 
         category.Update(

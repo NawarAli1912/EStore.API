@@ -1,4 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Application.Common.Repository;
 using Domain.Errors;
 using Domain.Services;
 using MediatR;
@@ -6,17 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.Checkout;
-internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
+internal sealed class CheckoutCommandHandler(
+    IApplicationDbContext context,
+    IOffersRepository offersRepository)
         : IRequestHandler<CheckoutCommand, Result<Created>>
 {
     private readonly IApplicationDbContext _context = context;
+    private readonly IOffersRepository _offersRepository = offersRepository;
 
 
     public async Task<Result<Created>> Handle(
         CheckoutCommand request,
         CancellationToken cancellationToken)
     {
-
         var customer = await _context
             .Customers
             .Include(c => c.Cart)
@@ -25,12 +28,12 @@ internal sealed class CheckoutCommandHandler(IApplicationDbContext context)
 
         if (customer is null)
         {
-            return DomainError.Customer.NotFound;
+            return DomainError.Customers.NotFound;
         }
 
         if (customer.Cart.CartItems.Count == 0)
         {
-            return DomainError.Cart.EmptyCart;
+            return DomainError.Carts.EmptyCart;
         }
 
         var cartProductsIds = customer

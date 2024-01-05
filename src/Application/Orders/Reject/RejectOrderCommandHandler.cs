@@ -22,7 +22,7 @@ internal sealed class RejectOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return DomainError.Order.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         order.Reject();

@@ -26,7 +26,7 @@ public sealed class GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnec
 
         if (rootCategories is null || rootCategories.Count == 0)
         {
-            return DomainError.Category.NotFound;
+            return DomainError.Categories.NotFound;
         }
 
         var result = rootCategories

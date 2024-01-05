@@ -120,7 +120,7 @@ public class Product : AggregateRoot
     {
         if (quantity < 0)
         {
-            return DomainError.Product.StockError(Name);
+            return DomainError.Products.StockError(Name);
         }
 
         Name = name ?? Name;
@@ -145,7 +145,7 @@ public class Product : AggregateRoot
         {
             case < 0:
                 Quantity += value;
-                return DomainError.Product.StockError(Name);
+                return DomainError.Products.StockError(Name);
             case 0:
                 Status = ProductStatus.OutOfStock;
                 break;

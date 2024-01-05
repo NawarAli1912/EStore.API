@@ -86,7 +86,7 @@ public class ProductUnitTests
         // Assert
         Assert.Single(result.Errors);
         Assert.Equal(
-            DomainError.Product.StockError(product.Name),
+            DomainError.Products.StockError(product.Name),
             result.Errors.First());
     }
 
@@ -130,7 +130,7 @@ public class ProductUnitTests
         var result = product.DecreaseQuantity(2);
 
         // Assert
-        Assert.Contains(DomainError.Product.StockError(product.Name), result.Errors);
+        Assert.Contains(DomainError.Products.StockError(product.Name), result.Errors);
         Assert.Equal(ProductStatus.Active, product.Status);
     }
 

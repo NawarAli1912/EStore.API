@@ -54,7 +54,7 @@ public sealed class GetHierarchyDownwardQueryHandler(
         var categories = queryResult.ToList();
         if (categories.Count == 0)
         {
-            return DomainError.Category.NotFound;
+            return DomainError.Categories.NotFound;
         }
 
         return Category.BuildCategoryTree(

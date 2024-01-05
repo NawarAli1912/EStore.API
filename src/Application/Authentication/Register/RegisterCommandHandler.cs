@@ -25,7 +25,7 @@ internal sealed class RegisterCommandHandler(
     {
         if (await _userManager.FindByEmailAsync(request.Email) is not null)
         {
-            return DomainError.Customer.DuplicateEmail;
+            return DomainError.Customers.DuplicateEmail;
         }
 
         string token;

@@ -25,12 +25,12 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         if (order.Status != OrderStatus.Pending)
         {
-            return DomainError.Order.InvalidStatus(order.Status);
+            return DomainError.Orders.InvalidStatus(order.Status);
         }
 
         var productsIds = order.LineItems.Select(o => o.ProductId)

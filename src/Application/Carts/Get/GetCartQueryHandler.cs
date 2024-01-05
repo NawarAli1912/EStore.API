@@ -22,7 +22,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context) :
 
         if (customer is null)
         {
-            return DomainError.Customer.NotFound;
+            return DomainError.Customers.NotFound;
         }
         var cartProductsIds = customer
             .Cart

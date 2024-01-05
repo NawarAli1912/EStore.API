@@ -21,7 +21,7 @@ internal sealed class UpdateProductCommandHandler(IApplicationDbContext context)
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         var updateProductResult = product.Update(

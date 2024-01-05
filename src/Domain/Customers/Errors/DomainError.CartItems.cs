@@ -4,7 +4,7 @@ namespace Domain.Errors;
 
 public static partial class DomainError
 {
-    public static class CartItem
+    public static class CartItems
     {
         public static Error NegativeQuantity = Error.Conflict(
             "CartItem.NegativeQuantity",

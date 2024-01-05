@@ -24,7 +24,7 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
 
         if (order is null)
         {
-            return DomainError.Order.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         var productsIds = order

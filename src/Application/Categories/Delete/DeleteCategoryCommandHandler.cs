@@ -18,7 +18,7 @@ internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext context
 
         if (category is null)
         {
-            return DomainError.Category.NotFound;
+            return DomainError.Categories.NotFound;
         }
 
         category.PrepareDelete(request.Action);

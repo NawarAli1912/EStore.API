@@ -30,7 +30,7 @@ internal sealed class CreateCategoryCommandHandler(IApplicationDbContext context
 
             if (parentCategory is null)
             {
-                return DomainError.Category.NotFound;
+                return DomainError.Categories.NotFound;
             }
         }
 

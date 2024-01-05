@@ -18,7 +18,7 @@ internal sealed class DeleteProductCommandHandler(IApplicationDbContext context)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (result is null)
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
 
         var productsInOrder = await _context
             .Orders
@@ -27,7 +27,7 @@ internal sealed class DeleteProductCommandHandler(IApplicationDbContext context)
 
         if (productsInOrder)
         {
-            return DomainError.Product.InOrder;
+            return DomainError.Products.InOrder;
         }
 
         result.MarkAsDeleted();

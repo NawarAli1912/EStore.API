@@ -26,26 +26,26 @@ internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDb
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         if (product.Status != ProductStatus.Active)
         {
-            return DomainError.Product.InvalidState(product.Name);
+            return DomainError.Products.InvalidState(product.Name);
         }
 
         if (await _context.Offers.Where(o => o.Type == OfferType.PercentageDiscountOffer)
             .Cast<PercentageDiscountOffer>()
             .AnyAsync(po => po.ProductId == request.ProductId, cancellationToken))
         {
-            return DomainError.Offer.UnderAnotherOffer;
+            return DomainError.Offers.UnderAnotherOffer;
         }
 
         if (await _context.Offers.Where(o => o.Type == OfferType.BundleDiscountOffer)
             .Cast<BundleDiscountOffer>()
             .AnyAsync(o => product.AssociatedOffers.Contains(o.Id), cancellationToken))
         {
-            return DomainError.Offer.UnderAnotherOffer;
+            return DomainError.Offers.UnderAnotherOffer;
         }
 
         var offer = PercentageDiscountOffer.Create(

@@ -4,7 +4,7 @@ namespace Domain.Errors;
 
 public static partial class DomainError
 {
-    public static class Product
+    public static class Products
     {
         public static Error NotFound = Error.NotFound("Product.NotFound", "The requested product doesn't exists.");
 
@@ -25,7 +25,7 @@ public static partial class DomainError
         public static Error NotPresentOnTheDictionary => Error.Unexpected("Product.NotPresentOnTheDictionary", $"The product was not present in the dictionary.");
     }
 
-    public static class Rating
+    public static class Ratings
     {
         public static Error InvalidRatingValue =
             Error.Validation("Rating.InvalidRatingValue", "Rating value must be between 0 and 5");

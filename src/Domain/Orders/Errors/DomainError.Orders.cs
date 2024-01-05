@@ -5,7 +5,7 @@ namespace Domain.Errors;
 
 public static partial class DomainError
 {
-    public static class Order
+    public static class Orders
     {
         public static Error NotFound =
             Error.NotFound("Order.NotFound", "The order doesn't exists.");

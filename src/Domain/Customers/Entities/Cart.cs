@@ -51,7 +51,7 @@ public sealed class Cart : Entity
     {
         if (!_cartItems.TryGetValue(item, out var oldItem))
         {
-            return DomainError.CartItem.NotFound;
+            return DomainError.CartItems.NotFound;
         }
 
         _cartItems.Remove(oldItem);

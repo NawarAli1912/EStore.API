@@ -36,7 +36,7 @@ public static class OrderOrchestratorService
         var cartItems = customer.Cart.CartItems.ToList();
         if (customer.Cart.CartItems.Count == 0)
         {
-            return DomainError.Cart.EmptyCart;
+            return DomainError.Carts.EmptyCart;
         }
 
         var order = Order.Create(
@@ -50,7 +50,7 @@ public static class OrderOrchestratorService
         {
             if (!productDict.TryGetValue(item.ProductId, out var product))
             {
-                errors.Add(DomainError.Product.NotFound);
+                errors.Add(DomainError.Products.NotFound);
                 continue;
             }
 
@@ -59,11 +59,11 @@ public static class OrderOrchestratorService
                 errors.Add(product.Status switch
                 {
                     ProductStatus.Deleted =>
-                        DomainError.Product.Deleted(product.Name),
+                        DomainError.Products.Deleted(product.Name),
                     ProductStatus.OutOfStock =>
-                        DomainError.Product.OutOfStock(product.Name),
+                        DomainError.Products.OutOfStock(product.Name),
                     _ =>
-                        DomainError.Product.InvalidState(product.Name)
+                        DomainError.Products.InvalidState(product.Name)
                 });
             }
 
@@ -101,7 +101,7 @@ public static class OrderOrchestratorService
 
         if (order.LineItems is null)
         {
-            return DomainError.Order.EmptyLineItems;
+            return DomainError.Orders.EmptyLineItems;
         }
 
         var lineItemsGroups = order
@@ -112,7 +112,7 @@ public static class OrderOrchestratorService
         {
             if (!productDict.TryGetValue(group.Key, out var product))
             {
-                errors.Add(DomainError.Product.NotPresentOnTheDictionary);
+                errors.Add(DomainError.Products.NotPresentOnTheDictionary);
                 continue;
             }
 
@@ -121,11 +121,11 @@ public static class OrderOrchestratorService
                 return product.Status switch
                 {
                     ProductStatus.Deleted =>
-                        DomainError.Product.Deleted(product.Name),
+                        DomainError.Products.Deleted(product.Name),
                     ProductStatus.OutOfStock =>
-                        DomainError.Product.OutOfStock(product.Name),
+                        DomainError.Products.OutOfStock(product.Name),
                     _ =>
-                        DomainError.Product.InvalidState(product.Name)
+                        DomainError.Products.InvalidState(product.Name)
                 };
             }
 
@@ -174,7 +174,7 @@ public static class OrderOrchestratorService
     {
         if (order.Status == Orders.Enums.OrderStatus.Canceled)
         {
-            return DomainError.Order.InvalidStatus(order.Status);
+            return DomainError.Orders.InvalidStatus(order.Status);
         }
 
         List<Error> errors = [];
@@ -182,14 +182,14 @@ public static class OrderOrchestratorService
         {
             if (!productIdToProduct.TryGetValue(productId, out var product))
             {
-                errors.Add(DomainError.Product.NotFound);
+                errors.Add(DomainError.Products.NotFound);
                 continue;
             }
 
             var decreaseResult = product.DecreaseQuantity(itemsToAddQuantities[productId]);
             if (decreaseResult.IsError)
             {
-                errors.Add(DomainError.Product.StockError(product.Name));
+                errors.Add(DomainError.Products.StockError(product.Name));
                 continue;
             }
 
@@ -203,7 +203,7 @@ public static class OrderOrchestratorService
         {
             if (!productIdToProduct.TryGetValue(productId, out var product))
             {
-                errors.Add(DomainError.Product.NotFound);
+                errors.Add(DomainError.Products.NotFound);
                 continue;
             }
 

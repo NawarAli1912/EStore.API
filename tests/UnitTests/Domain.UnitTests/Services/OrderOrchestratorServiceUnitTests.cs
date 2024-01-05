@@ -88,8 +88,8 @@ public sealed class OrderOrchestratorServiceUnitTests
             shippingLocation,
             phone);
         // Assert
-        Assert.Contains(DomainError.Product.Deleted(product1.Name), result.Errors);
-        Assert.Contains(DomainError.Product.OutOfStock(product2.Name), result.Errors);
+        Assert.Contains(DomainError.Products.Deleted(product1.Name), result.Errors);
+        Assert.Contains(DomainError.Products.OutOfStock(product2.Name), result.Errors);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public sealed class OrderOrchestratorServiceUnitTests
             phone);
 
         // Assert
-        Assert.Contains(DomainError.Cart.EmptyCart, result.Errors);
+        Assert.Contains(DomainError.Carts.EmptyCart, result.Errors);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public sealed class OrderOrchestratorServiceUnitTests
             phone);
 
         // Assert
-        Assert.Contains(DomainError.Product.NotFound, result.Errors);
+        Assert.Contains(DomainError.Products.NotFound, result.Errors);
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public sealed class OrderOrchestratorServiceUnitTests
 
         // Assert
         Assert.True(result.IsError);
-        Assert.Contains(DomainError.Product.NotPresentOnTheDictionary, result.Errors);
+        Assert.Contains(DomainError.Products.NotPresentOnTheDictionary, result.Errors);
     }
 
 }

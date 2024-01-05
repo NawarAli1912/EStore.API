@@ -22,7 +22,7 @@ internal sealed class GetOrderQueryHandler(IApplicationDbContext context) :
 
         if (order is null)
         {
-            return DomainError.Order.NotFound;
+            return DomainError.Orders.NotFound;
         }
 
         return order;

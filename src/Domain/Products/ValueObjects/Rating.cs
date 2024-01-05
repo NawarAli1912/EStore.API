@@ -14,7 +14,7 @@ public sealed class Rating : ValueObject
     {
         if (value is < 0 or > 5)
         {
-            return DomainError.Rating.InvalidRatingValue;
+            return DomainError.Ratings.InvalidRatingValue;
         }
 
         return new Rating(customerId, value);

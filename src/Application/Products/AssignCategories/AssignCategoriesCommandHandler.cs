@@ -21,7 +21,7 @@ internal sealed class AssignCategoriesCommandHandler(IApplicationDbContext conte
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         var categoriesDict = await _context

@@ -23,7 +23,7 @@ internal sealed class GetProductQueryHandler(IApplicationDbContext context)
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
         return product;
     }

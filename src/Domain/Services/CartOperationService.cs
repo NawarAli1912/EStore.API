@@ -15,12 +15,12 @@ public static class CartOperationService
     {
         if (customer is null)
         {
-            return DomainError.Customer.NotFound;
+            return DomainError.Customers.NotFound;
         }
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         if (product.Status != ProductStatus.Active)
@@ -28,11 +28,11 @@ public static class CartOperationService
             return product.Status switch
             {
                 ProductStatus.Deleted =>
-                    DomainError.Product.Deleted(product.Name),
+                    DomainError.Products.Deleted(product.Name),
                 ProductStatus.OutOfStock =>
-                    DomainError.Product.OutOfStock(product.Name),
+                    DomainError.Products.OutOfStock(product.Name),
                 _ =>
-                    DomainError.Product.InvalidState(product.Name)
+                    DomainError.Products.InvalidState(product.Name)
             };
         }
 
@@ -60,12 +60,12 @@ public static class CartOperationService
     {
         if (customer is null)
         {
-            return DomainError.Customer.NotFound;
+            return DomainError.Customers.NotFound;
         }
 
         if (product is null)
         {
-            return DomainError.Product.NotFound;
+            return DomainError.Products.NotFound;
         }
 
         var result = customer.RemoveCartItem(product.Id, requestedQuantity);
