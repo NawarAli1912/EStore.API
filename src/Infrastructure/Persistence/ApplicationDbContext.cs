@@ -5,6 +5,7 @@ using Domain.Customers;
 using Domain.Offers;
 using Domain.Orders;
 using Domain.Products;
+using Infrastructure.Persistence.FriendlyIdentifiers;
 using Infrastructure.Persistence.Outbox;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -31,6 +32,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Permission> Permissions { get; set; } = default!;
 
     public DbSet<Offer> Offers { get; set; } = default!;
+
+    public DbSet<FriendlyIdSequence> FriendlyIdSequences { get; set; } = default!;
 
     public async Task BeginTransactionAsync()
     {

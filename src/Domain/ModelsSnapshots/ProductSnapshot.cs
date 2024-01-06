@@ -7,6 +7,8 @@ public sealed class ProductSnapshot
 {
     public Guid Id { get; set; }
 
+    public string Code { get; set; } = default!;
+
     public string Name { get; set; } = default!;
 
     public string Description { get; set; } = default!;
@@ -30,6 +32,7 @@ public sealed class ProductSnapshot
         var item = new ProductSnapshot
         {
             Id = product.Id,
+            Code = product.Code,
             Name = product.Name,
             Description = product.Description,
             Quantity = product.Quantity,
@@ -51,6 +54,7 @@ public sealed class ProductSnapshot
     public static bool Equals(ProductSnapshot lhs, ProductSnapshot rhs)
     {
         return lhs.Id == rhs.Id
+            && lhs.Code == rhs.Code
             && lhs.Name == rhs.Name
             && lhs.Description == rhs.Description
             && lhs.Quantity == rhs.Quantity

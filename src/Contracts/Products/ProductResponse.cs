@@ -2,6 +2,7 @@
 
 public record ProductDetailedResponse(
     Guid Id,
+    string Code,
     string Name,
     string Description,
     int Quantity,
@@ -12,6 +13,7 @@ public record ProductDetailedResponse(
 
 public record ProductResponse(
     Guid Id,
+    string Code,
     string Name,
     string Description,
     int Quantity,

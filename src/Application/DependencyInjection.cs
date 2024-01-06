@@ -14,11 +14,11 @@ public static class DependencyInjection
         {
             config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
 
+            config.AddOpenBehavior(typeof(LoggingPipelineBehavior<,>));
+
             config.AddOpenBehavior(typeof(QueryCachingPipelineBehavior<,>));
 
             config.AddOpenBehavior(typeof(IdempotentPipelineBehavior<,>));
-
-            config.AddOpenBehavior(typeof(LoggingPipelineBehavior<,>));
         });
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));

@@ -1,5 +1,4 @@
 ﻿using Application.Common;
-using Domain.Offers.Enums;
 using Domain.Offers.Events;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,15 +14,7 @@ public sealed class OfferCreatedDomainEventHandler(IMemoryCache memoryCache)
     {
         await Task.Run(() =>
         {
-            if (notification.Offer.Type == OfferType.BundleDiscountOffer)
-            {
-                _memoryCache.Remove(CacheKeys.BundleOffersCacheKey);
-
-            }
-            if (notification.Offer.Type != OfferType.BundleDiscountOffer)
-            {
-                _memoryCache.Remove(CacheKeys.PercentageOffersCacheKey);
-            }
+            _memoryCache.Remove(CacheKeys.OffersCacheKey);
         }, cancellationToken);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Carts.Common;
 using Application.Common.DatabaseAbstraction;
+using Domain.Customers;
 using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Enums;
@@ -30,31 +31,25 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
             return DomainError.Customers.NotFound;
         }
 
-        if (request.OfferId.HasValue)
+        var result = await (request.OfferId.HasValue switch
         {
-            var offer = await _context.Offers
-                .FirstOrDefaultAsync(o => o.Id == request.OfferId, cancellationToken);
+            false => AddProductItem(request, customer, cancellationToken),
+            true => AddOfferItem(request, customer, cancellationToken)
+        });
 
-            if (offer is null)
-            {
-                return DomainError.Offers.NotFound;
-            }
 
-            var offerProducts = await LoadProducts(offer);
-
-            var offerAddResult =
-                CartOperationService.AddOfferItem(customer, offer, offerProducts, request.Quantity);
-
-            if (offerAddResult.IsError)
-            {
-                return offerAddResult.Errors;
-            }
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return new AddRemoveCartItemResult(offerAddResult.Value);
+        if (result.IsError)
+        {
+            return result.Errors;
         }
 
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return new AddRemoveCartItemResult(result.Value);
+    }
+
+    private async Task<Result<decimal>> AddProductItem(AddCartItemCommand request, Customer customer, CancellationToken cancellationToken)
+    {
         var product = await _context
             .Products
             .FirstOrDefaultAsync(p => p.Id == request.ProductId, cancellationToken);
@@ -67,18 +62,19 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
         var result = CartOperationService
             .AddProductItem(customer, product, request.Quantity);
 
-        if (result.IsError)
-        {
-            return result.Errors;
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return new AddRemoveCartItemResult(result.Value);
+        return result;
     }
 
-    private async Task<List<Product>> LoadProducts(Offer offer)
+    private async Task<Result<decimal>> AddOfferItem(AddCartItemCommand request, Customer customer, CancellationToken cancellationToken)
     {
+        var offer = await _context.Offers
+                .FirstOrDefaultAsync(o => o.Id == request.OfferId, cancellationToken);
+
+        if (offer is null)
+        {
+            return DomainError.Offers.NotFound;
+        }
+
         IQueryable<Product> query = _context.Products;
 
         query = offer.Type switch
@@ -87,7 +83,9 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
             OfferType.BundleDiscountOffer => query.Where(p => ((BundleDiscountOffer)offer).BundleProductsIds.Contains(p.Id)),
             _ => throw new NotImplementedException()
         };
+        var offerProducts = await query.ToListAsync(cancellationToken);
 
-        return await query.ToListAsync();
+        return CartOperationService
+            .AddOfferItem(customer, offer, offerProducts, request.Quantity);
     }
 }

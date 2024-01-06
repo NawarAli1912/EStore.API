@@ -1,4 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Application.Common.FriendlyIdentifiers;
 using Domain.Categories;
 using Domain.Products;
 using MediatR;
@@ -7,10 +8,11 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.Create;
 
-public sealed class CreateProductsCommandHandler(IApplicationDbContext context) :
+public sealed class CreateProductsCommandHandler(IApplicationDbContext context, IFriendlyIdGenerator friendlyIdGenerator) :
     IRequestHandler<CreateProductsCommand, Result<CreateProductsResult>>
 {
     private readonly IApplicationDbContext _context = context;
+    private readonly IFriendlyIdGenerator _friendlyIdGenerator = friendlyIdGenerator;
 
     public async Task<Result<CreateProductsResult>> Handle(
         CreateProductsCommand request,
@@ -56,11 +58,15 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context) 
             return errors;
         }
 
+        var friendlyIds = await
+            _friendlyIdGenerator.GenerateProductFriendlyId(products.Count);
         foreach (var product in products)
         {
+            product.SetCode(friendlyIds.Last());
             await _context.Products.AddAsync(
                 product,
                 cancellationToken);
+            friendlyIds.RemoveAt(friendlyIds.Count - 1);
         }
 
         await _context.SaveChangesAsync(cancellationToken);

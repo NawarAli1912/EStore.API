@@ -1,9 +1,7 @@
 ﻿using Domain.Products;
-using Domain.Products.Enums;
 using Infrastructure.Persistence.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection;
 
 namespace Infrastructure.Persistence.Configurations;
 
@@ -11,7 +9,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable(TablesNames.Product);
+        builder
+            .ToTable(TablesNames.Product);
 
         builder
             .HasKey(p => p.Id);
@@ -25,28 +24,24 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasMany(p => p.Categories)
             .WithMany(c => c.Products);
 
-        builder.Property(p => p.Status)
-            .HasDefaultValue(ProductStatus.Active);
-
         builder
             .HasMany(p => p.Reviews)
             .WithOne()
             .HasForeignKey(r => r.ProductId);
 
         builder
-            .Property(p => p.Status)
-            .HasDefaultValue(ProductStatus.Active);
-
-        var rowVersionProperty =
-            typeof(Product).GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        builder
             .Property("_version")
             .HasColumnName("Version")
             .IsRowVersion();
 
-        builder.Property<List<Guid>>("_associatedOffers")
+        builder
+            .Property<List<Guid>>("_associatedOffers")
             .HasColumnName("AssociatedOffers")
             .HasListOfIdsConverter();
+
+        builder
+            .HasIndex(p => p.Code)
+            .IsUnique();
+
     }
 }

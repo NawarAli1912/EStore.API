@@ -4,6 +4,7 @@ namespace Contracts.Orders;
 
 public record OrderResponse(
     Guid Id,
+    string Code,
     Guid CustomerId,
     OrderStatus Status,
     ShippingInfoResponse ShippingInfo,

@@ -21,6 +21,8 @@ public class Product : AggregateRoot
 
     private readonly List<Guid> _associatedOffers = [];
 
+    public string Code { get; private set; }
+
     public string Name { get; private set; } = string.Empty;
 
     public string Description { get; private set; } = string.Empty;
@@ -41,8 +43,9 @@ public class Product : AggregateRoot
 
     public IReadOnlyList<Guid> AssociatedOffers => _associatedOffers;
 
-    public double AverageRating => _ratings.Count > 0 ? _ratings.Select(r => r.Value).Sum() /
-                            _ratings.Count : 0.0;
+    public double AverageRating => _ratings.Count > 0 ?
+        _ratings.Select(r => r.Value).Sum() / _ratings.Count :
+        0.0;
 
     public static Product Create(
         Guid id,
@@ -51,31 +54,21 @@ public class Product : AggregateRoot
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
+        string Code = "",
         IEnumerable<Category>? categories = default,
         IEnumerable<Guid>? associatedOffers = default)
     {
-        List<Error> errors = [];
-
-        var product = new Product
-        {
-            Id = id,
-            Name = name,
-            Description = description,
-            Quantity = quantity,
-            CustomerPrice = customerPrice,
-            PurchasePrice = purchasePrice,
-        };
-
+        var product = new Product(
+            id,
+            name,
+            description,
+            quantity,
+            customerPrice,
+            purchasePrice);
 
         product.AssignCategories(categories ?? Array.Empty<Category>());
 
         product.AssociateOffers(associatedOffers ?? Array.Empty<Guid>());
-
-        product.Status = ProductStatus.Active;
-        if (product.Quantity == 0)
-        {
-            product.Status = ProductStatus.OutOfStock;
-        }
 
         product.RaiseDomainEvent(
             new ProductCreatedDomainEvent(product));
@@ -192,11 +185,31 @@ public class Product : AggregateRoot
         RaiseDomainEvent(new ProductUpdatedDomainEvent(this));
     }
 
+    public void SetCode(string code)
+    {
+        Code = code;
+    }
+
     private Product() : base(Guid.NewGuid())
     {
     }
 
-    private Product(Guid id) : base(id)
+    private Product(Guid id,
+        string name,
+        string description,
+        int quantity,
+        decimal customerPrice,
+        decimal purchasePrice) : base(id)
     {
+        Name = name;
+        Description = description;
+        Quantity = quantity;
+        CustomerPrice = customerPrice;
+        PurchasePrice = purchasePrice;
+        Status = ProductStatus.Active;
+        if (Quantity == 0)
+        {
+            Status = ProductStatus.OutOfStock;
+        }
     }
 }

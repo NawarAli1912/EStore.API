@@ -1,4 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Application.Common.FriendlyIdentifiers;
 using Application.Common.Repository;
 using Domain.Errors;
 using Domain.Services;
@@ -10,11 +11,13 @@ using SharedKernel.Primitives;
 namespace Application.Carts.Checkout;
 internal sealed class CheckoutCommandHandler(
     IApplicationDbContext context,
-    IOffersRepository offersRepository)
+    IOffersRepository offersRepository,
+    IFriendlyIdGenerator friendlyIdGenerator)
         : IRequestHandler<CheckoutCommand, Result<Created>>
 {
     private readonly IApplicationDbContext _context = context;
     private readonly IOffersRepository _offersRepository = offersRepository;
+    private readonly IFriendlyIdGenerator _friendlyIdGenerator = friendlyIdGenerator;
 
 
     public async Task<Result<Created>> Handle(
@@ -80,6 +83,10 @@ internal sealed class CheckoutCommandHandler(
         {
             return orderResult.Errors;
         }
+
+        orderResult
+            .Value
+            .SetCode((await _friendlyIdGenerator.GenerateOrderFriendlyId(1))[0]);
 
         await _context.Orders.AddAsync(orderResult.Value, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);

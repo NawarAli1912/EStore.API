@@ -51,6 +51,7 @@ public class ProductsMappingConfig : IRegister
                 src.MaxPrice,
                 null,
                 null,
+                src.OnOffer,
                 status
             );
     }
@@ -79,8 +80,8 @@ public class ProductsMappingConfig : IRegister
                 src.MaxPrice,
                 src.MinQuantity,
                 src.MaxQuantity,
-                status
-            );
+                src.OnOffer,
+                status);
     }
 
     private static Domain.Products.Enums.ProductStatus MapToDomainProductStatus(ProductStatus src) => src switch

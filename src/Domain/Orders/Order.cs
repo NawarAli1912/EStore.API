@@ -12,6 +12,8 @@ public sealed class Order : AggregateRoot, IAuditableEntity
 
     private readonly List<Guid> _requestedOffers = [];
 
+    public string Code { get; private set; }
+
     public Guid CustomerId { get; private set; }
 
     public OrderStatus Status { get; private set; }
@@ -126,9 +128,14 @@ public sealed class Order : AggregateRoot, IAuditableEntity
         Status = OrderStatus.Canceled;
     }
 
-    internal void AddRequestedOffer(Guid itemId)
+    public void AddRequestedOffer(Guid itemId)
     {
         _requestedOffers.Add(itemId);
+    }
+
+    public void SetCode(string code)
+    {
+        Code = code;
     }
 
     private Order() : base(Guid.NewGuid())

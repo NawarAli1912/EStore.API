@@ -8,5 +8,6 @@ public record ProductsFilter(
     decimal? MaxPrice,
     int? MinQuantity,
     int? MaxQuantity,
+    bool OnOffer,
     List<ProductStatus> ProductStatus
     );

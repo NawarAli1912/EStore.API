@@ -26,6 +26,7 @@ public record ListProductsQuery(
             keyBuilder.Append($"MaxPrice:{Filter.MaxPrice ?? 0};");
             keyBuilder.Append($"MinQuantity:{Filter.MinQuantity ?? 0};");
             keyBuilder.Append($"MaxQuantity:{Filter.MaxQuantity ?? 0};");
+            keyBuilder.Append($"OnOffer:{Filter.OnOffer};");
 
             if (Filter.ProductStatus != null && Filter.ProductStatus.Any())
             {

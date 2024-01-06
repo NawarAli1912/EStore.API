@@ -24,7 +24,7 @@ internal static class TestDataFactory
         quantity,
         customerPrice,
         purchasePrice,
-        categories);
+        categories: categories);
 
     private static List<Category> GeneratesubCategories(Guid parentId)
     {

@@ -10,7 +10,8 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
     {
-        builder.ToTable(TablesNames.Order);
+        builder
+            .ToTable(TablesNames.Order);
 
         builder
             .HasKey(o => o.Id);
@@ -28,11 +29,17 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder
             .ComplexProperty(o => o.ShippingInfo);
 
-        builder.Property(o => o.TotalPrice)
+        builder
+            .Property(o => o.TotalPrice)
             .HasPrecision(12, 2);
 
-        builder.Property<List<Guid>>("_requestedOffers")
+        builder
+            .Property<List<Guid>>("_requestedOffers")
             .HasColumnName("RequestedOffers")
             .HasListOfIdsConverter();
+
+        builder
+            .HasIndex(o => o.Code)
+            .IsUnique();
     }
 }

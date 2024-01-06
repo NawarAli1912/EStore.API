@@ -122,83 +122,79 @@ public sealed class ProductsRepository(
 
     public async Task<(List<Product>, int)> ListByFilter(ProductsFilter filter, int pageIndex, int pageSize)
     {
-        var products = await _elasticClient
-            .SearchAsync<ProductSnapshot>(s => s
-            .Query(q =>
-                q.Bool(b => b
-                    .Must(must =>
-                        !string.IsNullOrEmpty(filter.SearchTerm)
-                            ? must.MultiMatch(m => m
-                                .Query(filter.SearchTerm)
-                                .Fuzziness(Fuzziness.Auto)
-                                .Fields(f => f
-                                    .Field(ff => ff.Name, boost: 2)
-                                    .Field(ff => ff.Description)
-                                )
-                            )
-                            : null
-                    )
-                    .Filter(f =>
-                        f.Range(r => r
-                                .Field(f => f.CustomerPrice)
-                                .GreaterThanOrEquals((double?)filter.MinPrice ?? double.MinValue)
-                            )
-                        && f.Range(r => r
-                                .Field(f => f.CustomerPrice)
-                                .LessThanOrEquals((double?)filter.MaxPrice ?? double.MaxValue)
-                            )
-                        && f.Range(r => r
-                                .Field(f => f.Quantity)
-                                .GreaterThanOrEquals(filter.MinQuantity ?? int.MinValue)
-                            )
-                        &&
-                           f.Range(r => r
-                                .Field(f => f.Quantity)
-                                .LessThanOrEquals(filter.MaxQuantity ?? int.MaxValue)
-                            )
-                        && f.Terms(t => t
-                            .Field(ff => ff.Status)
-                            .Terms(filter.ProductStatus)))))
-            .From((pageIndex - 1) * pageSize)
-            .Size(pageSize));
+        var baseQuery = new QueryContainerDescriptor<ProductSnapshot>();
+
+        var searchTermQuery = !string.IsNullOrEmpty(filter.SearchTerm) ?
+                baseQuery.MultiMatch(m => m
+                    .Query(filter.SearchTerm)
+                    .Fuzziness(Fuzziness.Auto)
+                    .Fields(fs => fs
+                        .Field(f => f.Name, boost: 2)
+                        .Field(f => f.Description)))
+                : null;
+
+        var priceRangeQuery = baseQuery.Range(r => r
+            .Field(f => f.CustomerPrice)
+            .GreaterThanOrEquals((double?)filter.MinPrice ?? double.MinValue)
+            .LessThanOrEquals((double?)filter.MaxPrice ?? double.MaxValue));
 
 
+        var quantityRangeQuery = baseQuery.Range(r => r
+            .Field(f => f.Quantity)
+            .GreaterThanOrEquals(filter.MinQuantity ?? int.MinValue)
+            .LessThanOrEquals(filter.MaxQuantity ?? int.MaxValue));
 
+        var statusQuery = baseQuery.Terms(t => t
+            .Field(f => f.Status)
+            .Terms(filter.ProductStatus));
+
+        var offersQuery = filter.OnOffer ?
+            baseQuery.Exists(e => e.Field(f => f.AssociatedOffers)) :
+            null;
+
+        var query = baseQuery.Bool(b => b
+            .Must(searchTermQuery)
+            .Filter(priceRangeQuery, quantityRangeQuery, statusQuery, offersQuery));
+
+        var searchResponse = await _elasticClient.SearchAsync<ProductSnapshot>(s => s
+                .Query(_ => query)
+                .From((pageIndex - 1) * pageSize)
+                .Size(pageSize));
+
+        var products = searchResponse.Documents.ToList();
         var categoriesDict = new Dictionary<Guid, List<Category>>();
-
-        foreach (var product in products.Hits)
+        foreach (var product in products)
         {
-            foreach (var categorySnapshot in product.Source.Categories)
+            foreach (var categorySnapshot in product.Categories)
             {
                 var category = Category.Create(
                     categorySnapshot.CategoryId,
                     categorySnapshot.CategoryName,
                     parentCategoryId: categorySnapshot.ParentCategoryId);
 
-                if (categoriesDict.TryGetValue(product.Source.Id, out var cateogires))
+                if (categoriesDict.TryGetValue(product.Id, out var cateogires))
                 {
-                    categoriesDict[product.Source.Id].Add(category);
+                    categoriesDict[product.Id].Add(category);
                     continue;
                 }
 
-                categoriesDict[product.Source.Id] = [category];
+                categoriesDict[product.Id] = [category];
             }
         }
 
-
         List<Product> result = [];
         result.AddRange(products
-                .Hits
-                .Select(hit => Product.Create(
-                    hit.Source.Id,
-                    hit.Source.Name,
-                    hit.Source.Description,
-                    hit.Source.Quantity,
-                    hit.Source.CustomerPrice,
-                    hit.Source.PurchasePrice,
-                    categoriesDict.GetValueOrDefault(hit.Source.Id),
-                    hit.Source.AssociatedOffers)));
+                .Select(p => Product.Create(
+                    p.Id,
+                    p.Name,
+                    p.Description,
+                    p.Quantity,
+                    p.CustomerPrice,
+                    p.PurchasePrice,
+                    p.Code,
+                    categoriesDict.GetValueOrDefault(p.Id),
+                    p.AssociatedOffers)));
 
-        return (result, (int)products.Total);
+        return (result, (int)searchResponse.Total);
     }
 }

@@ -3,6 +3,7 @@ using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Cache;
 using Application.Common.DatabaseAbstraction;
+using Application.Common.FriendlyIdentifiers;
 using Application.Common.Idempotency;
 using Application.Common.Repository;
 using Application.Common.Storage;
@@ -17,6 +18,7 @@ using Infrastructure.Caching;
 using Infrastructure.Idempotency;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.DataSeed;
+using Infrastructure.Persistence.FriendlyIdentifiers;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repository;
 using Infrastructure.Storage;
@@ -97,6 +99,7 @@ public static class DependencyInjection
     private static IServiceCollection AddEFCore(this IServiceCollection services, IConfiguration configuration)
     {
 
+        services.AddScoped<IFriendlyIdGenerator, FriendlyIdGenerator>();
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
