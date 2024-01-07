@@ -6,7 +6,7 @@ internal sealed class PercentageDiscountOfferPricingStrategy : IOfferPricingStra
 {
     public Dictionary<Guid, decimal> Handle(
         Offer offer,
-        Dictionary<Guid, Product> productDict)
+        IDictionary<Guid, Product> productDict)
     {
         var parsedOffer = (PercentageDiscountOffer)offer;
         var product = productDict[parsedOffer.ProductId];

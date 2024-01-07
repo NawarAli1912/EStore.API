@@ -148,9 +148,13 @@ public sealed class ProductsRepository(
             .Field(f => f.Status)
             .Terms(filter.ProductStatus));
 
-        var offersQuery = filter.OnOffer ?
-            baseQuery.Exists(e => e.Field(f => f.AssociatedOffers)) :
-            null;
+        QueryContainer? offersQuery = null;
+        if (filter.OnOffer.HasValue)
+        {
+            offersQuery = filter.OnOffer.Value ?
+                baseQuery.Exists(e => e.Field(f => f.AssociatedOffers)) :
+                !baseQuery.Exists(e => e.Field(f => f.AssociatedOffers));
+        }
 
         var query = baseQuery.Bool(b => b
             .Must(searchTermQuery)

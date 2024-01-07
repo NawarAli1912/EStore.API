@@ -4,7 +4,7 @@ public record CartResponse(
     decimal TotalPrice);
 
 public record CartItemResponse(
-    Guid ProductId,
+    Guid ItemId,
     ItemType Type,
     int Quantity,
     decimal Price);

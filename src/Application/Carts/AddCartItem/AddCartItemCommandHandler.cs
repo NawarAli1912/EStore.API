@@ -11,10 +11,16 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.AddCartItem;
-internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
+internal sealed class AddCartItemCommandHandler
     : IRequestHandler<AddCartItemCommand, Result<AddRemoveCartItemResult>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+    private CartOperationService? _cartOperationService;
+
+    public AddCartItemCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<AddRemoveCartItemResult>> Handle(
         AddCartItemCommand request,
@@ -30,6 +36,8 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
         {
             return DomainError.Customers.NotFound;
         }
+
+        _cartOperationService = new CartOperationService(customer);
 
         var result = await (request.OfferId.HasValue switch
         {
@@ -59,10 +67,8 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
             return DomainError.Products.NotFound;
         }
 
-        var result = CartOperationService
-            .AddProductItem(customer, product, request.Quantity);
-
-        return result;
+        return _cartOperationService!
+            .AddProductItem(product, request.Quantity);
     }
 
     private async Task<Result<decimal>> AddOfferItem(AddCartItemCommand request, Customer customer, CancellationToken cancellationToken)
@@ -85,7 +91,7 @@ internal sealed class AddCartItemCommandHandler(IApplicationDbContext context)
         };
         var offerProducts = await query.ToListAsync(cancellationToken);
 
-        return CartOperationService
-            .AddOfferItem(customer, offer, offerProducts, request.Quantity);
+        return _cartOperationService!
+            .AddOfferItem(offer, offerProducts, request.Quantity);
     }
 }

@@ -93,10 +93,13 @@ public sealed class OrdersController(ISender sender, IMapper mapper) : ApiContro
     [HasPermission(Permissions.ManageOrdersLite)]
     public async Task<IActionResult> Update(Guid id, UpdateOrderRequest request)
     {
-        _ = await _sender.Send(
+        var result = await _sender.Send(
             _mapper.Map<UpdateOrderCommand>((id, request)));
 
-        return Ok();
+        return result.Match(
+            value => Ok(),
+            Problem
+            );
     }
 
     [HttpPatch("{id:guid}/cancel")]

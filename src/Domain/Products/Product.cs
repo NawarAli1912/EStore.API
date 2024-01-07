@@ -43,6 +43,8 @@ public class Product : AggregateRoot
 
     public IReadOnlyList<Guid> AssociatedOffers => _associatedOffers;
 
+    public byte[] Version => _version;
+
     public double AverageRating => _ratings.Count > 0 ?
         _ratings.Select(r => r.Value).Sum() / _ratings.Count :
         0.0;
@@ -54,7 +56,7 @@ public class Product : AggregateRoot
         int quantity,
         decimal customerPrice,
         decimal purchasePrice,
-        string Code = "",
+        string code = "",
         IEnumerable<Category>? categories = default,
         IEnumerable<Guid>? associatedOffers = default)
     {
@@ -64,7 +66,8 @@ public class Product : AggregateRoot
             description,
             quantity,
             customerPrice,
-            purchasePrice);
+            purchasePrice,
+            code);
 
         product.AssignCategories(categories ?? Array.Empty<Category>());
 
@@ -199,7 +202,8 @@ public class Product : AggregateRoot
         string description,
         int quantity,
         decimal customerPrice,
-        decimal purchasePrice) : base(id)
+        decimal purchasePrice,
+        string code = "") : base(id)
     {
         Name = name;
         Description = description;
@@ -207,6 +211,7 @@ public class Product : AggregateRoot
         CustomerPrice = customerPrice;
         PurchasePrice = purchasePrice;
         Status = ProductStatus.Active;
+        Code = code;
         if (Quantity == 0)
         {
             Status = ProductStatus.OutOfStock;

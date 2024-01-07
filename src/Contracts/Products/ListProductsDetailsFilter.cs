@@ -7,4 +7,4 @@ public record ListProductsDetailsFilter(
     int? MinQuantity,
     int? MaxQuantity,
     IEnumerable<ProductStatus>? Status,
-    bool OnOffer = false);
+    bool? OnOffer);

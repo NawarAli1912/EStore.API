@@ -62,7 +62,6 @@ public sealed class Order : AggregateRoot, IAuditableEntity
         for (var i = 0; i < quantity; ++i)
         {
             var lineItemResult = LineItem.Create(
-                Guid.NewGuid(),
                 productId,
                 Id,
                 productPrice,
@@ -82,17 +81,26 @@ public sealed class Order : AggregateRoot, IAuditableEntity
         return Result.Updated;
     }
 
-    public Result<Updated> RemoveItems(Guid productId, int Quantity)
+    public Result<Updated> RemoveItems(
+        Guid productId,
+        int quantity,
+        Guid? relatedOfferId = default)
     {
-        if (_lineItems.Count(li => li.ProductId == productId) < Quantity)
+        if (_lineItems.Count(li => li.ProductId == productId) < quantity)
         {
             return DomainError.LineItem.ExceedsAvailableQuantity(productId);
         }
 
-        for (var i = 0; i < Quantity; ++i)
+        for (var i = 0; i < quantity; ++i)
         {
             var lineItem = _lineItems
-                .First(item => item.ProductId == productId);
+                .FirstOrDefault(item => item.ProductId == productId
+                && item.RelatedOfferId == relatedOfferId);
+
+            if (lineItem is null)
+            {
+                return DomainError.LineItem.NotFound;
+            }
 
             _lineItems.Remove(lineItem);
 
@@ -128,9 +136,14 @@ public sealed class Order : AggregateRoot, IAuditableEntity
         Status = OrderStatus.Canceled;
     }
 
-    public void AddRequestedOffer(Guid itemId)
+    public void AddRequestedOffer(Guid offerId)
     {
-        _requestedOffers.Add(itemId);
+        _requestedOffers.Add(offerId);
+    }
+
+    public void RemoveRequestedOffer(Guid offerId)
+    {
+        _requestedOffers.Remove(offerId);
     }
 
     public void SetCode(string code)

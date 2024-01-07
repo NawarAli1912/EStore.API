@@ -2,7 +2,7 @@
 using Domain.Offers.Enums;
 
 namespace Domain.Services.OffersPricingStartegy;
-internal static class OfferPricingStrategyFactory
+public static class OfferPricingStrategyFactory
 {
     public static IOfferPricingStrategy GetStrategy(Offer offer)
     {

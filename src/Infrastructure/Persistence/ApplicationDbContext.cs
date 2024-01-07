@@ -4,13 +4,16 @@ using Domain.Categories;
 using Domain.Customers;
 using Domain.Offers;
 using Domain.Orders;
+using Domain.Orders.Entities;
 using Domain.Products;
 using Infrastructure.Persistence.FriendlyIdentifiers;
 using Infrastructure.Persistence.Outbox;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
+using SharedKernel.Primitives;
 
 namespace Infrastructure.Persistence;
 
@@ -34,6 +37,25 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Offer> Offers { get; set; } = default!;
 
     public DbSet<FriendlyIdSequence> FriendlyIdSequences { get; set; } = default!;
+
+    public DbSet<LineItem> LineItems { get; set; } = default!;
+
+    ChangeTracker IApplicationDbContext.ChangeTracker { get => ChangeTracker; }
+
+    public void MarkAdded(Entity entity)
+    {
+        Entry(entity).State = EntityState.Added;
+    }
+
+    public void MarkRemoved(Entity entity)
+    {
+        Entry(entity).State = EntityState.Deleted;
+    }
+
+    public void MarkModified(Entity entity)
+    {
+        Entry(entity).State = EntityState.Modified;
+    }
 
     public async Task BeginTransactionAsync()
     {

@@ -6,9 +6,11 @@ namespace Application.Orders.Update;
 
 public record UpdateOrderCommand(
     Guid Id,
-    UpdateShippingInfo ShippingInfo,
+    UpdateShippingInfo? ShippingInfo,
     List<LineItemUpdate> DeleteLineItems,
-    List<LineItemUpdate> AddLineItems
+    List<LineItemUpdate> AddLineItems,
+    List<OfferUpdate> AddOffers,
+    List<OfferUpdate> DeleteOffers
     ) : IRequest<Result<Updated>>;
 
 public record DeleteLineItem(Guid Id);
@@ -21,3 +23,7 @@ public record UpdateShippingInfo(
     ShippingCompany? ShippingCompany,
     string? ShippingComapnyLocation,
     string? PhoneNumber);
+
+public record OfferUpdate(
+    Guid OfferId,
+    int Quantity);

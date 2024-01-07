@@ -18,5 +18,14 @@ public static partial class DomainError
         public static Error UnspportedProducts =>
             Error.Validation("Offer.UnspportedProducts", "Some products are not supported to be under an offer.");
 
+        public static Error UnintializedOffersDict =>
+            Error.Unexpected("Offers.UnintializedOffersDict");
+
+        public static Error NotPresentInOrder =>
+            Error.Validation("Offer.NotPresentInOrder", "Can't remvoe offer, doesn't exists on the order.");
+
+
+        public static Error CantLoad =>
+            Error.Unexpected("Offer.CantLoad");
     }
 }

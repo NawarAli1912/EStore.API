@@ -4,7 +4,7 @@ using Domain.Products;
 namespace Domain.Services.OffersPricingStartegy;
 internal sealed class BundleDiscountOfferPricingStrategy : IOfferPricingStrategy
 {
-    public Dictionary<Guid, decimal> Handle(Offer offer, Dictionary<Guid, Product> productDict)
+    public Dictionary<Guid, decimal> Handle(Offer offer, IDictionary<Guid, Product> productDict)
     {
         Dictionary<Guid, decimal> result = [];
 

@@ -17,7 +17,6 @@ public sealed class LineItem : Entity
     public Guid? RelatedOfferId { get; private set; }
 
     internal static Result<LineItem> Create(
-        Guid id,
         Guid productId,
         Guid orderId,
         decimal price,
@@ -30,29 +29,14 @@ public sealed class LineItem : Entity
             return DomainError.LineItem.InvalidCreationData;
         }
 
-        return new LineItem(
-            id,
-            productId,
-            orderId,
-            price,
-            type,
-            relatedOfferId
-            );
-    }
-
-    private LineItem(
-        Guid id,
-        Guid productId,
-        Guid orderId,
-        decimal price,
-        ItemType type,
-        Guid? relatedOfferId) : base(id)
-    {
-        ProductId = productId;
-        OrderId = orderId;
-        Price = price;
-        Type = type;
-        RelatedOfferId = relatedOfferId;
+        return new LineItem
+        {
+            ProductId = productId,
+            OrderId = orderId,
+            Price = price,
+            Type = type,
+            RelatedOfferId = relatedOfferId
+        };
     }
 
     private LineItem() : base(Guid.NewGuid())

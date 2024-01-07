@@ -49,7 +49,7 @@ public sealed class CategoriesController(ISender sender, IMapper mapper) : ApiCo
             _mapper.Map<CreateCategoryCommand>(request));
 
         return result.Match(
-            _ => Ok(),
+            _ => Created(),
             Problem);
     }
 
@@ -74,5 +74,6 @@ public sealed class CategoriesController(ISender sender, IMapper mapper) : ApiCo
         return result.Match(
             _ => Ok(),
             Problem);
+
     }
 }

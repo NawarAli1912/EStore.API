@@ -24,6 +24,9 @@ public static partial class DomainError
             $"Requested quantity to remove of product {id} exceeds the available quantity in order.");
 
         public static Error InvalidCreationData => Error.Unexpected(
-            "Order.InvalidCreationData", "Can't create order item with the provided data.");
+            "LineItem.InvalidCreationData", "Can't create order item with the provided data.");
+
+        public static Error NotFound => Error.Validation(
+            "LineItem.NotFound", "LineItem doesn't exists.");
     }
 }

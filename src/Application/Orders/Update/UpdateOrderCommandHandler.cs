@@ -1,4 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
+using Application.Common.Repository;
 using Domain.Errors;
 using Domain.Orders.Enums;
 using Domain.Services;
@@ -8,10 +9,11 @@ using SharedKernel.Primitives;
 
 namespace Application.Orders.Update;
 
-internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, IOffersRepository offersRepository)
         : IRequestHandler<UpdateOrderCommand, Result<Updated>>
 {
     private readonly IApplicationDbContext _context = context;
+    private readonly IOffersRepository _offersRepository = offersRepository;
 
     public async Task<Result<Updated>> Handle(
         UpdateOrderCommand request,
@@ -32,9 +34,30 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
             return DomainError.Orders.InvalidStatus(order.Status);
         }
 
+        var originalLineItemsIds = order
+            .LineItems.Select(li => li.Id).ToList();
+
+        var allOffers = await _offersRepository.List();
+
+        var relatedOffersIds =
+            request.AddOffers.Select(item => item.OfferId)
+                .Concat(request.DeleteOffers.Select(item => item.OfferId))
+                .Concat(order.RequestedOffers)
+                .ToHashSet();
+
+        var relatedOffersDict = allOffers!
+            .Where(o => relatedOffersIds.Contains(o.Id))
+            .ToDictionary(o => o.Id, o => o);
+
+        if (relatedOffersDict.Count != relatedOffersIds.Count)
+        {
+            return DomainError.Offers.NotFound;
+        }
+
         var productsIds = order.LineItems.Select(o => o.ProductId)
             .Concat(request.AddLineItems.Select(item => item.ProductId))
             .Concat(request.DeleteLineItems.Select(item => item.ProductId))
+            .Concat(relatedOffersDict.Values.SelectMany(offer => offer.ListRelatedProductsIds()))
             .ToHashSet();
 
         var productsDict = await _context
@@ -43,24 +66,58 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context)
             .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
 
 
-        var updateResult = OrderOrchestratorService.UpdateItems(
+        if (productsDict.Count != productsIds.Count)
+        {
+            return DomainError.Products.NotFound;
+        }
+
+
+        var OrderOrchestratorService =
+            new OrderOrchestratorService(productsDict, relatedOffersDict);
+
+        var updateProductItemsResult = OrderOrchestratorService.UpdateProductItems(
             order,
-            productsDict,
             request.AddLineItems
                 .ToDictionary(i => i.ProductId, i => i.Quantity),
             request.DeleteLineItems
                 .ToDictionary(i => i.ProductId, i => i.Quantity));
 
-        if (updateResult.IsError)
+        if (updateProductItemsResult.IsError)
         {
-            return updateResult.Errors;
+            return updateProductItemsResult.Errors;
         }
 
-        order.UpdateShippingInfo(
-            request.ShippingInfo.ShippingCompany,
-            request.ShippingInfo.ShippingComapnyLocation,
-            request.ShippingInfo.PhoneNumber);
+        var updateOfferItemsResult = OrderOrchestratorService.UpdateOffersItems(
+            order,
+            request.AddOffers
+                .ToDictionary(i => i.OfferId, i => i.Quantity),
+            request.DeleteOffers
+                .ToDictionary(i => i.OfferId, i => i.Quantity));
 
+        if (updateOfferItemsResult.IsError)
+        {
+            return updateOfferItemsResult.Errors;
+        }
+
+        if (request.ShippingInfo is not null)
+        {
+            order.UpdateShippingInfo(
+                request.ShippingInfo.ShippingCompany,
+                request.ShippingInfo.ShippingComapnyLocation,
+                request.ShippingInfo.PhoneNumber);
+        }
+
+        foreach (var entry in _context.ChangeTracker.Entries())
+        {
+            var entity = entry.Entity;
+            var state = entry.State;
+            var entityName = entity.GetType().Name;
+            var entityId = entity.GetType().GetProperty("Id")?.GetValue(entity);
+
+            Console.WriteLine($"Entity: {entityName}, ID: {entityId}, State: {state}");
+        }
+
+        _context.Orders.Update(order);
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result.Updated;

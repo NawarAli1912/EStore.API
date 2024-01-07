@@ -1,5 +1,6 @@
 ﻿using Domain.Customers;
 using Domain.Orders;
+using Domain.Products;
 using Infrastructure.Persistence.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -16,15 +17,36 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder
             .HasKey(o => o.Id);
 
+        builder
+            .Property(o => o.Id)
+            .ValueGeneratedNever();
+
         builder.HasOne<Customer>()
             .WithMany()
             .HasForeignKey(o => o.CustomerId)
             .IsRequired();
 
-        builder.HasMany(o => o.LineItems)
-            .WithOne()
-            .HasForeignKey(li => li.OrderId)
-            .IsRequired();
+        builder.OwnsMany(o => o.LineItems, liBuilder =>
+        {
+            liBuilder
+                .HasKey("OrderId", "Id");
+
+            liBuilder
+                .Property(li => li.Id)
+                .ValueGeneratedNever();
+
+            liBuilder
+                .WithOwner()
+                .HasForeignKey("OrderId");
+
+            liBuilder.HasOne<Product>()
+                .WithMany()
+                .HasForeignKey(li => li.ProductId);
+
+            liBuilder.Property(li => li.Price)
+                .HasColumnType("decimal(12, 2)");
+
+        });
 
         builder
             .ComplexProperty(o => o.ShippingInfo);
@@ -41,5 +63,7 @@ internal class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder
             .HasIndex(o => o.Code)
             .IsUnique();
+        builder.Metadata.FindNavigation(nameof(Order.LineItems))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

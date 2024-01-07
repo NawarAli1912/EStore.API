@@ -9,10 +9,16 @@ using SharedKernel.Primitives;
 
 namespace Domain.Services;
 
-public static class CartOperationService
+public class CartOperationService
 {
-    public static Result<decimal> AddOfferItem(
-        Customer customer,
+    private readonly Customer _customer;
+
+    public CartOperationService(Customer customer)
+    {
+        _customer = customer;
+    }
+
+    public Result<decimal> AddOfferItem(
         Offer offer,
         List<Product> offerProducts,
         int requestedQuantity)
@@ -44,20 +50,19 @@ public static class CartOperationService
             return errors;
         }
 
-        var result = customer.AddCartItem(offer.Id, requestedQuantity, ItemType.Offer);
+        var result = _customer.AddCartItem(offer.Id, requestedQuantity, ItemType.Offer);
 
         return result.IsError ?
             result.Errors :
             offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
     }
 
-    public static Result<decimal> RemoveOfferItem(
-        Customer customer,
+    public Result<decimal> RemoveOfferItem(
         Offer offer,
         List<Product> offerProducts,
         int requestedQuantity)
     {
-        var result = customer
+        var result = _customer
             .RemoveCartItem(offer.Id, requestedQuantity, ItemType.Offer);
 
         if (result.IsError)
@@ -70,8 +75,7 @@ public static class CartOperationService
            offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
     }
 
-    public static Result<decimal> AddProductItem(
-        Customer customer,
+    public Result<decimal> AddProductItem(
         Product product,
         int requestedQuantity)
     {
@@ -87,7 +91,7 @@ public static class CartOperationService
             };
         }
 
-        var result = customer.AddCartItem(product.Id, requestedQuantity);
+        var result = _customer.AddCartItem(product.Id, requestedQuantity);
 
         if (result.IsError)
         {
@@ -97,12 +101,11 @@ public static class CartOperationService
         return product.CustomerPrice * requestedQuantity;
     }
 
-    public static Result<decimal> RemoveProductItem(
-        Customer customer,
+    public Result<decimal> RemoveProductItem(
         Product product,
         int requestedQuantity)
     {
-        var result = customer.RemoveCartItem(product.Id, requestedQuantity);
+        var result = _customer.RemoveCartItem(product.Id, requestedQuantity);
 
         if (result.IsError)
         {

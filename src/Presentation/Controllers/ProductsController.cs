@@ -79,7 +79,7 @@ public sealed class ProductsController(
         var result = await _sender.Send(command);
 
         return result.Match(
-            value => Ok(_mapper.Map<CreateProductsResponse>(value)),
+            value => Ok(_mapper.Map<ProductDetailedResponse>(value)),
             Problem);
     }
 

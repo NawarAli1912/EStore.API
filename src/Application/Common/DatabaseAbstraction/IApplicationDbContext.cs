@@ -4,6 +4,8 @@ using Domain.Offers;
 using Domain.Orders;
 using Domain.Products;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using SharedKernel.Primitives;
 
 namespace Application.Common.DatabaseAbstraction;
 
@@ -19,6 +21,8 @@ public interface IApplicationDbContext
 
     DbSet<Offer> Offers { get; set; }
 
+    ChangeTracker ChangeTracker { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     Task BeginTransactionAsync();
@@ -26,4 +30,10 @@ public interface IApplicationDbContext
     Task CommitTransactionAsync();
 
     Task RollbackTransactionAsync();
+
+    void MarkAdded(Entity entity);
+
+    void MarkModified(Entity entity);
+
+    void MarkRemoved(Entity entity);
 }

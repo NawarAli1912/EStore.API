@@ -2,9 +2,9 @@
 using Domain.Products;
 
 namespace Domain.Services.OffersPricingStartegy;
-internal interface IOfferPricingStrategy
+public interface IOfferPricingStrategy
 {
     Dictionary<Guid, decimal> Handle(
         Offer offer,
-        Dictionary<Guid, Product> productDict);
+        IDictionary<Guid, Product> productDict);
 }

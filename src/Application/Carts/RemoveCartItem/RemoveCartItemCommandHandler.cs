@@ -17,6 +17,7 @@ internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context
     : IRequestHandler<RemoveCartItemCommand, Result<AddRemoveCartItemResult>>
 {
     private readonly IApplicationDbContext _context = context;
+    private CartOperationService? _cartOperationService;
 
     public async Task<Result<AddRemoveCartItemResult>> Handle(RemoveCartItemCommand request, CancellationToken cancellationToken)
     {
@@ -32,6 +33,8 @@ internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context
         {
             return DomainError.Customers.NotFound;
         }
+
+        _cartOperationService = new CartOperationService(customer);
 
         var itemToRemove = customer
             .Cart
@@ -70,9 +73,8 @@ internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context
         {
             return DomainError.Products.NotFound;
         }
-        var result = CartOperationService.RemoveProductItem(customer, product, request.Quantity);
-
-        return result;
+        return _cartOperationService!
+            .RemoveProductItem(product, request.Quantity);
     }
 
     private async Task<Result<decimal>> RemoveOfferItem(RemoveCartItemCommand request, Customer customer, CancellationToken cancellationToken)
@@ -99,9 +101,7 @@ internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context
 
         var offerProducts = await query.ToListAsync(cancellationToken);
 
-        var result = CartOperationService
-                    .RemoveOfferItem(customer, offer, offerProducts, request.Quantity);
-
-        return result;
+        return _cartOperationService!
+                    .RemoveOfferItem(offer, offerProducts, request.Quantity);
     }
 }

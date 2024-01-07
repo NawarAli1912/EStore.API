@@ -42,6 +42,5 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder
             .HasIndex(p => p.Code)
             .IsUnique();
-
     }
 }

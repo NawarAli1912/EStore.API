@@ -21,7 +21,10 @@ public sealed class OffersController(ISender sender, IMapper mapper) : ApiContro
         var result =
             await _sender.Send(_mapper.Map<CreateBundleDiscountOfferCommand>(request));
 
-        return result.Match(Ok, Problem);
+        return result
+            .Match(
+            _ => Created(),
+            Problem);
     }
 
     [HttpPost("percentage-discount")]
@@ -30,7 +33,9 @@ public sealed class OffersController(ISender sender, IMapper mapper) : ApiContro
         var result =
             await _sender.Send(_mapper.Map<CreatePercentageDiscountOfferCommand>(request));
 
-        return result.Match(Ok, Problem);
+        return result.Match(
+            _ => Created(),
+            Problem);
     }
 
     [HttpGet]
@@ -38,6 +43,8 @@ public sealed class OffersController(ISender sender, IMapper mapper) : ApiContro
     {
         var result = await _sender.Send(new ListOffersQuery());
 
-        return result.Match(Ok, Problem);
+        return result.Match(
+            value => Ok(_mapper.Map<ListOfferResponse>(value)),
+            Problem);
     }
 }

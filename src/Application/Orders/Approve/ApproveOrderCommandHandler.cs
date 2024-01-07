@@ -41,7 +41,9 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
             return DomainError.Products.NotFound;
         }
 
-        var result = OrderOrchestratorService.Approve(order, productsDict);
+        var orderOrchestratorService = new OrderOrchestratorService(productsDict);
+
+        var result = orderOrchestratorService.Approve(order);
 
         if (result.IsError)
         {

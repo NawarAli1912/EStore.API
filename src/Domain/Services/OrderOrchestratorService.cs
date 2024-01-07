@@ -4,13 +4,19 @@ using Domain.Offers;
 using Domain.Orders;
 using Domain.Products;
 using Domain.Products.Enums;
-using Domain.Services.OffersPricingStartegy;
+using Domain.Services.OfferAdditionStrategy;
+using Domain.Services.OfferRemovalStrategy;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.Services;
-public static class OrderOrchestratorService
+public class OrderOrchestratorService(
+    Dictionary<Guid, Product> productDict,
+    Dictionary<Guid, Offer>? offersDict = default)
 {
+    private readonly Dictionary<Guid, Product> ProductDict = productDict;
+    private readonly Dictionary<Guid, Offer> OffersDict = offersDict ?? [];
+
     /// <summary>
     /// Processes a new order for a specified customer.
     /// This function updates the product quantities based on the customer's cart,
@@ -45,14 +51,17 @@ public static class OrderOrchestratorService
     /// <returns>
     ///     A Result object containing the created order if the process is successful. In case of errors (e.g., empty cart, unavailable products), it returns a list of these errors.
     /// </returns>
-    public static Result<Order> CreateOrder(
+    public Result<Order> CreateOrder(
         Customer customer,
-        Dictionary<Guid, Product> productDict,
-        Dictionary<Guid, Offer> offersDict,
         ShippingCompany shippingCompany,
         string shippingCompanyAddress,
         string phoneNumber)
     {
+        if (offersDict is null)
+        {
+            return DomainError.Offers.UnintializedOffersDict;
+        }
+
         var cartItems = customer
             .Cart
             .CartItems
@@ -95,26 +104,10 @@ public static class OrderOrchestratorService
             }
 
             var offer = offersDict[cartItem.ItemId];
-            var pricingStartegy = OfferPricingStrategyFactory.GetStrategy(offer);
-            var productToPrice = pricingStartegy.Handle(offer, productDict);
+            var offerAdditionStrategy = OfferAdditionStrategyFactory
+                .GetStrategy(offer, productDict);
 
-
-            foreach (var item in productToPrice)
-            {
-                var addItemResult = order.AddItems(
-                    item.Key,
-                    item.Value,
-                    cartItem.Quantity,
-                    ItemType.Offer,
-                    offer.Id);
-
-                if (addItemResult.IsError)
-                {
-                    errors.AddRange(addItemResult.Errors);
-                }
-            }
-
-            order.AddRequestedOffer(cartItem.ItemId);
+            offerAdditionStrategy.Handle(order, cartItem.Quantity);
         }
 
         if (errors.Count > 0)
@@ -140,12 +133,8 @@ public static class OrderOrchestratorService
     ///     A Result indicating whether the approval was successful (Result.Updated).
     ///     If errors occur during approval, the Result will contain a list of error details.
     /// </returns>
-    public static Result<Updated> Approve(
-        Order order,
-        Dictionary<Guid, Product> productDict)
+    public Result<Updated> Approve(Order order)
     {
-
-
         if (order.LineItems is null)
         {
             return DomainError.Orders.EmptyLineItems;
@@ -183,6 +172,46 @@ public static class OrderOrchestratorService
         return Result.Updated;
     }
 
+    public Result<Updated> UpdateOffersItems(
+        Order order,
+        Dictionary<Guid, int> offerToAdd,
+        Dictionary<Guid, int> offersToDelete)
+    {
+        List<Error> errors = [];
+        foreach (var items in offerToAdd)
+        {
+            var offerAdditionStrategy =
+                OfferAdditionStrategyFactory.GetStrategy(OffersDict[items.Key], ProductDict);
+
+            var additionResult = offerAdditionStrategy.Handle(order, items.Value);
+
+            if (additionResult.IsError)
+            {
+                errors.AddRange(additionResult.Errors);
+            }
+        }
+
+        foreach (var item in offersToDelete)
+        {
+            var offerRemovalStrategy =
+                OfferRemovalStrategyFactory.GetStrategy(OffersDict[item.Key]);
+
+            var removalResult = offerRemovalStrategy.Handle(order, item.Value);
+
+            if (removalResult.IsError)
+            {
+                errors.AddRange(removalResult.Errors);
+            }
+        }
+
+        if (errors.Count > 0)
+        {
+            return errors;
+        }
+
+        return Result.Updated;
+    }
+
     /// <summary>
     /// Updates the items in the order based on the provided dictionaries.
     /// </summary>
@@ -202,23 +231,26 @@ public static class OrderOrchestratorService
     ///     A result indicating whether the update was successful (Result.Updated) or any errors that occurred during the update.
     ///     If errors occur, the result will contain a list of error details.
     /// </returns>
-    public static Result<Updated> UpdateItems(
+    public Result<Updated> UpdateProductItems(
         Order order,
-        Dictionary<Guid, Product> productIdToProduct,
         Dictionary<Guid, int> itemsToAddQuantities,
         Dictionary<Guid, int> itemsToDeleteQuantities)
     {
-        if (order.Status == Orders.Enums.OrderStatus.Canceled)
-        {
-            return DomainError.Orders.InvalidStatus(order.Status);
-        }
 
         List<Error> errors = [];
         foreach (var productId in itemsToAddQuantities.Keys)
         {
-            if (!productIdToProduct.TryGetValue(productId, out var product))
+
+            if (!ProductDict.TryGetValue(productId, out var product))
             {
                 errors.Add(DomainError.Products.NotFound);
+                continue;
+            }
+
+            var productValidation = ValidateProductStatus(product);
+            if (productValidation.IsError)
+            {
+                errors.AddRange(productValidation.Errors);
                 continue;
             }
 
@@ -237,14 +269,19 @@ public static class OrderOrchestratorService
 
         foreach (var productId in itemsToDeleteQuantities.Keys)
         {
-            if (!productIdToProduct.TryGetValue(productId, out var product))
+            if (!ProductDict.TryGetValue(productId, out var product))
             {
                 errors.Add(DomainError.Products.NotFound);
                 continue;
             }
 
             product.IncreaseQuantity(itemsToDeleteQuantities[productId]);
-            order.RemoveItems(product.Id, itemsToDeleteQuantities[productId]);
+            var removalResult = order.RemoveItems(product.Id, itemsToDeleteQuantities[productId]);
+            if (removalResult.IsError)
+            {
+                errors.AddRange(removalResult.Errors);
+            }
+
         }
 
         if (errors.Count > 0)
@@ -255,25 +292,35 @@ public static class OrderOrchestratorService
         return Result.Updated;
     }
 
-    private static List<Error> ValidateProductsStatus(Dictionary<Guid, Product> productDict)
+    private List<Error> ValidateProductsStatus(Dictionary<Guid, Product> productDict)
     {
         var errors = new List<Error>();
         foreach (var product in productDict.Values)
         {
             if (product.Status != ProductStatus.Active)
             {
-                errors.Add(product.Status switch
-                {
-                    ProductStatus.Deleted =>
-                        DomainError.Products.Deleted(product.Name),
-                    ProductStatus.OutOfStock =>
-                        DomainError.Products.OutOfStock(product.Name),
-                    _ =>
-                        DomainError.Products.InvalidState(product.Name)
-                });
+                var result = ValidateProductStatus(product);
+
+                if (result.IsError)
+                    errors.AddRange(result.Errors);
             }
         }
 
         return errors;
+    }
+
+    private Result<Success> ValidateProductStatus(Product product)
+    {
+
+        return product.Status != ProductStatus.Active ?
+            product.Status switch
+            {
+                ProductStatus.Deleted =>
+                    DomainError.Products.Deleted(product.Name),
+                ProductStatus.OutOfStock =>
+                    DomainError.Products.OutOfStock(product.Name),
+                _ =>
+                    DomainError.Products.InvalidState(product.Name)
+            } : Result.Success;
     }
 }
