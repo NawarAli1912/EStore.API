@@ -6,7 +6,8 @@ namespace Infrastructure.Persistence.Common;
 public class ListOfIdsConverter(ConverterMappingHints? mappingHints = null)
     : ValueConverter<List<Guid>, string>(
         v => string.Join(',', v),
-        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Guid.Parse).ToList(),
+        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(Guid.Parse).ToList(),
         mappingHints)
 {
 }

@@ -5,7 +5,8 @@ namespace Application.Products.Create;
 
 public record CreateProductsCommand(
     Guid RequestId,
-    List<CreateProductItems> Items) : IdempotentCommand<Result<CreateProductsResult>>(RequestId);
+    List<CreateProductItems> Items)
+    : IdempotentCommand<Result<CreateProductsResult>>(RequestId);
 
 public record CreateProductItems(
     string Name,

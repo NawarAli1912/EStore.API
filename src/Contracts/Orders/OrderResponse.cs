@@ -4,24 +4,22 @@ namespace Contracts.Orders;
 
 public record OrderResponse(
     Guid Id,
-    string Code,
     Guid CustomerId,
-    OrderStatus Status,
+    string Code,
     ShippingInfoResponse ShippingInfo,
+    OrderStatus Status,
     DateTime CreatedAt,
     DateTime ModifiedAt,
     decimal TotalPrice,
-    List<LineItemResponse> LineItems
+    List<OrderItemResponse> LineItems
     );
 
 public record ShippingInfoResponse(
     ShippingCompany ShippingCompany,
     string ShippingComapnyLocation,
-    string PhoneNumber
-    );
+    string PhoneNumber);
 
-public record LineItemResponse(
+public record OrderItemResponse(
     Guid ProductId,
     int Quantity,
-    decimal Price
-    );
+    decimal Price);

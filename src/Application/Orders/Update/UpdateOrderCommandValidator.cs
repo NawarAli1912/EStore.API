@@ -1,83 +1,142 @@
 ﻿namespace Application.Orders.Update;
 using FluentValidation;
-using Microsoft.IdentityModel.Tokens;
 
 public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
 {
     public UpdateOrderCommandValidator()
     {
         RuleFor(command => command.Id)
-            .NotEmpty().WithMessage("Order ID is required.");
+            .NotEmpty()
+            .WithMessage("Order ID is required.");
 
-        RuleFor(command => command.ShippingInfo)
-            .SetValidator(new UpdateShippingInfoValidator());
+        When(command => command.ShippingInfo is not null, () =>
+        {
+            RuleFor(command => command.ShippingInfo!.ShippingCompany)
+                .IsInEnum()
+                .When(info => info.ShippingInfo!.ShippingCompany.HasValue)
+                .WithMessage("Shipping company must be a valid enum value");
 
-        RuleFor(command => command.DeleteLineItems)
-            .Must(lineItems => lineItems == null || lineItems.All(item => item != null))
-            .WithMessage("Delete line items list cannot contain null elements.");
+            RuleFor(command => command.ShippingInfo!.ShippingComapnyLocation)
+                .NotEmpty()
+                .When(info => info.ShippingInfo!.ShippingComapnyLocation is not null)
+                .WithMessage("Shipping company location must not be empty");
 
-        RuleForEach(command => command.DeleteLineItems)
-            .SetValidator(new LineItemUpdateValidator());
+            RuleFor(command => command.ShippingInfo!.PhoneNumber)
+                .Matches(@"^\+9639[5-9]\d{7}$")
+                .When(info => info.ShippingInfo!.PhoneNumber is not null)
+                .WithMessage("Invalid phone number.");
+        });
 
-        RuleFor(command => command.AddLineItems)
-            .Must(lineItems => lineItems == null || lineItems.All(item => item != null))
-            .WithMessage("Add line items list cannot contain null elements.");
+        When(command => command.AddProducts is not null, () =>
+        {
+            RuleForEach(command => command.AddProducts)
+                 .SetValidator(new ProductItemValidator());
 
-        RuleForEach(command => command.AddLineItems)
-            .SetValidator(new LineItemUpdateValidator());
+            RuleFor(command => command.AddProducts)
+                .Must(BeUniqueProduct)
+                .WithMessage("Product IDs in AddProducts must be unique");
 
-        RuleFor(command => command.DeleteLineItems)
-           .Must(BeUniqueByProductId)
-           .WithMessage("Delete line items list must not contain duplicate products.");
+        });
 
-        RuleFor(command => command.AddLineItems)
-            .Must(BeUniqueByProductId)
-            .WithMessage("Add line items list must not contain duplicate products.");
+        When(command => command.DeleteProducts is not null, () =>
+        {
+            RuleForEach(command => command.DeleteProducts)
+            .SetValidator(new ProductItemValidator());
 
-        RuleFor(command => command)
-            .Must(command => NotOverlap(command.DeleteLineItems, command.AddLineItems))
-            .WithMessage("Delete and Add line items lists must not contain overlapping products.");
+            RuleFor(command => command.DeleteProducts)
+            .Must(BeUniqueProduct)
+            .WithMessage("Product IDs in DeleteProducts must be unique");
+        });
+
+        When(command => command.AddOffers is not null, () =>
+        {
+            RuleForEach(command => command.AddOffers)
+                .SetValidator(new OfferItemValidator());
+
+            RuleFor(command => command.AddOffers)
+            .Must(BeUniqueOffer)
+            .WithMessage("Offer IDs in AddOffers must be unique");
+        });
+
+        When(command => command.DeleteOffers is not null, () =>
+        {
+            RuleForEach(command => command.DeleteOffers)
+                .SetValidator(new OfferItemValidator());
+
+            RuleFor(command => command.DeleteOffers)
+           .Must(BeUniqueOffer)
+           .WithMessage("Offer IDs in DeleteOffers must be unique");
+
+        });
+
+
+        When(command => command.AddProducts is not null
+            && command.DeleteProducts is not null, () =>
+        {
+            RuleFor(command => command)
+            .Must(command => !HaveOverlappingProductIds(command.AddProducts, command.DeleteProducts))
+            .WithMessage("Product IDs in AddProducts and DeleteProducts must not overlap");
+        });
+
+        When(command => command.AddOffers is not null
+            && command.DeleteOffers is not null, () =>
+        {
+            RuleFor(command => command)
+            .Must(command => !HaveOverlappingOfferIds(command.AddOffers, command.DeleteOffers))
+            .WithMessage("Offer IDs in AddOffers and DeleteOffers must not overlap");
+        });
     }
 
-    private bool BeUniqueByProductId(List<LineItemUpdate> lineItems)
+    private bool BeUniqueProduct(List<ProductItem> products)
     {
-        return lineItems.GroupBy(item => item.ProductId).All(g => g.Count() == 1);
+        var productIds = products.Select(p => p.ProductId).ToList();
+        return productIds.Distinct().Count() == productIds.Count;
     }
 
-    private bool NotOverlap(List<LineItemUpdate> deleteItems, List<LineItemUpdate> addItems)
+    private bool BeUniqueOffer(List<OfferItem> offers)
     {
-        var deleteProductIds = deleteItems.Select(item => item.ProductId).ToHashSet();
-        var addProductIds = addItems.Select(item => item.ProductId);
+        var offerIds = offers.Select(o => o.OfferId).ToList();
+        return offerIds.Distinct().Count() == offerIds.Count;
+    }
 
-        return !addProductIds.Any(deleteProductIds.Contains);
+    private bool HaveOverlappingProductIds(List<ProductItem> addProducts, List<ProductItem> deleteProducts)
+    {
+        var addProductIds = new HashSet<Guid>(addProducts.Select(p => p.ProductId));
+        return deleteProducts.Any(p => addProductIds.Contains(p.ProductId));
+    }
+
+    private bool HaveOverlappingOfferIds(List<OfferItem> addOffers, List<OfferItem> deleteOffers)
+    {
+        var addOfferIds = new HashSet<Guid>(addOffers.Select(o => o.OfferId));
+        return deleteOffers.Any(o => addOfferIds.Contains(o.OfferId));
     }
 }
 
-public class LineItemUpdateValidator : AbstractValidator<LineItemUpdate>
+public class ProductItemValidator : AbstractValidator<ProductItem>
 {
-    public LineItemUpdateValidator()
+    public ProductItemValidator()
     {
-        RuleFor(item => item.ProductId)
-            .NotEmpty().WithMessage("Product ID is required.");
+        RuleFor(product => product.ProductId)
+            .NotEmpty()
+            .WithMessage("Product ID must not be empty");
 
-        RuleFor(item => item.Quantity)
-            .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+        RuleFor(product => product.Quantity)
+            .GreaterThan(0)
+            .WithMessage("Quantity must be greater than zero");
     }
 }
 
-public class UpdateShippingInfoValidator : AbstractValidator<UpdateShippingInfo>
+public class OfferItemValidator : AbstractValidator<OfferItem>
 {
-    public UpdateShippingInfoValidator()
+    public OfferItemValidator()
     {
-        RuleFor(info => info.ShippingComapnyLocation)
-            .MaximumLength(255).When(info => info.ShippingCompany.HasValue)
-            .WithMessage("Shipping company location is required.");
+        RuleFor(offer => offer.OfferId)
+            .NotEmpty()
+            .WithMessage("Offer ID must not be empty");
 
-
-        RuleFor(info => info.PhoneNumber)
-            .Matches(@"^\+9639[5-9]\d{7}$")
-            .When(info => !info.PhoneNumber.IsNullOrEmpty())
-            .WithMessage("Invalid phone number.");
+        RuleFor(offer => offer.Quantity)
+            .GreaterThan(0)
+            .WithMessage("Quantity must be greater than zero");
     }
 }
 

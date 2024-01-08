@@ -32,14 +32,14 @@ public class OrdersMappingConfig : IRegister
             .Map(dest => dest, src => src.Item2);
     }
 
-    private List<LineItemResponse> MapLineItemsToLineItemsResponse(List<LineItem> src)
+    private List<OrderItemResponse> MapLineItemsToLineItemsResponse(List<LineItem> src)
     {
-        List<LineItemResponse> result = [];
+        List<OrderItemResponse> result = [];
 
         var groups = src.GroupBy(item => item.ProductId);
         foreach (var group in groups)
         {
-            result.Add(new LineItemResponse(
+            result.Add(new OrderItemResponse(
                 group.Key,
                 group.Count(),
                 group.Select(item => item.Price).Sum()));

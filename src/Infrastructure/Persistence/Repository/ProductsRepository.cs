@@ -5,6 +5,7 @@ using Dapper;
 using Domain.Categories;
 using Domain.ModelsSnapshots;
 using Domain.Products;
+using Microsoft.EntityFrameworkCore;
 using Nest;
 
 namespace Infrastructure.Persistence.Repository;
@@ -123,7 +124,6 @@ public sealed class ProductsRepository(
     public async Task<(List<Product>, int)> ListByFilter(ProductsFilter filter, int pageIndex, int pageSize)
     {
         var baseQuery = new QueryContainerDescriptor<ProductSnapshot>();
-
         var searchTermQuery = !string.IsNullOrEmpty(filter.SearchTerm) ?
                 baseQuery.MultiMatch(m => m
                     .Query(filter.SearchTerm)
@@ -160,11 +160,27 @@ public sealed class ProductsRepository(
             .Must(searchTermQuery)
             .Filter(priceRangeQuery, quantityRangeQuery, statusQuery, offersQuery));
 
-        var searchResponse = await _elasticClient.SearchAsync<ProductSnapshot>(s => s
-                .Query(_ => query)
-                .From((pageIndex - 1) * pageSize)
-                .Size(pageSize));
+        (List<Product>, int) result;
+        try
+        {
+            var searchResponse = await _elasticClient.SearchAsync<ProductSnapshot>(s => s
+                    .Query(_ => query)
+                    .From((pageIndex - 1) * pageSize)
+                    .Size(pageSize));
 
+            result = ProcessElasticsearchResponse(searchResponse);
+
+        }
+        catch
+        {
+            result = await FallBackToDbQuery(filter, pageIndex, pageSize);
+        }
+
+        return result;
+    }
+
+    private (List<Product>, int) ProcessElasticsearchResponse(ISearchResponse<ProductSnapshot> searchResponse)
+    {
         var products = searchResponse.Documents.ToList();
         var categoriesDict = new Dictionary<Guid, List<Category>>();
         foreach (var product in products)
@@ -200,5 +216,69 @@ public sealed class ProductsRepository(
                     p.AssociatedOffers)));
 
         return (result, (int)searchResponse.Total);
+    }
+
+    private async Task<(List<Product>, int)> FallBackToDbQuery(ProductsFilter filter, int pageIndex, int pageSize)
+    {
+        var query = _context
+            .Products
+            .Include(p => p.Categories)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.SearchTerm))
+        {
+            query = query.Where(p => p.Name.Contains(filter.SearchTerm) || p.Description.Contains(filter.SearchTerm));
+        }
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(p => p.CustomerPrice >= filter.MinPrice.Value);
+        }
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(p => p.CustomerPrice <= filter.MaxPrice.Value);
+        }
+
+        if (filter.MinQuantity.HasValue)
+        {
+            query = query.Where(p => p.Quantity >= filter.MinQuantity.Value);
+        }
+
+        if (filter.MaxQuantity.HasValue)
+        {
+            query = query.Where(p => p.Quantity <= filter.MaxQuantity.Value);
+        }
+
+        if (filter.ProductStatus != null && filter.ProductStatus.Any())
+        {
+            query = query.Where(p => filter.ProductStatus.Contains(p.Status));
+        }
+
+        if (filter.OnOffer.HasValue)
+        {
+            if (filter.OnOffer.Value)
+            {
+                query = query
+                    .Where(p => p.AssociatedOffers.Any());
+            }
+            else
+            {
+                query = query
+                    .Where(p => !p.AssociatedOffers.Any());
+            }
+        }
+
+
+        var totalProducts = await query.CountAsync();
+        var products = await query
+            .OrderBy(p => p.Id)
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var productsWithOffers = products.Where(p => p.AssociatedOffers.Any()).ToList();
+
+        return (products, totalProducts);
     }
 }

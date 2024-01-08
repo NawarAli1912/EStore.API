@@ -7,23 +7,22 @@ namespace Application.Orders.Update;
 public record UpdateOrderCommand(
     Guid Id,
     UpdateShippingInfo? ShippingInfo,
-    List<LineItemUpdate> DeleteLineItems,
-    List<LineItemUpdate> AddLineItems,
-    List<OfferUpdate> AddOffers,
-    List<OfferUpdate> DeleteOffers
+    List<ProductItem> DeleteProducts,
+    List<ProductItem> AddProducts,
+    List<OfferItem> AddOffers,
+    List<OfferItem> DeleteOffers
     ) : IRequest<Result<Updated>>;
-
-public record DeleteLineItem(Guid Id);
-
-public record LineItemUpdate(
-    Guid ProductId,
-    int Quantity);
 
 public record UpdateShippingInfo(
     ShippingCompany? ShippingCompany,
     string? ShippingComapnyLocation,
     string? PhoneNumber);
 
-public record OfferUpdate(
+
+public record ProductItem(
+    Guid ProductId,
+    int Quantity);
+
+public record OfferItem(
     Guid OfferId,
     int Quantity);

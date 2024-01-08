@@ -4,7 +4,6 @@ using Domain.Categories;
 using Domain.Customers;
 using Domain.Offers;
 using Domain.Orders;
-using Domain.Orders.Entities;
 using Domain.Products;
 using Infrastructure.Persistence.FriendlyIdentifiers;
 using Infrastructure.Persistence.Outbox;
@@ -37,8 +36,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Offer> Offers { get; set; } = default!;
 
     public DbSet<FriendlyIdSequence> FriendlyIdSequences { get; set; } = default!;
-
-    public DbSet<LineItem> LineItems { get; set; } = default!;
 
     ChangeTracker IApplicationDbContext.ChangeTracker { get => ChangeTracker; }
 

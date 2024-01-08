@@ -41,7 +41,7 @@ public class Product : AggregateRoot
 
     public IReadOnlyCollection<ProductReview> Reviews => _reviews;
 
-    public IReadOnlyList<Guid> AssociatedOffers => _associatedOffers;
+    public List<Guid> AssociatedOffers => _associatedOffers.ToList();
 
     public byte[] Version => _version;
 

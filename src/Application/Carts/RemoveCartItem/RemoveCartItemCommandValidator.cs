@@ -6,6 +6,10 @@ public sealed class RemoveCartItemCommandValidator : AbstractValidator<RemoveCar
 {
     public RemoveCartItemCommandValidator()
     {
+        RuleFor(command => command.CustomerId)
+           .NotEmpty()
+           .WithMessage("Customer ID is required.");
+
         RuleFor(command => command.Quantity)
             .NotNull()
             .GreaterThan(0);

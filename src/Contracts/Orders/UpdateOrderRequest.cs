@@ -4,15 +4,11 @@ namespace Contracts.Orders;
 
 public record UpdateOrderRequest(
     ShippingInfoRequest? ShippingInfo,
-    List<LineItemRequest>? DeleteLineItems,
-    List<LineItemRequest>? AddLineItems,
-    List<OfferUpdate>? AddOffers,
-    List<OfferUpdate>? DeleteOffers
+    List<ProductItem>? DeleteProducts,
+    List<ProductItem>? AddProducts,
+    List<OfferItem>? AddOffers,
+    List<OfferItem>? DeleteOffers
     );
-
-public record LineItemRequest(
-    Guid ProductId,
-    int Quantity);
 
 public record ShippingInfoRequest(
     ShippingCompany? ShippingCompany,
@@ -20,6 +16,11 @@ public record ShippingInfoRequest(
     string? PhoneNumber
     );
 
-public record OfferUpdate(
+public record ProductItem(
+    Guid ProductId,
+    int Quantity);
+
+
+public record OfferItem(
     Guid OfferId,
     int Quantity);

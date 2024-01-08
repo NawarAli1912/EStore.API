@@ -1,5 +1,4 @@
 ﻿using Domain.Products;
-using Infrastructure.Persistence.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -32,12 +31,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder
             .Property("_version")
             .HasColumnName("Version")
-            .IsRowVersion();
+        .IsRowVersion();
 
         builder
-            .Property<List<Guid>>("_associatedOffers")
-            .HasColumnName("AssociatedOffers")
-            .HasListOfIdsConverter();
+            .Property(p => p.AssociatedOffers)
+            .HasField("_associatedOffers");
 
         builder
             .HasIndex(p => p.Code)

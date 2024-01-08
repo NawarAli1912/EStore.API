@@ -15,23 +15,30 @@ public class CreateProductItemsValidator : AbstractValidator<CreateProductItems>
 {
     public CreateProductItemsValidator()
     {
-        RuleFor(item => item.Name)
-            .NotEmpty().WithMessage("Product name is required.")
-            .MaximumLength(100).WithMessage("Product name cannot exceed 100 characters.");
+        RuleFor(command => command.Name)
+                .NotEmpty()
+                .WithMessage("Name cannot be empty.")
+                .Length(2, 100)
+                .WithMessage("Name must be between 2 and 100 characters.");
 
-        RuleFor(item => item.Description)
-            .NotEmpty().WithMessage("Product description is required.")
-            .MaximumLength(500).WithMessage("Product description cannot exceed 500 characters.");
+        RuleFor(command => command.Description)
+                .NotEmpty()
+                .WithMessage("Description cannot be empty.")
+                .Length(10, 500)
+                .WithMessage("Description must be between 10 and 500 characters.");
 
-        RuleFor(item => item.Quantity)
-            .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+        RuleFor(command => command.Quantity)
+               .GreaterThan(0)
+               .WithMessage("Quantity must be greater than 0.");
 
-        RuleFor(item => item.CustomerPrice)
-            .GreaterThan(0).WithMessage("Customer price must be greater than 0.");
+        RuleFor(command => command.PurchasePrice)
+                .GreaterThanOrEqualTo(0m)
+                .WithMessage("Purchase price must be greater than or equal to 0.");
 
-        RuleFor(item => item.PurchasePrice)
-            .GreaterThan(0).WithMessage("Purchase price must be greater than 0.")
-            .LessThan(item => item.CustomerPrice)
+        RuleFor(command => command.CustomerPrice)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Customer price must be greater than or equal to 0.")
+                .GreaterThanOrEqualTo(command => command.CustomerPrice)
                 .WithMessage("Purchase price must be less than the customer price.");
     }
 }

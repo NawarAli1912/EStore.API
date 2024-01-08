@@ -55,8 +55,8 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
         }
 
         var productsIds = order.LineItems.Select(o => o.ProductId)
-            .Concat(request.AddLineItems.Select(item => item.ProductId))
-            .Concat(request.DeleteLineItems.Select(item => item.ProductId))
+            .Concat(request.AddProducts.Select(item => item.ProductId))
+            .Concat(request.DeleteProducts.Select(item => item.ProductId))
             .Concat(relatedOffersDict.Values.SelectMany(offer => offer.ListRelatedProductsIds()))
             .ToHashSet();
 
@@ -77,9 +77,9 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
 
         var updateProductItemsResult = OrderOrchestratorService.UpdateProductItems(
             order,
-            request.AddLineItems
+            request.AddProducts
                 .ToDictionary(i => i.ProductId, i => i.Quantity),
-            request.DeleteLineItems
+            request.DeleteProducts
                 .ToDictionary(i => i.ProductId, i => i.Quantity));
 
         if (updateProductItemsResult.IsError)
@@ -105,16 +105,6 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
                 request.ShippingInfo.ShippingCompany,
                 request.ShippingInfo.ShippingComapnyLocation,
                 request.ShippingInfo.PhoneNumber);
-        }
-
-        foreach (var entry in _context.ChangeTracker.Entries())
-        {
-            var entity = entry.Entity;
-            var state = entry.State;
-            var entityName = entity.GetType().Name;
-            var entityId = entity.GetType().GetProperty("Id")?.GetValue(entity);
-
-            Console.WriteLine($"Entity: {entityName}, ID: {entityId}, State: {state}");
         }
 
         _context.Orders.Update(order);
