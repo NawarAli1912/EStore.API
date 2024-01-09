@@ -5,6 +5,7 @@ using Domain.Products.Enums;
 using Domain.Products.Events;
 using Domain.Products.ValueObjects;
 using SharedKernel.Primitives;
+using System.Collections.Immutable;
 using Result = SharedKernel.Primitives.Result;
 
 namespace Domain.Products;

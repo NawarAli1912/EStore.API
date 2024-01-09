@@ -22,23 +22,35 @@ public class ApiController : ControllerBase
         }
 
         HttpContext.Items[HttpContextItemKeys.Errors] = errors;
-
-        // ToDo: Handle multiple errors in different way
-        var firstError = errors[0];
-        var statusCode = firstError.Type switch
+        if (errors.Count > 1)
         {
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError
+            var aggregatedDetails =
+                string.Join("; ", errors.Select(e => e.Description));
+            var aggregatedTitles =
+                string.Join(", ", errors.Select(e => GetTitle(e.Type)));
+
+            return Problem(
+                title: aggregatedTitles,
+                detail: aggregatedDetails,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        var error = errors[0];
+
+        ProblemDetails problem = new ProblemDetails
+        {
+
         };
 
-        return Problem(statusCode: statusCode, title: firstError.Description);
+        return Problem(
+            title: GetTitle(error.Type),
+            detail: error.Description,
+            statusCode: GetStatusCode(error.Type));
     }
 
     private IActionResult ValidationProblem(List<Error> errors)
     {
-        var modelStateDictionary = new ModelStateDictionary();
+        ModelStateDictionary modelStateDictionary = [];
 
         foreach (var error in errors)
         {
@@ -49,4 +61,25 @@ public class ApiController : ControllerBase
 
         return ValidationProblem(modelStateDictionary);
     }
+
+    private int GetStatusCode(ErrorType type) =>
+        type switch
+        {
+            ErrorType.Failure => StatusCodes.Status400BadRequest,
+            ErrorType.Validation => StatusCodes.Status400BadRequest,
+            ErrorType.NotFound => StatusCodes.Status404NotFound,
+            ErrorType.Conflict => StatusCodes.Status409Conflict,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+    private string GetTitle(ErrorType type) =>
+        type switch
+        {
+            ErrorType.Failure => "Bad Request",
+            ErrorType.Validation => "Bad Request",
+            ErrorType.NotFound => "Not Found",
+            ErrorType.Conflict => "Conflict",
+            _ => "Server Failure"
+        };
+
 }

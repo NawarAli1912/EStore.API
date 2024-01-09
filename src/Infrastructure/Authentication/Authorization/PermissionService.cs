@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Authentication.Authorization;
-public sealed class PermissionService(UserManager<IdentityUser> userManager, RoleManager<Role> roleManager) : IPermissionService
+public sealed class PermissionService(
+    UserManager<IdentityUser> userManager,
+    RoleManager<Role> roleManager) : IPermissionService
 {
     private readonly UserManager<IdentityUser> _userManager = userManager;
     private readonly RoleManager<Role> _roleManager = roleManager;

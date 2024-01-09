@@ -5,5 +5,5 @@ namespace Infrastructure.Authentication.Authorization;
 public sealed class PermissionRequirement(Permissions permission)
         : IAuthorizationRequirement
 {
-    public Permissions Permissions { get; } = permission;
+    public Permissions Permission { get; } = permission;
 }

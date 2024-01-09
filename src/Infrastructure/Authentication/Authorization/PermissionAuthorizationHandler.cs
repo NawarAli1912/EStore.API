@@ -7,7 +7,9 @@ namespace Infrastructure.Authentication.Authorization;
 public sealed class PermissionAuthorizationHandler
     : AuthorizationHandler<PermissionRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        PermissionRequirement requirement)
     {
         var permissionClaim = context.User.Claims.FirstOrDefault(
             c => c.Type == CustomClaims.Permissions);
@@ -23,7 +25,7 @@ public sealed class PermissionAuthorizationHandler
         }
 
         var userPermissions = (Permissions)permissionClaimValue;
-        if ((userPermissions & requirement.Permissions) != 0)
+        if ((userPermissions & requirement.Permission) != 0)
         {
             context.Succeed(requirement);
         }

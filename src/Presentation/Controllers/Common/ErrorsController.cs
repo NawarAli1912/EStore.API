@@ -13,6 +13,6 @@ public class ErrorsController : ControllerBase
             .Features
             .Get<IExceptionHandlerFeature>()?.Error;
 
-        return Problem(title: exception?.Message);
+        return Problem(title: "Server error.", detail: exception!.Message);
     }
 }

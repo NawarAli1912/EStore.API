@@ -30,7 +30,7 @@ public static partial class DomainError
             "Product.NotExists", $"The product {name}," +
             $" doesn't exists.");
 
-        public static Error InvalidState(string name) => Error.Unexpected(
+        public static Error InvalidState(string name) => Error.Validation(
             "Product.InvalidState",
             $"The product {name}, is on an invalid state.");
 
@@ -40,7 +40,7 @@ public static partial class DomainError
 
         public static Error NotPresentOnTheDictionary =>
             Error.Unexpected("Product.NotPresentOnTheDictionary",
-            $"The product was not present in the dictionary.");
+            $"The product was not present in the dictionary, contact the development team.");
     }
 
     public static class Ratings

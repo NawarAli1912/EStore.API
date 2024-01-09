@@ -10,58 +10,39 @@ using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Domain.Services;
-public class OrderOrchestratorService(
-    Dictionary<Guid, Product> productDict,
-    Dictionary<Guid, Offer>? offersDict = default)
+public class OrderOrchestratorService
 {
-    private readonly Dictionary<Guid, Product> ProductDict = productDict;
-    private readonly Dictionary<Guid, Offer> OffersDict = offersDict ?? [];
+    private readonly Dictionary<Guid, Product> _productDict;
+    private readonly Dictionary<Guid, Offer> _offersDict;
+
+    public OrderOrchestratorService(Dictionary<Guid, Product> productDict, Dictionary<Guid, Offer>? offersDict = null)
+    {
+        _productDict = productDict;
+        _offersDict = offersDict ?? [];
+    }
 
     /// <summary>
-    /// Processes a new order for a specified customer.
-    /// This function updates the product quantities based on the customer's cart,
-    /// integrates shipping information, and handles potential errors.
-    /// It starts by validating the cart contents,
-    /// then creates an order using customer and shipping details.
-    /// The function assesses product availability,
-    /// calculates prices (including for offers),
-    /// and adds these items to the order.
-    /// If errors arise during this process, such as with product availability,
-    /// the function returns these errors. On successful completion,
-    /// the customer's cart is cleared, and the order is returned.
+    /// Creates an order for a customer, processing items from their cart.
+    /// This method first ensures that necessary data structures (like offersDict) are initialized.
+    /// It then validates the customer's cart for any items.
+    /// If valid, it proceeds to create an order and adds each cart item to the order,
+    /// handling products and offers differently.
+    /// The method validates product statuses and manages addition strategies for offers.
+    /// It accumulates any errors encountered during this process. After successfully adding all items,
+    /// it clears the customer's cart and returns the created order.
+    /// In case of errors at any stage, appropriate error messages are returned.
     /// </summary>
-    /// <param name="customer">
-    ///     The customer for whom the order is being created.
-    /// </param>
-    /// <param name="productDict">
-    ///     Dictionary mapping each product's ID to its corresponding product details.
-    /// </param>
-    /// <param name="offersDict">
-    ///     Dictionary holding offer information, keyed by offer ID.
-    /// </param>
-    /// <param name="shippingCompany">
-    ///     The shipping company to handle the order delivery.
-    /// </param>
-    /// <param name="shippingCompanyAddress">
-    ///     The address of the shipping company.
-    /// </param>
-    /// <param name="phoneNumber">
-    ///     Contact phone number for the order.
-    /// </param>
-    /// <returns>
-    ///     A Result object containing the created order if the process is successful. In case of errors (e.g., empty cart, unavailable products), it returns a list of these errors.
-    /// </returns>
+    /// <param name="customer">The customer placing the order, containing their cart items.</param>
+    /// <param name="shippingCompany">The shipping company to be used for delivering the order.</param>
+    /// <param name="shippingCompanyAddress">The address of the shipping company.</param>
+    /// <param name="phoneNumber">The contact phone number for the order.</param>
+    /// <returns>Returns an Order object if successful, or an error message if any issues arise during order creation.</returns>
     public Result<Order> CreateOrder(
         Customer customer,
         ShippingCompany shippingCompany,
         string shippingCompanyAddress,
         string phoneNumber)
     {
-        if (offersDict is null)
-        {
-            return DomainError.Offers.UnintializedOffersDict;
-        }
-
         var cartItems = customer
             .Cart
             .CartItems
@@ -78,7 +59,15 @@ public class OrderOrchestratorService(
             shippingCompanyAddress,
             phoneNumber);
 
-        var errors = ValidateProductsStatus(productDict);
+        var orderProductsIds = cartItems
+            .Select(ci => ci.ItemId)
+            .ToHashSet();
+        var errors = ValidateProductsStatus(
+            _productDict
+                    .Where(kv => orderProductsIds
+                    .Contains(kv.Key))
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+
         if (errors.Count > 0)
         {
             return errors;
@@ -88,7 +77,10 @@ public class OrderOrchestratorService(
         {
             if (cartItem.Type == ItemType.Product)
             {
-                var product = productDict[cartItem.ItemId];
+                if (!_productDict.TryGetValue(cartItem.ItemId, out var product))
+                {
+                    return DomainError.Products.NotPresentOnTheDictionary;
+                }
 
                 var addItemResult = order.AddItems(
                     product.Id,
@@ -103,9 +95,13 @@ public class OrderOrchestratorService(
                 continue;
             }
 
-            var offer = offersDict[cartItem.ItemId];
+            if (!_offersDict.TryGetValue(cartItem.ItemId, out var offer))
+            {
+                return DomainError.Offers.NotPresentOnTheDictionary;
+            }
+
             var offerAdditionStrategy = OfferAdditionStrategyFactory
-                .GetStrategy(offer, productDict);
+                .GetStrategy(offer, _productDict);
 
             offerAdditionStrategy.Handle(order, cartItem.Quantity);
         }
@@ -140,7 +136,7 @@ public class OrderOrchestratorService(
             return DomainError.Orders.EmptyLineItems;
         }
 
-        var errors = ValidateProductsStatus(productDict);
+        var errors = ValidateProductsStatus(_productDict);
         if (errors.Count > 0)
         {
             return errors;
@@ -152,7 +148,7 @@ public class OrderOrchestratorService(
 
         foreach (var group in lineItemsGroups)
         {
-            var product = productDict[group.Key];
+            var product = _productDict[group.Key];
 
             var decreaseQuantityResult = product.DecreaseQuantity(group.Count());
 
@@ -181,7 +177,7 @@ public class OrderOrchestratorService(
         foreach (var items in offerToAdd)
         {
             var offerAdditionStrategy =
-                OfferAdditionStrategyFactory.GetStrategy(OffersDict[items.Key], ProductDict);
+                OfferAdditionStrategyFactory.GetStrategy(_offersDict[items.Key], _productDict);
 
             var additionResult = offerAdditionStrategy.Handle(order, items.Value);
 
@@ -194,7 +190,7 @@ public class OrderOrchestratorService(
         foreach (var item in offersToDelete)
         {
             var offerRemovalStrategy =
-                OfferRemovalStrategyFactory.GetStrategy(OffersDict[item.Key]);
+                OfferRemovalStrategyFactory.GetStrategy(_offersDict[item.Key]);
 
             var removalResult = offerRemovalStrategy.Handle(order, item.Value);
 
@@ -241,7 +237,7 @@ public class OrderOrchestratorService(
         foreach (var productId in itemsToAddQuantities.Keys)
         {
 
-            if (!ProductDict.TryGetValue(productId, out var product))
+            if (!_productDict.TryGetValue(productId, out var product))
             {
                 errors.Add(DomainError.Products.NotFound);
                 continue;
@@ -269,7 +265,7 @@ public class OrderOrchestratorService(
 
         foreach (var productId in itemsToDeleteQuantities.Keys)
         {
-            if (!ProductDict.TryGetValue(productId, out var product))
+            if (!_productDict.TryGetValue(productId, out var product))
             {
                 errors.Add(DomainError.Products.NotFound);
                 continue;

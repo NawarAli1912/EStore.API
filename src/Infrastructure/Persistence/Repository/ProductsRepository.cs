@@ -41,7 +41,7 @@ public sealed class ProductsRepository(
                      c.Id AS CategoryId,
                      c.Name AS CategoryName,
                      c.ParentCategoryId,
-             	    DENSE_RANK() OVER (ORDER BY p.Id) AS ProductRank
+             	     DENSE_RANK() OVER (ORDER BY p.Id) AS ProductRank
                  FROM
                      Products p
                  JOIN
@@ -220,6 +220,58 @@ public sealed class ProductsRepository(
 
     private async Task<(List<Product>, int)> FallBackToDbQuery(ProductsFilter filter, int pageIndex, int pageSize)
     {
+
+        /*var baseQuery = @"
+                        WITH ProductsWithRowNum AS (
+                        SELECT
+                            p.Id,
+                            p.Name,
+                            p.Description,
+                            p.Quantity,
+                            p.PurchasePrice,
+                            p.CustomerPrice,
+                            c.Id AS CategoryId,
+                            c.Name AS CategoryName,
+                            c.ParentCategoryId,
+   	                        DENSE_RANK() OVER (ORDER BY p.Id) AS ProductRank
+                        FROM
+                            Products p
+                        JOIN
+                            CategoryProduct cp ON p.Id = cp.ProductsId
+                        JOIN
+                            Categories c ON cp.CategoriesId = c.Id
+	                    WHERE 
+		                    (@SearchTerm IS NULL OR P.Name LIKE '%' + @SearchTerm + '%' OR P.Description LIKE '%' + @SearchTerm + '%')
+		                    AND (@MinPrice IS NULL OR P.CustomerPrice >= @MinPrice)
+		                    AND (@MaxPrice IS NULL OR P.CustomerPrice <= @MaxPrice)
+		                    AND (@MinQuantity IS NULL OR P.Quantity >= @MinQuantity)
+		                    AND (@MaxQuantity IS NULL OR P.Quantity <= @MaxQuantity)
+		                    AND (
+			                    @OnOffer IS NULL
+			                    OR (
+				                    @OnOffer = 1 AND P.AssociatedOffers IS NOT NULL AND JSON_QUERY(P.AssociatedOffers) <> '[]'
+			                    )
+			                    OR (
+				                    @OnOffer = 0 AND (P.AssociatedOffers IS NULL OR JSON_QUERY(P.AssociatedOffers) = '[]')
+			                    )
+		                    ))
+                        SELECT
+                            Id,
+                            Name,
+                            Description,
+                            Quantity,
+                            PurchasePrice,
+                            CustomerPrice,
+                            CategoryId,
+                            CategoryName,
+                            ParentCategoryId
+                        FROM 
+	                        ProductsWithRowNum
+                        WHERE 
+                            ProductRank > (@PageIndex-1)*@PageIndex AND ProductRank <= ((@PageIndex-1)*@PageIndex) + @PageSize
+                        ORDER BY 
+                            Id
+                        ";*/
         var query = _context
             .Products
             .Include(p => p.Categories)

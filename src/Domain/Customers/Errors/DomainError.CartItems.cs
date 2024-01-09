@@ -6,7 +6,7 @@ public static partial class DomainError
 {
     public static class CartItems
     {
-        public static Error NegativeQuantity = Error.Conflict(
+        public static Error NegativeQuantity = Error.Validation(
             "CartItem.NegativeQuantity",
             "Invalid Quantity"
             );

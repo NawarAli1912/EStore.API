@@ -13,8 +13,8 @@ public static partial class DomainError
         public static Error InvalidStatus(OrderStatus status) =>
             Error.Validation("Order.InvalidStatus", $"Can't operate on the orders the status is {status}.");
 
-        public static Error EmptyLineItems => Error.Unexpected(
-            "Order.EmptyLineItems", "Can't operate on empty order.");
+        public static Error EmptyLineItems =>
+            Error.Unexpected("Order.EmptyLineItems", "Can't operate on empty order.");
     }
 
     public static class LineItem
@@ -26,7 +26,7 @@ public static partial class DomainError
         public static Error InvalidCreationData => Error.Unexpected(
             "LineItem.InvalidCreationData", "Can't create order item with the provided data.");
 
-        public static Error NotFound => Error.Validation(
+        public static Error NotFound => Error.NotFound(
             "LineItem.NotFound", "LineItem doesn't exists.");
     }
 }
