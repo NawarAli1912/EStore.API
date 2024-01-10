@@ -45,11 +45,11 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
                 .Concat(order.RequestedOffers)
                 .ToHashSet();
 
-        var relatedOffersDict = allOffers!
+        var relatedOffers = allOffers!
             .Where(o => relatedOffersIds.Contains(o.Id))
-            .ToDictionary(o => o.Id, o => o);
+            .ToList();
 
-        if (relatedOffersDict.Count != relatedOffersIds.Count)
+        if (relatedOffers.Count != relatedOffersIds.Count)
         {
             return DomainError.Offers.NotFound;
         }
@@ -57,23 +57,23 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
         var productsIds = order.LineItems.Select(o => o.ProductId)
             .Concat(request.AddProducts.Select(item => item.ProductId))
             .Concat(request.DeleteProducts.Select(item => item.ProductId))
-            .Concat(relatedOffersDict.Values.SelectMany(offer => offer.ListRelatedProductsIds()))
+            .Concat(relatedOffers.SelectMany(offer => offer.ListRelatedProductsIds()))
             .ToHashSet();
 
-        var productsDict = await _context
+        var requestedProducts = await _context
             .Products
             .Where(p => productsIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
+            .ToListAsync(cancellationToken);
 
 
-        if (productsDict.Count != productsIds.Count)
+        if (requestedProducts.Count != productsIds.Count)
         {
             return DomainError.Products.NotFound;
         }
 
 
         var OrderOrchestratorService =
-            new OrderOrchestratorService(productsDict, relatedOffersDict);
+            new OrderOrchestratorService(requestedProducts, relatedOffers);
 
         var updateProductItemsResult = OrderOrchestratorService.UpdateProductItems(
             order,

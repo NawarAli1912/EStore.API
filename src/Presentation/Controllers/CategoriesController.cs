@@ -61,7 +61,7 @@ public sealed class CategoriesController(ISender sender, IMapper mapper) : ApiCo
             _mapper.Map<UpdateCategoryCommand>((id, request)));
 
         return result.Match(
-            value => Ok(_mapper.Map<CategoryResponse>(value)),
+            _ => Ok(),
             Problem);
     }
 

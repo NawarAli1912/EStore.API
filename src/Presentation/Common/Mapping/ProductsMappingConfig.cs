@@ -17,8 +17,6 @@ public class ProductsMappingConfig : IRegister
             .Map(dest => dest.RequestId, src => src.Item1)
             .Map(dest => dest.Items, src => src.Item2.Items);
 
-        config.NewConfig<Product, CreateProductResponse>();
-
         config.NewConfig<Product, ProductDetailedResponse>();
 
         config.NewConfig<Product, ProductResponse>();
@@ -89,7 +87,6 @@ public class ProductsMappingConfig : IRegister
         ProductStatus.Active => Domain.Products.Enums.ProductStatus.Active,
         ProductStatus.OutOfStock => Domain.Products.Enums.ProductStatus.OutOfStock,
         ProductStatus.Deleted => Domain.Products.Enums.ProductStatus.Deleted,
-
         _ => throw new ArgumentException()
     };
 }

@@ -1,6 +1,5 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
-using Domain.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
@@ -8,11 +7,11 @@ using SharedKernel.Primitives;
 namespace Application.Products.Update;
 
 internal sealed class UpdateProductCommandHandler(IApplicationDbContext context)
-        : IRequestHandler<UpdateProductCommand, Result<Product>>
+        : IRequestHandler<UpdateProductCommand, Result<Updated>>
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result<Product>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Updated>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         List<Error> errors = [];
         var product = await _context
@@ -38,6 +37,6 @@ internal sealed class UpdateProductCommandHandler(IApplicationDbContext context)
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return updateProductResult.Value;
+        return Result.Updated;
     }
 }

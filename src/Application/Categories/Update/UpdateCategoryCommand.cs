@@ -1,5 +1,4 @@
-﻿using Domain.Categories;
-using MediatR;
+﻿using MediatR;
 using SharedKernel.Primitives;
 
 namespace Application.Categories.Update;
@@ -8,4 +7,4 @@ public record UpdateCategoryCommand(
     string? Name,
     Guid? ParentCategoryId,
     bool NullParent = false
-    ) : IRequest<Result<Category>>;
+    ) : IRequest<Result<Updated>>;

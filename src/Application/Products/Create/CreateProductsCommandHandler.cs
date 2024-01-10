@@ -9,12 +9,12 @@ using SharedKernel.Primitives;
 namespace Application.Products.Create;
 
 public sealed class CreateProductsCommandHandler(IApplicationDbContext context, IFriendlyIdGenerator friendlyIdGenerator) :
-    IRequestHandler<CreateProductsCommand, Result<CreateProductsResult>>
+    IRequestHandler<CreateProductsCommand, Result<Created>>
 {
     private readonly IApplicationDbContext _context = context;
     private readonly IFriendlyIdGenerator _friendlyIdGenerator = friendlyIdGenerator;
 
-    public async Task<Result<CreateProductsResult>> Handle(
+    public async Task<Result<Created>> Handle(
         CreateProductsCommand request,
         CancellationToken cancellationToken)
     {
@@ -71,6 +71,6 @@ public sealed class CreateProductsCommandHandler(IApplicationDbContext context, 
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new CreateProductsResult(products);
+        return Result.Created;
     }
 }

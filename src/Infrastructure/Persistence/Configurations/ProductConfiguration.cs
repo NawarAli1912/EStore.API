@@ -31,7 +31,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder
             .Property("_version")
             .HasColumnName("Version")
-        .IsRowVersion();
+            .IsRowVersion();
 
         builder
             .Property(p => p.AssociatedOffers)

@@ -1,5 +1,4 @@
-﻿using Domain.Products;
-using MediatR;
+﻿using MediatR;
 using SharedKernel.Primitives;
 
 namespace Application.Products.Update;
@@ -10,5 +9,5 @@ public record UpdateProductCommand(
     string? Description,
     int? Quantity,
     decimal? PurchasePrice,
-    decimal? CustomerPrice) : IRequest<Result<Product>>;
+    decimal? CustomerPrice) : IRequest<Result<Updated>>;
 

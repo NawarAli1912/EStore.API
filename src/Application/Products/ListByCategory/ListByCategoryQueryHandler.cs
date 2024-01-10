@@ -20,11 +20,9 @@ public sealed class ListByCategoryQueryHandler(
         var categoryIds = await _categoriesRepository
             .GetCategoryIdsInHierarchy(request.CategoryId);
 
-        var products = await _productsRepository
+        var result = await _productsRepository
             .ListByCategories(categoryIds, request.Page, request.PageSize);
 
-        var totalCount = await _productsRepository.GetProductCountByCategory(categoryIds);
-
-        return new ListProductResult([.. products], totalCount);
+        return new ListProductResult(result.Item1, result.Item2);
     }
 }

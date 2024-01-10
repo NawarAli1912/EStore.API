@@ -84,9 +84,7 @@ public sealed class OrdersController(ISender sender, IMapper mapper) : ApiContro
     {
         var result = await _sender.Send(new RejectOrderCommand(id));
 
-        return result.Match(
-            _ => Ok(),
-            Problem);
+        return result.Match(_ => Ok(), Problem);
     }
 
     [HttpPatch("{id:guid}/update")]
@@ -96,18 +94,15 @@ public sealed class OrdersController(ISender sender, IMapper mapper) : ApiContro
         var result = await _sender.Send(
             _mapper.Map<UpdateOrderCommand>((id, request)));
 
-        return result.Match(
-            value => Ok(),
-            Problem
-            );
+        return result.Match(_ => Ok(), Problem);
     }
 
     [HttpPatch("{id:guid}/cancel")]
     [HasPermission(Permissions.ManageOrdersLite)]
     public async Task<IActionResult> Cancel(Guid id)
     {
-        _ = await _sender.Send(new CancelOrderCommand(id));
+        var result = await _sender.Send(new CancelOrderCommand(id));
 
-        return Ok();
+        return result.Match(_ => Ok(), Problem);
     }
 }

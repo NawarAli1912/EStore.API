@@ -31,17 +31,17 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
             .Select(li => li.ProductId)
             .ToHashSet();
 
-        var productsDict = await _context
+        var requestedProducts = await _context
             .Products
             .Where(p => productsIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, p => p, cancellationToken);
+            .ToListAsync(cancellationToken);
 
-        if (productsIds.Count != productsDict.Count)
+        if (productsIds.Count != requestedProducts.Count)
         {
             return DomainError.Products.NotFound;
         }
 
-        var orderOrchestratorService = new OrderOrchestratorService(productsDict);
+        var orderOrchestratorService = new OrderOrchestratorService(requestedProducts);
 
         var result = orderOrchestratorService.Approve(order);
 

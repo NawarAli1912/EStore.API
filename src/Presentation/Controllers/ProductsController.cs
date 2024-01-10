@@ -76,9 +76,7 @@ public sealed class ProductsController(
         var command = _mapper.Map<CreateProductsCommand>((parsedRequestId, request));
         var result = await _sender.Send(command);
 
-        return result.Match(
-            value => Ok(_mapper.Map<ProductDetailedResponse>(value)),
-            Problem);
+        return result.Match(_ => Created(), Problem);
     }
 
     [HttpGet("details")]
@@ -138,7 +136,7 @@ public sealed class ProductsController(
             .Send(_mapper.Map<UpdateProductCommand>((id, request)));
 
         return result.Match(
-            value => Ok(value),
+            _ => Ok(),
             Problem);
     }
 

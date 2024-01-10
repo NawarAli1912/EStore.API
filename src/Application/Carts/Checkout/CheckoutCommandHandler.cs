@@ -48,30 +48,27 @@ internal sealed class CheckoutCommandHandler(
             .Select(c => c.ItemId)
             .ToHashSet();
 
-        var cartOffersDict = allOffers!
+        var requestedOffers = allOffers!
             .Where(o => cartOffersIds.Contains(o.Id))
-            .ToDictionary(o => o.Id, o => o);
+            .ToList();
 
         var productIds = customer.Cart.CartItems
             .Where(c => c.Type == ItemType.Product)
             .Select(c => c.ItemId)
-            .Concat(cartOffersDict.Values.SelectMany(o => o.ListRelatedProductsIds()))
+            .Concat(requestedOffers.SelectMany(o => o.ListRelatedProductsIds()))
             .ToHashSet();
 
-        var productDict = await _context
+        var requestedProducts = await _context
             .Products
             .Where(p => productIds.Contains(p.Id))
-            .ToDictionaryAsync(
-                p => p.Id,
-                p => p,
-                cancellationToken);
+            .ToListAsync(cancellationToken);
 
-        if (productDict.Count != productIds.Count)
+        if (requestedProducts.Count != productIds.Count)
         {
             return DomainError.Products.NotFound;
         }
 
-        var orderOrchestratorService = new OrderOrchestratorService(productDict, cartOffersDict);
+        var orderOrchestratorService = new OrderOrchestratorService(requestedProducts, requestedOffers);
 
         var orderResult = orderOrchestratorService.CreateOrder(
             customer,

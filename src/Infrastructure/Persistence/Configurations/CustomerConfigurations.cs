@@ -15,6 +15,10 @@ internal class CustomerConfigurations : IEntityTypeConfiguration<Customer>
         builder
             .HasKey(c => c.Id);
 
+        builder
+            .Property(c => c.Id)
+            .ValueGeneratedNever();
+
         builder.HasOne(c => c.Cart)
             .WithOne()
             .HasForeignKey<Cart>(cart => cart.CustomerId);

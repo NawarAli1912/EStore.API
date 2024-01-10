@@ -15,10 +15,24 @@ public class OrderOrchestratorService
     private readonly Dictionary<Guid, Product> _productDict;
     private readonly Dictionary<Guid, Offer> _offersDict;
 
-    public OrderOrchestratorService(Dictionary<Guid, Product> productDict, Dictionary<Guid, Offer>? offersDict = null)
+    /// <summary>
+    /// Initializes a new instance of the OrderOrchestratorService class, setting it up to process customer cart and orders.
+    /// </summary>
+    /// <param name="products">An IEnumerable of products currently in the customer's cart or order. This IEnumerable should contain all the products that the customer intends to order.</param>
+    /// <param name="offers">An optional IEnumerable of offers applicable to the products in the customer's cart. This IEnumerable should include any relevant offers that the customer can use for their order.</param>
+    /// <remarks>
+    /// This constructor is designed to be used with the specific contents of a customer's cart. 
+    /// It requires an accurate IEnumerable of products and any applicable offers from the cart to properly orchestrate the order process.
+    /// </remarks>
+
+    public OrderOrchestratorService(IEnumerable<Product> products, IEnumerable<Offer>? offers = null)
     {
-        _productDict = productDict;
-        _offersDict = offersDict ?? [];
+        _productDict = products
+            .Distinct()
+            .ToDictionary(p => p.Id);
+        _offersDict = offers?
+            .Distinct()
+            .ToDictionary(o => o.Id) ?? [];
     }
 
     /// <summary>
@@ -59,14 +73,9 @@ public class OrderOrchestratorService
             shippingCompanyAddress,
             phoneNumber);
 
-        var orderProductsIds = cartItems
-            .Select(ci => ci.ItemId)
-            .ToHashSet();
-        var errors = ValidateProductsStatus(
-            _productDict
-                    .Where(kv => orderProductsIds
-                    .Contains(kv.Key))
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+        var errors = ValidateProducts(
+            _productDict,
+            cartItems.Where(ci => ci.Type == ItemType.Product).Select(ci => ci.ItemId));
 
         if (errors.Count > 0)
         {
@@ -77,11 +86,7 @@ public class OrderOrchestratorService
         {
             if (cartItem.Type == ItemType.Product)
             {
-                if (!_productDict.TryGetValue(cartItem.ItemId, out var product))
-                {
-                    return DomainError.Products.NotPresentOnTheDictionary;
-                }
-
+                var product = _productDict[cartItem.ItemId];
                 var addItemResult = order.AddItems(
                     product.Id,
                     product.CustomerPrice,
@@ -100,8 +105,19 @@ public class OrderOrchestratorService
                 return DomainError.Offers.NotPresentOnTheDictionary;
             }
 
-            var offerAdditionStrategy = OfferAdditionStrategyFactory
-                .GetStrategy(offer, _productDict);
+            var offerProductsValidationErrors = ValidateProducts(
+                _productDict,
+                offer.ListRelatedProductsIds());
+
+            if (offerProductsValidationErrors.Count > 0)
+            {
+                errors.AddRange(offerProductsValidationErrors);
+                continue;
+            }
+
+            var offerAdditionStrategy = OfferAdditionStrategyFactory.GetStrategy(
+                offer,
+                _productDict);
 
             offerAdditionStrategy.Handle(order, cartItem.Quantity);
         }
@@ -136,19 +152,25 @@ public class OrderOrchestratorService
             return DomainError.Orders.EmptyLineItems;
         }
 
-        var errors = ValidateProductsStatus(_productDict);
+        var lineItemsGroups = order
+            .LineItems
+            .GroupBy(li => li.ProductId);
+
+        var errors = ValidateProducts(
+            _productDict,
+            lineItemsGroups.Select(g => g.Key));
+
         if (errors.Count > 0)
         {
             return errors;
         }
 
-        var lineItemsGroups = order
-            .LineItems
-            .GroupBy(li => li.ProductId);
-
         foreach (var group in lineItemsGroups)
         {
-            var product = _productDict[group.Key];
+            if (!_productDict.TryGetValue(group.Key, out var product))
+            {
+                return DomainError.Products.NotPresentOnTheDictionary;
+            }
 
             var decreaseQuantityResult = product.DecreaseQuantity(group.Count());
 
@@ -174,12 +196,26 @@ public class OrderOrchestratorService
         Dictionary<Guid, int> offersToDelete)
     {
         List<Error> errors = [];
-        foreach (var items in offerToAdd)
+        foreach (var item in offerToAdd)
         {
-            var offerAdditionStrategy =
-                OfferAdditionStrategyFactory.GetStrategy(_offersDict[items.Key], _productDict);
+            if (!_offersDict.TryGetValue(item.Key, out var offer))
+            {
+                return DomainError.Offers.NotPresentOnTheDictionary;
+            }
 
-            var additionResult = offerAdditionStrategy.Handle(order, items.Value);
+            var offerProductsValidationErrors = ValidateProducts(
+                _productDict,
+                offer.ListRelatedProductsIds());
+
+            if (offerProductsValidationErrors.Count > 0)
+            {
+                return offerProductsValidationErrors;
+            }
+
+            var offerAdditionStrategy =
+                OfferAdditionStrategyFactory.GetStrategy(offer, _productDict);
+
+            var additionResult = offerAdditionStrategy.Handle(order, item.Value);
 
             if (additionResult.IsError)
             {
@@ -189,6 +225,20 @@ public class OrderOrchestratorService
 
         foreach (var item in offersToDelete)
         {
+            if (!_offersDict.TryGetValue(item.Key, out var offer))
+            {
+                return DomainError.Offers.NotPresentOnTheDictionary;
+            }
+
+            var offerProductsValidationErrors = ValidateProducts(
+                _productDict,
+                offer.ListRelatedProductsIds());
+
+            if (offerProductsValidationErrors.Count > 0)
+            {
+                return offerProductsValidationErrors;
+            }
+
             var offerRemovalStrategy =
                 OfferRemovalStrategyFactory.GetStrategy(_offersDict[item.Key]);
 
@@ -217,10 +267,10 @@ public class OrderOrchestratorService
     /// <param name="productIdToProduct">
     ///     A dictionary containing product information (mapping product ID to product).
     /// </param>
-    /// <param name="itemsToAddQuantities">
+    /// <param name="productsToAddQuantity">
     ///     A dictionary specifying the quantities of items to add (mapping product ID to quantity to be added).
     /// </param>
-    /// <param name="itemsToDeleteQuantities">
+    /// <param name="productsToRemvoeQuantity">
     ///     A dictionary specifying the quantities of items to delete (mapping product ID to quantity to be deleted).
     /// </param>
     /// <returns>
@@ -229,28 +279,25 @@ public class OrderOrchestratorService
     /// </returns>
     public Result<Updated> UpdateProductItems(
         Order order,
-        Dictionary<Guid, int> itemsToAddQuantities,
-        Dictionary<Guid, int> itemsToDeleteQuantities)
+        Dictionary<Guid, int> productsToAddQuantity,
+        Dictionary<Guid, int> productsToRemvoeQuantity)
     {
+        List<Error> errors = ValidateProducts(
+            _productDict,
+            productsToAddQuantity.Select(kv => kv.Key)
+            .Concat(productsToRemvoeQuantity.Select(kv => kv.Key)));
 
-        List<Error> errors = [];
-        foreach (var productId in itemsToAddQuantities.Keys)
+        if (errors.Count > 0)
         {
+            return errors;
+        }
 
-            if (!_productDict.TryGetValue(productId, out var product))
-            {
-                errors.Add(DomainError.Products.NotFound);
-                continue;
-            }
+        foreach (var productId in productsToAddQuantity.Keys)
+        {
+            var product = _productDict[productId];
 
-            var productValidation = ValidateProductStatus(product);
-            if (productValidation.IsError)
-            {
-                errors.AddRange(productValidation.Errors);
-                continue;
-            }
-
-            var decreaseResult = product.DecreaseQuantity(itemsToAddQuantities[productId]);
+            var decreaseResult = product
+                .DecreaseQuantity(productsToAddQuantity[productId]);
             if (decreaseResult.IsError)
             {
                 errors.Add(DomainError.Products.StockError(product.Name));
@@ -260,24 +307,22 @@ public class OrderOrchestratorService
             order.AddItems(
                 product.Id,
                 product.CustomerPrice,
-                itemsToAddQuantities[productId]);
+                productsToAddQuantity[productId]);
         }
 
-        foreach (var productId in itemsToDeleteQuantities.Keys)
+        foreach (var productId in productsToRemvoeQuantity.Keys)
         {
-            if (!_productDict.TryGetValue(productId, out var product))
-            {
-                errors.Add(DomainError.Products.NotFound);
-                continue;
-            }
+            var product = _productDict[productId];
 
-            product.IncreaseQuantity(itemsToDeleteQuantities[productId]);
-            var removalResult = order.RemoveItems(product.Id, itemsToDeleteQuantities[productId]);
+            product.IncreaseQuantity(productsToRemvoeQuantity[productId]);
+
+            var removalResult = order.RemoveItems(
+                product.Id,
+                productsToRemvoeQuantity[productId]);
             if (removalResult.IsError)
             {
                 errors.AddRange(removalResult.Errors);
             }
-
         }
 
         if (errors.Count > 0)
@@ -288,35 +333,31 @@ public class OrderOrchestratorService
         return Result.Updated;
     }
 
-    private List<Error> ValidateProductsStatus(Dictionary<Guid, Product> productDict)
+    private List<Error> ValidateProducts(Dictionary<Guid, Product> productDict, IEnumerable<Guid> requiredProducts)
     {
         var errors = new List<Error>();
-        foreach (var product in productDict.Values)
+        foreach (var productId in requiredProducts)
         {
+            if (!productDict.TryGetValue(productId, out var product))
+            {
+                return [DomainError.Products.NotPresentOnTheDictionary];
+            }
+
             if (product.Status != ProductStatus.Active)
             {
-                var result = ValidateProductStatus(product);
+                var error = product.Status switch
+                {
+                    ProductStatus.Deleted =>
+                        DomainError.Products.Deleted(product.Name),
+                    ProductStatus.OutOfStock =>
+                        DomainError.Products.OutOfStock(product.Name),
+                    _ =>
+                        DomainError.Products.InvalidState(product.Name)
+                };
 
-                if (result.IsError)
-                    errors.AddRange(result.Errors);
+                errors.Add(error);
             }
         }
-
         return errors;
-    }
-
-    private Result<Success> ValidateProductStatus(Product product)
-    {
-
-        return product.Status != ProductStatus.Active ?
-            product.Status switch
-            {
-                ProductStatus.Deleted =>
-                    DomainError.Products.Deleted(product.Name),
-                ProductStatus.OutOfStock =>
-                    DomainError.Products.OutOfStock(product.Name),
-                _ =>
-                    DomainError.Products.InvalidState(product.Name)
-            } : Result.Success;
     }
 }

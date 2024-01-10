@@ -25,7 +25,7 @@ public sealed class ProductSnapshot
 
     public List<CategorySnapshot> Categories { get; set; } = [];
 
-    public List<Guid> AssociatedOffers { get; set; } = [];
+    public string AssociatedOffers { get; set; } = string.Empty;
 
     public static ProductSnapshot Snapshot(Product product)
     {
@@ -40,7 +40,7 @@ public sealed class ProductSnapshot
             CustomerPrice = product.CustomerPrice,
             ViewCount = product.ViewCount,
             Status = product.Status,
-            AssociatedOffers = [.. product.AssociatedOffers]
+            AssociatedOffers = string.Join(',', product.AssociatedOffers),
         };
 
         foreach (var category in product.Categories)
