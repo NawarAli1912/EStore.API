@@ -1,7 +1,7 @@
 ﻿using Domain.Categories;
 using Domain.Products;
 
-namespace Domain.UnitTests;
+namespace Domain.UnitTests.Categories;
 public sealed class CategoryUnitTests
 {
     [Fact]

@@ -2,7 +2,7 @@ using Domain.Errors;
 using Domain.Products.Enums;
 using SharedKernel.Primitives;
 
-namespace Domain.UnitTests;
+namespace Domain.UnitTests.Products;
 
 public class ProductUnitTests
 {

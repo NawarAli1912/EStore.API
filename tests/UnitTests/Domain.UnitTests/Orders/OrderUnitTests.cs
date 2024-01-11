@@ -3,7 +3,7 @@ using Domain.Errors;
 using Domain.Orders.ValueObjects;
 using Domain.Products;
 
-namespace Domain.UnitTests;
+namespace Domain.UnitTests.Orders;
 public sealed class OrderUnitTests
 {
     private readonly Customer customer;
@@ -46,7 +46,7 @@ public sealed class OrderUnitTests
         // Assert
         Assert.Equal(initialItemCount + 5, order.LineItems.Count);
         Assert.Equal(
-            (2 * product2.CustomerPrice) + (3 * product1.CustomerPrice) + initialTotalPrice,
+            2 * product2.CustomerPrice + 3 * product1.CustomerPrice + initialTotalPrice,
             order.TotalPrice);
 
         Assert.Contains(product1.Id, order.LineItems.Select(li => li.ProductId));
@@ -91,7 +91,7 @@ public sealed class OrderUnitTests
         // Assert
         Assert.Equal(initialItemCount - 3, order.LineItems.Count);
         Assert.Equal(
-            initialToatalPrice - (product1.CustomerPrice) - (product2.CustomerPrice * 2),
+            initialToatalPrice - product1.CustomerPrice - product2.CustomerPrice * 2,
             order.TotalPrice);
         Assert.DoesNotContain(product1.Id, order.LineItems.Select(li => li.ProductId));
 

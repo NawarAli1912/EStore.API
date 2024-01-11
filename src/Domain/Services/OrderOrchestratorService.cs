@@ -75,7 +75,9 @@ public class OrderOrchestratorService
 
         var errors = ValidateProducts(
             _productDict,
-            cartItems.Where(ci => ci.Type == ItemType.Product).Select(ci => ci.ItemId));
+            cartItems
+            .Where(ci => ci.Type == ItemType.Product)
+            .Select(ci => ci.ItemId));
 
         if (errors.Count > 0)
         {
@@ -119,7 +121,8 @@ public class OrderOrchestratorService
                 offer,
                 _productDict);
 
-            offerAdditionStrategy.Handle(order, cartItem.Quantity);
+            offerAdditionStrategy
+                .Handle(order, cartItem.Quantity);
         }
 
         if (errors.Count > 0)

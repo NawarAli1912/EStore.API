@@ -1,5 +1,7 @@
 ﻿using Domain.Categories;
 using Domain.Customers;
+using Domain.Offers;
+using Domain.Offers.Enums;
 using Domain.Orders;
 using Domain.Products;
 using SharedKernel.Enums;
@@ -50,4 +52,26 @@ internal static class TestDataFactory
             "Location1",
             "+963992465535");
     }
+
+    public static Offer CreateOffer(OfferType type, List<Guid> ProductsIds) =>
+        type switch
+        {
+            OfferType.PercentageDiscountOffer => PercentageDiscountOffer.Create(
+                "PercentageDiscountOffer",
+                "Description",
+                ProductsIds[0],
+                0.2m,
+                DateOnly.FromDateTime(DateTime.UtcNow),
+                DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2))
+                ),
+            OfferType.BundleDiscountOffer => BundleDiscountOffer.Create(
+                "BundleDiscountOffer",
+                "Description",
+                ProductsIds,
+                0.2m,
+                DateOnly.FromDateTime(DateTime.UtcNow),
+                DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2))
+                ),
+            _ => throw new NotImplementedException()
+        };
 }

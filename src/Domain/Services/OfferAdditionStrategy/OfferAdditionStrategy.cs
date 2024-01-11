@@ -13,7 +13,8 @@ public abstract class OfferAdditionStrategy
 
     protected OfferAdditionStrategy(Offer offer, Dictionary<Guid, Product> productDict)
     {
-        _productDict = productDict ?? throw new ArgumentNullException(nameof(productDict));
+        _productDict = productDict
+                ?? throw new ArgumentNullException(nameof(productDict));
         _offer = offer;
     }
 

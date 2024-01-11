@@ -1,6 +1,6 @@
 ﻿using SharedKernel.Primitives;
 
-namespace Domain.UnitTests;
+namespace Domain.UnitTests.Customers;
 public sealed class CustomerUnitTests
 {
     [Fact]
