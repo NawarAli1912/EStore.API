@@ -150,7 +150,7 @@ public class OrderOrchestratorService
     /// </returns>
     public Result<Updated> Approve(Order order)
     {
-        if (order.LineItems is null)
+        if (order.LineItems.Count == 0)
         {
             return DomainError.Orders.EmptyLineItems;
         }
@@ -170,10 +170,7 @@ public class OrderOrchestratorService
 
         foreach (var group in lineItemsGroups)
         {
-            if (!_productDict.TryGetValue(group.Key, out var product))
-            {
-                return DomainError.Products.NotPresentOnTheDictionary;
-            }
+            var product = _productDict[group.Key];
 
             var decreaseQuantityResult = product.DecreaseQuantity(group.Count());
 

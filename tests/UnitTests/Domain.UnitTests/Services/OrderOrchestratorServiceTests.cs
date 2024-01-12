@@ -1,6 +1,7 @@
 ﻿using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Enums;
+using Domain.Orders.Enums;
 using Domain.Products;
 using Domain.Services;
 using SharedKernel.Enums;
@@ -138,6 +139,70 @@ public sealed class OrderOrchestratorServiceTests
         Assert.Contains(DomainError.Offers.NotPresentOnTheDictionary, result.Errors);
     }
 
+    [Fact]
+    public void CreateOrderWithInvalidOfferProducts_ReturnsError()
+    {
+        // Arrange
+        var dummyProduct = TestDataFactory.CreateProduct();
+        var dummyOffer = TestDataFactory
+            .CreateOffer(OfferType.PercentageDiscountOffer, [dummyProduct.Id]);
+        _offers.Add(dummyOffer);
+
+        var customer = TestDataFactory.CreateCustomer();
+        customer.AddCartItem(dummyOffer.Id, 1, ItemType.Offer);
+
+        var ordersService = new OrderOrchestratorService(
+                _products,
+                _offers);
+
+        // Act
+        var result = ordersService.CreateOrder(
+            customer,
+            _shippingCompany,
+            _shippingCompanyAddress,
+            _phoneNumber);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Contains(DomainError.Products.NotPresentOnTheDictionary, result.Errors);
+    }
+
+    [Fact]
+    public void CreateOrderWithDeletedOrOutOfStockOfferProducts_ReturnsError()
+    {
+        // Arrange
+        var dummyProduct1 = TestDataFactory.CreateProduct();
+        dummyProduct1.MarkAsDeleted();
+        var dummyProduct2 = TestDataFactory.CreateProduct();
+        dummyProduct2.DecreaseQuantity(dummyProduct2.Quantity);
+
+        var dummyOffer = TestDataFactory
+            .CreateOffer(OfferType.BundleDiscountOffer, [dummyProduct1.Id, dummyProduct2.Id]);
+        _products.Add(dummyProduct1);
+        _products.Add(dummyProduct2);
+
+        _offers.Add(dummyOffer);
+
+        var customer = TestDataFactory.CreateCustomer();
+        customer.AddCartItem(dummyOffer.Id, 1, ItemType.Offer);
+
+        var ordersService = new OrderOrchestratorService(
+                _products,
+                _offers);
+
+        // Act
+        var result = ordersService.CreateOrder(
+            customer,
+            _shippingCompany,
+            _shippingCompanyAddress,
+            _phoneNumber);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Contains(DomainError.Products.Deleted(dummyProduct1.Name), result.Errors);
+        Assert.Contains(DomainError.Products.OutOfStock(dummyProduct2.Name), result.Errors);
+    }
+
     [Theory]
     [InlineData(1, 1, 1, 1, 1)]
     [InlineData(1, 2, 3, 4, 5)]
@@ -236,5 +301,105 @@ public sealed class OrderOrchestratorServiceTests
             Assert.Equal(bundleOfferQuantity, result.Value.LineItems.Where(li => li.ProductId == productId &&
                             li.RelatedOfferId == _bundleOffer.Id).Count());
         }
+    }
+
+
+    [Fact]
+    public void CreateOrderWithValidData_EmptyTheCustomerCart()
+    {
+        // Arrange
+        var customer = TestDataFactory.CreateCustomer();
+        customer.AddCartItem(_p1.Id, 1, ItemType.Product);
+        customer.AddCartItem(_p2.Id, 2, ItemType.Product);
+        customer.AddCartItem(_percentageOffer.Id, 1, ItemType.Offer);
+
+        var ordersService = new OrderOrchestratorService(_products, _offers);
+
+        // Act
+        var result = ordersService.CreateOrder(
+            customer,
+            _shippingCompany,
+            _shippingCompanyAddress,
+            _phoneNumber);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.Empty(customer.Cart.CartItems);
+    }
+
+    [Fact]
+    public void ApproveWithEmptyOrderLineItems_ReturnError()
+    {
+        // Arrange
+        var order = TestDataFactory.CreateOrder();
+
+        var ordersService = new OrderOrchestratorService(_products, _offers);
+
+        // Act
+        var result = ordersService.Approve(order);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Contains(DomainError.Orders.EmptyLineItems, result.Errors);
+    }
+
+    [Fact]
+    public void ApproveWithDeletedOrOutOfStockProducts_ReturnsError()
+    {
+        // Arrange
+        var dummyProduct1 = TestDataFactory.CreateProduct();
+        dummyProduct1.MarkAsDeleted();
+        var dummyProduct2 = TestDataFactory.CreateProduct();
+        dummyProduct2.DecreaseQuantity(dummyProduct2.Quantity);
+
+        _products.AddRange([dummyProduct1, dummyProduct2]);
+
+        var order = TestDataFactory.CreateOrder();
+        order.AddItems(dummyProduct1.Id, dummyProduct1.CustomerPrice, 1, ItemType.Product);
+        order.AddItems(dummyProduct2.Id, dummyProduct1.CustomerPrice, 2, ItemType.Product);
+
+        var ordersService = new OrderOrchestratorService(_products, _offers);
+
+        // Act
+        var result = ordersService.Approve(order);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Contains(DomainError.Products.Deleted(dummyProduct1.Name), result.Errors);
+        Assert.Contains(DomainError.Products.OutOfStock(dummyProduct2.Name), result.Errors);
+    }
+
+    [Fact]
+    public void ApproveOrderWithInsufficientProductQuantity_ReturnsError()
+    {
+        // Arrange
+        var order = TestDataFactory.CreateOrder();
+        order.AddItems(_p1.Id, _p1.CustomerPrice, _p1.Quantity + 1, ItemType.Product);
+
+        var ordersService = new OrderOrchestratorService(_products, _offers);
+
+        // Act
+        var result = ordersService.Approve(order);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Contains(DomainError.Products.StockError(_p1.Name), result.Errors);
+    }
+
+    [Fact]
+    public void ApproveOrderWithValidDate_ChangeTheStatusToApproved()
+    {
+        // Arrange
+        var order = TestDataFactory.CreateOrder();
+        order.AddItems(_p1.Id, _p1.CustomerPrice, 1, ItemType.Product);
+
+        var ordersService = new OrderOrchestratorService(_products, _offers);
+
+        // Act
+        var result = ordersService.Approve(order);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.Equal(OrderStatus.Approved, order.Status);
     }
 }

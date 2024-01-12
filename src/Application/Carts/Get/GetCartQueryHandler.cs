@@ -15,7 +15,6 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
 
     public async Task<Result<CartResult>> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
-
         List<Error> errors = [];
         var customer = await _context
             .Customers
@@ -54,6 +53,11 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
                 p => p.CustomerPrice,
                 cancellationToken);
 
+        if (productIds.Count != productToPriceDict.Count)
+        {
+            return DomainError.Products.NotPresentOnTheDictionary;
+        }
+
         List<CartItemResult> items = [];
         var totalPrice = 0.0M;
         foreach (var cartItem in customer.Cart.CartItems)
@@ -74,6 +78,11 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
             }
 
             var offer = offersDict[cartItem.ItemId];
+            if (!offersDict.TryGetValue(cartItem.ItemId, out offer) ||
+                offer.Status != Domain.Offers.Enums.OfferStatus.Published)
+            {
+                return DomainError.Offers.NotPresentOnTheDictionary;
+            }
 
             itemPrice = offer.CalculatePrice(productToPriceDict) * cartItem.Quantity;
 
