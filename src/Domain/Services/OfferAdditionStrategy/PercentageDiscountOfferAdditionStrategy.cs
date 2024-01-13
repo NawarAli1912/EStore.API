@@ -10,7 +10,7 @@ internal sealed class PercentageDiscountOfferAdditionStrategy : OfferAdditionStr
 {
     public PercentageDiscountOfferAdditionStrategy(
         Offer offer,
-        Dictionary<Guid, Product> productDict) : base(offer, productDict)
+        IDictionary<Guid, Product> productDict) : base(offer, productDict)
     {
     }
 
@@ -20,14 +20,13 @@ internal sealed class PercentageDiscountOfferAdditionStrategy : OfferAdditionStr
 
         var parsedOffer = (PercentageDiscountOffer)_offer;
 
-        var pricingStartegy = OfferPricingStrategyFactory.GetStrategy(_offer);
-        var productToPrice = pricingStartegy.Handle(_offer, _productDict);
-
-        var productPrice = productToPrice[parsedOffer.ProductId];
+        var pricingStartegy = OfferProductsPricingStrategyFactory
+                .GetStrategy(_offer, _productDict);
+        var productToPrice = pricingStartegy.ComputeProductsPrices();
 
         var addItemResult = order.AddItems(
             parsedOffer.ProductId,
-            productPrice,
+            productToPrice[parsedOffer.ProductId],
             quantity,
             ItemType.Offer,
             _offer.Id);

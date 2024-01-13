@@ -13,8 +13,6 @@ public sealed class Category : AggregateRoot
 
     public Guid? ParentCategoryId { get; private set; }
 
-    public Category? ParentCategory { get; private set; }
-
     public IReadOnlySet<Product> Products => _products;
 
     public IReadOnlyList<Category> SubCategories => _subCategories;
@@ -73,18 +71,15 @@ public sealed class Category : AggregateRoot
 
     public void PrepareDelete(SubcategoryActions action)
     {
-        var parent = ParentCategory;
         var parentId = ParentCategoryId;
 
         if (action == SubcategoryActions.Detach)
         {
-            parent = null;
             parentId = null;
         }
 
         foreach (var subCategory in _subCategories)
         {
-            subCategory.ParentCategory = parent;
             subCategory.ParentCategoryId = parentId;
         }
     }
@@ -97,7 +92,6 @@ public sealed class Category : AggregateRoot
         Guid? parentCategoryId = null) : base(id)
     {
         Name = name;
-        ParentCategory = parentCategory;
         ParentCategoryId = parentCategoryId;
         _subCategories = subCategories;
     }

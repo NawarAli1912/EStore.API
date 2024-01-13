@@ -12,7 +12,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.HasKey(c => c.Id);
 
-        builder.HasOne(c => c.ParentCategory)
+        builder.HasOne<Category>()
             .WithMany(c => c.SubCategories)
             .HasForeignKey(c => c.ParentCategoryId)
             .OnDelete(DeleteBehavior.NoAction);

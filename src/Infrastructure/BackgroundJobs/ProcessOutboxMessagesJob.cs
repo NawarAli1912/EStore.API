@@ -50,7 +50,6 @@ public sealed class ProcessOutboxMessagesJob(
                 }
 
                 await _publisher.Publish(domainEvent, context.CancellationToken);
-                message.ProcessedOnUtc = DateTime.UtcNow;
             }
             catch (Exception ex)
             {
@@ -60,7 +59,11 @@ public sealed class ProcessOutboxMessagesJob(
                 {
                     message.Error = ex.Message.ToString();
                 }
+
+                continue;
             }
+
+            message.ProcessedOnUtc = DateTime.UtcNow;
         }
 
         await _dbContext.SaveChangesAsync();

@@ -4,4 +4,6 @@ public record ListProductsFilter(
     string? SearchTerm,
     decimal? MinPrice,
     decimal? MaxPrice,
-    bool? OnOffer);
+    bool? OnOffer,
+    string? SortColumn,
+    string? SortOrder);

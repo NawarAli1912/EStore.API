@@ -12,7 +12,6 @@ internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext context
     public async Task<Result<Deleted>> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await _context.Categories
-            .Include(c => c.ParentCategory)
             .Include(c => c.SubCategories)
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 

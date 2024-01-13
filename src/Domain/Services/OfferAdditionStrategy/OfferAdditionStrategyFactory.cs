@@ -5,7 +5,7 @@ using Domain.Products;
 namespace Domain.Services.OfferAdditionStrategy;
 public static class OfferAdditionStrategyFactory
 {
-    public static OfferAdditionStrategy GetStrategy(Offer offer, Dictionary<Guid, Product> productDict)
+    public static OfferAdditionStrategy GetStrategy(Offer offer, IDictionary<Guid, Product> productDict)
     {
         return offer.Type switch
         {

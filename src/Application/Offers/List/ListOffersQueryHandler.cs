@@ -36,14 +36,12 @@ internal sealed class ListOffersQueryHandler(
 
         foreach (var offer in offers)
         {
-            var offerPricingStrategy = OfferPricingStrategyFactory
-                .GetStrategy(offer);
+            var offerProductPricingStrategy = OfferProductsPricingStrategyFactory
+                    .GetStrategy(offer, productsDict);
 
-            var offerPrice = offerPricingStrategy
-                .Handle(offer, productsDict)
-                .Sum(kv => kv.Value);
+            var offerProductsPrices = offerProductPricingStrategy.ComputeProductsPrices();
 
-            offersPrices.Add(offer.Id, offerPrice);
+            offersPrices.Add(offer.Id, offer.CalculatePrice(offerProductsPrices));
         }
 
         return new ListOfferResult(offers, offersPrices);

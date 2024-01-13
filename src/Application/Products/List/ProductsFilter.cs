@@ -9,5 +9,6 @@ public record ProductsFilter(
     int? MinQuantity,
     int? MaxQuantity,
     bool? OnOffer,
-    List<ProductStatus> ProductStatus
-    );
+    List<ProductStatus> ProductStatus,
+    string? SortColumn,
+    string? SortOrder);

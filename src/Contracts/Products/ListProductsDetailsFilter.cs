@@ -7,4 +7,6 @@ public record ListProductsDetailsFilter(
     int? MinQuantity,
     int? MaxQuantity,
     IEnumerable<ProductStatus>? Status,
-    bool? OnOffer);
+    bool? OnOffer,
+    string? SortColumn,
+    string? SortOrder);

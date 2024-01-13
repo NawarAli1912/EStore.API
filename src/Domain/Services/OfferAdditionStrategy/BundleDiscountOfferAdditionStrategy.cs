@@ -10,7 +10,7 @@ internal sealed class BundleDiscountOfferAdditionStrategy : OfferAdditionStrateg
 {
     public BundleDiscountOfferAdditionStrategy(
         Offer offer,
-        Dictionary<Guid, Product> productDict) : base(offer, productDict)
+        IDictionary<Guid, Product> productDict) : base(offer, productDict)
     {
     }
 
@@ -18,8 +18,9 @@ internal sealed class BundleDiscountOfferAdditionStrategy : OfferAdditionStrateg
     {
         List<Error> errors = [];
 
-        var pricingStartegy = OfferPricingStrategyFactory.GetStrategy(_offer);
-        var productToPrice = pricingStartegy.Handle(_offer, _productDict);
+        var pricingStartegy = OfferProductsPricingStrategyFactory
+            .GetStrategy(_offer, _productDict);
+        var productToPrice = pricingStartegy.ComputeProductsPrices();
 
         foreach (var item in productToPrice)
         {

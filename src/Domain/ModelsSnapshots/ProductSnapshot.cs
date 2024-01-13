@@ -25,7 +25,9 @@ public sealed class ProductSnapshot
 
     public List<CategorySnapshot> Categories { get; set; } = [];
 
-    public string AssociatedOffers { get; set; } = string.Empty;
+    public List<Guid> AssociatedOffers { get; set; } = [];
+
+    public string AssociatedOffersString { get; set; } = default!;
 
     public static ProductSnapshot Snapshot(Product product)
     {
@@ -40,7 +42,7 @@ public sealed class ProductSnapshot
             CustomerPrice = product.CustomerPrice,
             ViewCount = product.ViewCount,
             Status = product.Status,
-            AssociatedOffers = string.Join(',', product.AssociatedOffers),
+            AssociatedOffers = product.AssociatedOffers,
         };
 
         foreach (var category in product.Categories)
@@ -53,14 +55,18 @@ public sealed class ProductSnapshot
 
     public static bool Equals(ProductSnapshot lhs, ProductSnapshot rhs)
     {
-        return lhs.Id == rhs.Id
+        var q = lhs.Id == rhs.Id
             && lhs.Code == rhs.Code
             && lhs.Name == rhs.Name
             && lhs.Description == rhs.Description
             && lhs.Quantity == rhs.Quantity
             && lhs.PurchasePrice.Equals(rhs.PurchasePrice)
             && lhs.CustomerPrice.Equals(rhs.CustomerPrice)
+            && lhs.AssociatedOffers.Order()
+                    .SequenceEqual(rhs.AssociatedOffers.Order())
             && lhs.Categories.OrderBy(c => c.CategoryId)
                     .SequenceEqual(rhs.Categories.OrderBy(c => c.CategoryId));
+
+        return q;
     }
 }

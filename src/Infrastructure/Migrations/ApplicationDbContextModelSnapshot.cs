@@ -35,7 +35,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryProduct");
+                    b.ToTable("CategoryProduct", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Authentication.Permission", b =>
@@ -54,7 +54,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
 
                     b.HasData(
                         new
@@ -305,7 +305,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReview");
+                    b.ToTable("ProductReview", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Products.Product", b =>
@@ -391,7 +391,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FriendlyIdSequences");
+                    b.ToTable("FriendlyIdSequences", (string)null);
 
                     b.HasData(
                         new
@@ -430,7 +430,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OutboxMessages");
+                    b.ToTable("OutboxMessages", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -616,7 +616,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("PermissionRole");
+                    b.ToTable("PermissionRole", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Offers.BundleDiscountOffer", b =>
@@ -646,7 +646,7 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.ToTable("Offers", t =>
+                    b.ToTable("Offers", null, t =>
                         {
                             t.Property("Discount")
                                 .HasColumnName("PercentageDiscountOffer_Discount");
@@ -688,7 +688,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Domain.Customers.ValueObjects.CartItem", "CartItems", b1 =>
+                    b.OwnsMany("Domain.Customers.Entities.Cart.CartItems#Domain.Customers.ValueObjects.CartItem", "CartItems", b1 =>
                         {
                             b1.Property<Guid>("CartId")
                                 .HasColumnType("uniqueidentifier");
@@ -727,7 +727,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Domain.Orders.Entities.LineItem", "LineItems", b1 =>
+                    b.OwnsMany("Domain.Orders.Order.LineItems#Domain.Orders.Entities.LineItem", "LineItems", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
                                 .HasColumnType("uniqueidentifier");
@@ -751,7 +751,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasIndex("ProductId");
 
-                            b1.ToTable("LineItem");
+                            b1.ToTable("LineItem", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");

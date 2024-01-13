@@ -7,6 +7,7 @@ using Domain.ModelsSnapshots;
 using Domain.Products;
 using Nest;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace Infrastructure.Persistence.Repository;
 
@@ -23,7 +24,6 @@ public sealed class ProductsRepository(
         int pageIndex,
         int pageSize)
     {
-        var productDict = new Dictionary<Guid, Product>();
         await using var sqlConnection = _sqlConnectionFactory.Create();
 
         var multiQueryResult =
@@ -39,10 +39,22 @@ public sealed class ProductsRepository(
         var products = multiQueryResult
             .Read<ProductSnapshot, CategorySnapshot, Product>(MapProductCategorySanpShotToProduct, splitOn: "CategoryId");
 
+        Dictionary<Guid, Product> productDict = [];
+        foreach (var product in products)
+        {
+            if (productDict.TryGetValue(product.Id, out var dictProduct))
+            {
+                dictProduct.AssignCategories(product.Categories);
+                continue;
+            }
+
+            productDict.Add(product.Id, product);
+        }
+
         var totalProducts = multiQueryResult
             .Read<int>().Single();
 
-        return ([.. products], totalProducts);
+        return (productDict.Values.ToList(), totalProducts);
     }
 
     public async Task<(List<Product>, int)> ListByFilter(
@@ -50,11 +62,7 @@ public sealed class ProductsRepository(
         int pageIndex,
         int pageSize)
     {
-        if (!await CheckConnection())
-        {
-            return await FallBackToDbQuery(filter, pageIndex, pageSize);
-        }
-
+        var dbPrdocuts = FallBackToDbQuery(filter, pageIndex, pageSize);
         var baseQuery = new QueryContainerDescriptor<ProductSnapshot>();
         var searchTermQuery = !string.IsNullOrEmpty(filter.SearchTerm) ?
                 baseQuery.MultiMatch(m => m
@@ -92,12 +100,48 @@ public sealed class ProductsRepository(
             .Must(searchTermQuery)
             .Filter(priceRangeQuery, quantityRangeQuery, statusQuery, offersQuery));
 
-        var searchResponse = await _elasticClient.SearchAsync<ProductSnapshot>(s => s
+        var sortingField = filter.SortColumn ?? "_score";
+        ISearchResponse<ProductSnapshot> searchResponse;
+        try
+        {
+            searchResponse = await _elasticClient.SearchAsync<ProductSnapshot>(s => s
                 .Query(_ => query)
+                .Sort(s =>
+                    s.Field(f =>
+                    {
+                        f.Order(filter.SortOrder == "asc"
+                                ? SortOrder.Ascending
+                                : SortOrder.Descending);
+
+                        switch (sortingField)
+                        {
+                            case "name":
+                                f.Field(ff => ff.Name);
+                                break;
+                            case "price":
+                                f.Field(ff => ff.CustomerPrice);
+                                break;
+                            case "quantity":
+                                f.Field(ff => ff.Quantity);
+                                break;
+                            default:
+                                f.Field("_score");
+                                f.Descending();
+                                break;
+                        }
+                        return f;
+                    }))
                 .From((pageIndex - 1) * pageSize)
                 .Size(pageSize));
+        }
+        catch (Exception ex)
+        {
+            Log.Error("elastic search query doesn't work with exception {ex}", ex);
 
-        return ProcessElasticsearchResponse(searchResponse); ;
+            return await dbPrdocuts;
+        }
+
+        return ProcessElasticsearchResponse(searchResponse);
     }
 
     public async Task<int> GetProductCountByCategory(IEnumerable<Guid> categoriesIds)
@@ -145,7 +189,7 @@ public sealed class ProductsRepository(
                     p.PurchasePrice,
                     p.Code,
                     categoriesDict.GetValueOrDefault(p.Id),
-                    JsonConvert.DeserializeObject<List<Guid>>(p.AssociatedOffers))));
+                    p.AssociatedOffers)));
 
         return (result, (int)searchResponse.Total);
     }
@@ -171,32 +215,40 @@ public sealed class ProductsRepository(
                  filter.OnOffer
              });
 
-        var products = multiQueryResult
-            .Read<ProductSnapshot, CategorySnapshot, Product>(MapProductCategorySanpShotToProduct, splitOn: "CategoryId");
+        var products = multiQueryResult.Read<ProductSnapshot, CategorySnapshot, Product>(
+            MapProductCategorySanpShotToProduct,
+            splitOn: "CategoryId");
 
-        var totalProducts = multiQueryResult.Read<int>().Single();
-        return (products.ToList(), totalProducts);
+        Dictionary<Guid, Product> productDict = [];
+        foreach (var product in products)
+        {
+            if (productDict.TryGetValue(product.Id, out var dictProduct))
+            {
+                dictProduct.AssignCategories(product.Categories);
+                continue;
+            }
+
+            productDict.Add(product.Id, product);
+        }
+
+        var totalProducts = multiQueryResult
+                .Read<int>()
+                .Single();
+
+        return (productDict.Values.ToList(), totalProducts);
     }
 
     private Product MapProductCategorySanpShotToProduct(
         ProductSnapshot productSnap,
         CategorySnapshot categorySnap)
     {
-        var productDict = new Dictionary<Guid, Product>();
         var category =
             Category.Create(
             categorySnap.CategoryId,
             categorySnap.CategoryName,
             categorySnap.ParentCategoryId);
 
-        if (productDict.TryGetValue(productSnap.Id, out Product? product))
-        {
-            product.AssignCategories([category]);
-
-            return product;
-        }
-
-        product = Product.Create(
+        var product = Product.Create(
             productSnap.Id,
             productSnap.Name,
             productSnap.Description,
@@ -207,27 +259,8 @@ public sealed class ProductsRepository(
 
         product.AssignCategories([category]);
         product.AssociateOffers(
-            JsonConvert.DeserializeObject<List<Guid>>(productSnap.AssociatedOffers)
-            ?? []);
+            JsonConvert.DeserializeObject<List<Guid>>(productSnap.AssociatedOffersString) ?? []);
 
-        productDict.Add(productSnap.Id, product);
         return product;
-    }
-
-    private async Task<bool> CheckConnection()
-    {
-        try
-        {
-            var q = await _elasticClient.PingAsync();
-            if (q.IsValid)
-                return true;
-
-        }
-        catch
-        {
-            return false;
-        }
-
-        return false;
     }
 }

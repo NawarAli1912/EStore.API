@@ -11,7 +11,7 @@ public abstract class OfferAdditionStrategy
 
     protected readonly Offer _offer;
 
-    protected OfferAdditionStrategy(Offer offer, Dictionary<Guid, Product> productDict)
+    protected OfferAdditionStrategy(Offer offer, IDictionary<Guid, Product> productDict)
     {
         _productDict = productDict
                 ?? throw new ArgumentNullException(nameof(productDict));

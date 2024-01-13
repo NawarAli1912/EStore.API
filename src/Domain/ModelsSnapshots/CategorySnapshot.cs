@@ -18,4 +18,24 @@ public sealed class CategorySnapshot
             CategoryName = category.Name
         };
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+            return false;
+
+        CategorySnapshot other = (CategorySnapshot)obj;
+
+        // Compare relevant properties for equality
+        return CategoryId == other.CategoryId
+            && CategoryName == other.CategoryName
+            && ParentCategoryId == other.ParentCategoryId;
+    }
+
+    public override int GetHashCode()
+    {
+        // Implement GetHashCode based on the properties used in Equals
+        return HashCode.Combine(CategoryId, CategoryName, ParentCategoryId);
+    }
+
 }

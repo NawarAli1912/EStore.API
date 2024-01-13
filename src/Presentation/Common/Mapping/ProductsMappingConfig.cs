@@ -50,8 +50,9 @@ public class ProductsMappingConfig : IRegister
                 null,
                 null,
                 src.OnOffer,
-                status
-            );
+                status,
+                src.SortColumn,
+                src.SortOrder);
     }
 
     private static ProductsFilter ListProductsDetailsFilterToProductsFilter(ListProductsDetailsFilter src)
@@ -79,7 +80,9 @@ public class ProductsMappingConfig : IRegister
                 src.MinQuantity,
                 src.MaxQuantity,
                 src.OnOffer,
-                status);
+                status,
+                src.SortColumn,
+                src.SortOrder);
     }
 
     private static Domain.Products.Enums.ProductStatus MapToDomainProductStatus(ProductStatus src) => src switch

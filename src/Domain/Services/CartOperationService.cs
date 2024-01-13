@@ -4,6 +4,7 @@ using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Products;
 using Domain.Products.Enums;
+using Domain.Services.OffersPricingStartegy;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
@@ -31,7 +32,8 @@ public class CartOperationService
                 return DomainError.Offers.InvalidState(offer.Name);
             }
 
-            var inactiveProducts = offerProducts.Where(p => p.Status != ProductStatus.Active);
+            var inactiveProducts = offerProducts
+                .Where(p => p.Status != ProductStatus.Active);
             foreach (var product in inactiveProducts)
             {
                 errors.Add(product.Status switch
@@ -50,11 +52,17 @@ public class CartOperationService
             return errors;
         }
 
+        var pricingStrategy = OfferProductsPricingStrategyFactory
+            .GetStrategy(
+                offer,
+                offerProducts.ToDictionary(item => item.Id, item => item));
+        var productToPrice = pricingStrategy.ComputeProductsPrices();
+
         var result = _customer.AddCartItem(offer.Id, requestedQuantity, ItemType.Offer);
 
         return result.IsError ?
             result.Errors :
-            offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
+            offer.CalculatePrice(productToPrice) * requestedQuantity;
     }
 
     public Result<decimal> RemoveOfferItem(
@@ -70,9 +78,15 @@ public class CartOperationService
             return result.Errors;
         }
 
+        var pricingStrategy = OfferProductsPricingStrategyFactory
+            .GetStrategy(
+                offer,
+                offerProducts.ToDictionary(item => item.Id, item => item));
+        var productToPrice = pricingStrategy.ComputeProductsPrices();
+
         return result.IsError ?
            result.Errors :
-           offer.CalculatePrice(offerProducts.ToDictionary(p => p.Id, p => p.CustomerPrice)) * requestedQuantity;
+           offer.CalculatePrice(productToPrice) * requestedQuantity;
     }
 
     public Result<decimal> AddProductItem(
@@ -114,6 +128,4 @@ public class CartOperationService
 
         return -product.CustomerPrice * requestedQuantity;
     }
-
-
 }
