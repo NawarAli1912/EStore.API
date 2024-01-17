@@ -1,4 +1,5 @@
-﻿using Application.Common.DatabaseAbstraction;
+﻿using Application.Common.Cache;
+using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using Domain.Services;
 using MediatR;
@@ -7,10 +8,19 @@ using SharedKernel.Primitives;
 
 namespace Application.Orders.Approve;
 
-internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
+internal sealed class ApproveOrderCommandHandler
         : IRequestHandler<ApproveOrderCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+    private readonly IProductsStore _productsStore;
+
+    public ApproveOrderCommandHandler(
+        IApplicationDbContext context,
+        IProductsStore productsStore)
+    {
+        _context = context;
+        _productsStore = productsStore;
+    }
 
     public async Task<Result<Updated>> Handle(
         ApproveOrderCommand request,
@@ -31,10 +41,8 @@ internal sealed class ApproveOrderCommandHandler(IApplicationDbContext context)
             .Select(li => li.ProductId)
             .ToHashSet();
 
-        var requestedProducts = await _context
-            .Products
-            .Where(p => productsIds.Contains(p.Id))
-            .ToListAsync(cancellationToken);
+        var requestedProducts = await _productsStore
+            .GetByIds(productsIds, cancellationToken);
 
         if (productsIds.Count != requestedProducts.Count)
         {

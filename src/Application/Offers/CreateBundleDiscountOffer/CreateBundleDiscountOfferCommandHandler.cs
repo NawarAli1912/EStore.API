@@ -1,29 +1,35 @@
-﻿using Application.Common.DatabaseAbstraction;
-using Application.Common.Repository;
+﻿using Application.Common.Cache;
+using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Events;
 using Domain.Products.Enums;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Offers.CreateBundleDiscountOffer;
-internal sealed class CreateBundleDiscountOfferCommandHandler(
-    IApplicationDbContext context,
-    IOffersRepository offersRepository) : IRequestHandler<CreateBundleDiscountOfferCommand, Result<BundleDiscountOffer>>
+internal sealed class CreateBundleDiscountOfferCommandHandler : IRequestHandler<CreateBundleDiscountOfferCommand, Result<BundleDiscountOffer>>
 {
-    private readonly IApplicationDbContext _context = context;
-    private readonly IOffersRepository _offersRepository = offersRepository;
+    private readonly IApplicationDbContext _context;
+    private readonly IProductsStore _productsStore;
+    private readonly IOffersStore _offersStore;
+
+    public CreateBundleDiscountOfferCommandHandler(
+        IApplicationDbContext context,
+        IProductsStore productsStore,
+        IOffersStore offersStore)
+    {
+        _context = context;
+        _productsStore = productsStore;
+        _offersStore = offersStore;
+    }
 
     public async Task<Result<BundleDiscountOffer>> Handle(CreateBundleDiscountOfferCommand request, CancellationToken cancellationToken)
     {
         List<Error> errors = [];
 
-        var products = await _context
-            .Products
-            .Where(p => request.Products.Contains(p.Id))
-            .ToListAsync(cancellationToken);
+        var products = await _productsStore
+            .GetByIds(request.Products.ToHashSet(), cancellationToken);
 
         if (products.Count != request.Products.Count)
         {
@@ -34,7 +40,7 @@ internal sealed class CreateBundleDiscountOfferCommandHandler(
             .SelectMany(p => p.AssociatedOffers)
             .ToHashSet();
 
-        var percentageOffers = (await _offersRepository.List())!
+        var percentageOffers = (await _offersStore.List())!
             .Where(o => o.Type == Domain.Offers.Enums.OfferType.PercentageDiscountOffer)
             .ToList()
             .Cast<PercentageDiscountOffer>();

@@ -14,6 +14,7 @@ using Infrastructure.Authentication.Authorization;
 using Infrastructure.Authentication.Jwt;
 using Infrastructure.Authentication.Models;
 using Infrastructure.BackgroundJobs;
+using Infrastructure.Cache;
 using Infrastructure.Caching;
 using Infrastructure.Idempotency;
 using Infrastructure.Persistence;
@@ -40,6 +41,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IProductsStore, ProductsStore>();
         services.AddScoped<IIdemptencyService, IdempotencyService>();
 
         services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));
@@ -85,6 +87,16 @@ public static class DependencyInjection
                                 .WithIntervalInHours(24)
                                 .OnEveryDay()
                                 .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 0))));
+
+            var cahceProductsJobKey = new JobKey(nameof(CacheProductsJob));
+            configure.AddJob<CacheProductsJob>(cahceProductsJobKey)
+                .AddTrigger(
+                    trigger => trigger
+                        .ForJob(cahceProductsJobKey)
+                        .StartNow() // Trigger the job to run as soon as possible
+                        .WithSimpleSchedule(x => x
+                            .WithMisfireHandlingInstructionFireNow() // Handle misfires by firing immediately
+                            .WithRepeatCount(0)));
         });
 
         services.AddQuartzHostedService();
@@ -126,7 +138,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
-        services.AddScoped<IOffersRepository, OffersRepository>();
+        services.AddScoped<IOffersStore, OffersStore>();
 
         return services;
     }

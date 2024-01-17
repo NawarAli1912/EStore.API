@@ -7,9 +7,14 @@ using Quartz;
 namespace Infrastructure.BackgroundJobs;
 
 [DisallowConcurrentExecution]
-public sealed class ManageOffersStatusJob(ApplicationDbContext dbContext) : IJob
+public sealed class ManageOffersStatusJob : IJob
 {
-    private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly ApplicationDbContext _dbContext;
+
+    public ManageOffersStatusJob(ApplicationDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
 
     public async Task Execute(IJobExecutionContext context)
     {

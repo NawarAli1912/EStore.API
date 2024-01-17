@@ -5,10 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Orders.List;
-internal sealed class ListOrdersQueryHandler(IApplicationDbContext context)
+internal sealed class ListOrdersQueryHandler
     : IRequestHandler<ListOrdersQuery, Result<ListOrderResult>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public ListOrdersQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<ListOrderResult>> Handle(
         ListOrdersQuery request,

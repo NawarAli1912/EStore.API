@@ -6,10 +6,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Carts.Clear;
 
-internal sealed class ClearCartCommandHandler(IApplicationDbContext context)
+internal sealed class ClearCartCommandHandler
     : IRequestHandler<ClearCartCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public ClearCartCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(ClearCartCommand request, CancellationToken cancellationToken)
     {

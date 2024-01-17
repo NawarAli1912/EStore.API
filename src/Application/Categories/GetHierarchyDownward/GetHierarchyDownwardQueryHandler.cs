@@ -8,11 +8,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Categories.GetHierarchyDownward;
 
-public sealed class GetHierarchyDownwardQueryHandler(
-            ISqlConnectionFactory sqlConnectionFactory) :
+public sealed class GetHierarchyDownwardQueryHandler :
         IRequestHandler<GetHierarchyDownwardQuery, Result<Category>>
 {
-    private readonly ISqlConnectionFactory _sqlConnectionFactory = sqlConnectionFactory;
+    private readonly ISqlConnectionFactory _sqlConnectionFactory;
+
+    public GetHierarchyDownwardQueryHandler(ISqlConnectionFactory sqlConnectionFactory)
+    {
+        _sqlConnectionFactory = sqlConnectionFactory;
+    }
 
     public async Task<Result<Category>> Handle(
         GetHierarchyDownwardQuery request,

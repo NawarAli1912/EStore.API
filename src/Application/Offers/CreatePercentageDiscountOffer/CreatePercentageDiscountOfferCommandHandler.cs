@@ -10,10 +10,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Offers.CreatePercentageDiscountOffer;
 
-internal sealed class CreatePercentageDiscountOfferCommandHandler(IApplicationDbContext context)
+internal sealed class CreatePercentageDiscountOfferCommandHandler
         : IRequestHandler<CreatePercentageDiscountOfferCommand, Result<PercentageDiscountOffer>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public CreatePercentageDiscountOfferCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<PercentageDiscountOffer>> Handle(
         CreatePercentageDiscountOfferCommand request,

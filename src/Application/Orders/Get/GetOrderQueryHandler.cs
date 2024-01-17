@@ -7,10 +7,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Orders.Get;
 
-internal sealed class GetOrderQueryHandler(IApplicationDbContext context) :
+internal sealed class GetOrderQueryHandler :
     IRequestHandler<GetOrderQuery, Result<Order>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public GetOrderQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Order>> Handle(GetOrderQuery request, CancellationToken cancellationToken)
     {

@@ -6,10 +6,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Categories.Update;
 
-internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateCategoryCommandHandler
     : IRequestHandler<UpdateCategoryCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public UpdateCategoryCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {

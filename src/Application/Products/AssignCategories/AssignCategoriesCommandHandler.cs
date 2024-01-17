@@ -7,10 +7,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.AssignCategories;
 
-internal sealed class AssignCategoriesCommandHandler(IApplicationDbContext context)
+internal sealed class AssignCategoriesCommandHandler
         : IRequestHandler<AssignCategoriesCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public AssignCategoriesCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(AssignCategoriesCommand request, CancellationToken cancellationToken)
     {

@@ -7,10 +7,16 @@ using Serilog;
 
 namespace Infrastructure.Storage;
 
-public sealed class StorageService(IAmazonS3 amazonS3, IOptions<StorageSettings> storageSettings) : IStorageService
+public sealed class StorageService : IStorageService
 {
-    private readonly IAmazonS3 _amazonS3 = amazonS3;
-    private readonly StorageSettings _storageSettings = storageSettings.Value;
+    private readonly IAmazonS3 _amazonS3;
+    private readonly StorageSettings _storageSettings;
+
+    public StorageService(IAmazonS3 amazonS3, IOptions<StorageSettings> storageSettings)
+    {
+        _amazonS3 = amazonS3;
+        _storageSettings = storageSettings.Value;
+    }
 
     public async Task UploadFiles(Guid id, IEnumerable<IFormFile> files, FileSource source)
     {

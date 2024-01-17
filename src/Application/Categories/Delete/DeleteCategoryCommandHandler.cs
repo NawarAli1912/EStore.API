@@ -5,9 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Categories.Delete;
-internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext context) : IRequestHandler<DeleteCategoryCommand, Result<Deleted>>
+internal sealed class DeleteCategoryCommandHandler
+    : IRequestHandler<DeleteCategoryCommand, Result<Deleted>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public DeleteCategoryCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Deleted>> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {

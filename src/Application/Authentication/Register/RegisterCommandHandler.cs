@@ -10,14 +10,21 @@ using SharedKernel.Primitives;
 
 namespace Application.Authentication.Register;
 
-internal sealed class RegisterCommandHandler(
-    UserManager<IdentityUser> userManager,
-    IJwtTokenGenerator jwtTokenGenerator,
-    IApplicationDbContext context) : IRequestHandler<RegisterCommand, Result<AuthenticationResult>>
+internal sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<AuthenticationResult>>
 {
-    private readonly UserManager<IdentityUser> _userManager = userManager;
-    private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
-    private readonly IApplicationDbContext _context = context;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IApplicationDbContext _context;
+
+    public RegisterCommandHandler(
+        UserManager<IdentityUser> userManager,
+        IJwtTokenGenerator jwtTokenGenerator,
+        IApplicationDbContext context)
+    {
+        _userManager = userManager;
+        _jwtTokenGenerator = jwtTokenGenerator;
+        _context = context;
+    }
 
     public async Task<Result<AuthenticationResult>> Handle(
         RegisterCommand request,

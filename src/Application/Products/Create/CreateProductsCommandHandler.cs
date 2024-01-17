@@ -8,11 +8,19 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.Create;
 
-public sealed class CreateProductsCommandHandler(IApplicationDbContext context, IFriendlyIdGenerator friendlyIdGenerator) :
+public sealed class CreateProductsCommandHandler :
     IRequestHandler<CreateProductsCommand, Result<Created>>
 {
-    private readonly IApplicationDbContext _context = context;
-    private readonly IFriendlyIdGenerator _friendlyIdGenerator = friendlyIdGenerator;
+    private readonly IApplicationDbContext _context;
+    private readonly IFriendlyIdGenerator _friendlyIdGenerator;
+
+    public CreateProductsCommandHandler(
+        IApplicationDbContext context,
+        IFriendlyIdGenerator friendlyIdGenerator)
+    {
+        _context = context;
+        _friendlyIdGenerator = friendlyIdGenerator;
+    }
 
     public async Task<Result<Created>> Handle(
         CreateProductsCommand request,

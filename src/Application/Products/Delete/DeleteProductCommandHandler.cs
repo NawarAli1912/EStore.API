@@ -6,10 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Products.Delete;
-internal sealed class DeleteProductCommandHandler(IApplicationDbContext context)
+internal sealed class DeleteProductCommandHandler
         : IRequestHandler<DeleteProductCommand, Result<Deleted>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public DeleteProductCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Deleted>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {

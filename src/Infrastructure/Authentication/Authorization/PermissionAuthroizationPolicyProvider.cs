@@ -2,10 +2,16 @@
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Authentication.Authorization;
-public sealed class PermissionAuthroizationPolicyProvider(IOptions<AuthorizationOptions> options)
-                : DefaultAuthorizationPolicyProvider(options)
+public sealed class PermissionAuthroizationPolicyProvider
+                : DefaultAuthorizationPolicyProvider
 {
-    private readonly AuthorizationOptions _options = options.Value;
+    private readonly AuthorizationOptions _options;
+
+    public PermissionAuthroizationPolicyProvider(IOptions<AuthorizationOptions> options)
+        : base(options)
+    {
+        _options = options.Value;
+    }
 
     public override async Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
     {

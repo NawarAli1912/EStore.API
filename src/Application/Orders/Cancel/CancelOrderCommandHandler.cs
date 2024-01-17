@@ -6,10 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Orders.Cancel;
-internal sealed class CancelOrderCommandHandler(IApplicationDbContext context)
+internal sealed class CancelOrderCommandHandler
     : IRequestHandler<CancelOrderCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+    public CancelOrderCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
     {

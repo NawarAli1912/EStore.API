@@ -7,10 +7,16 @@ using Quartz;
 namespace Infrastructure.BackgroundJobs;
 
 [DisallowConcurrentExecution]
-public sealed class ElasticSearchSyncJob(IApplicationDbContext dbcontext, IElasticClient elasticClient) : IJob
+public sealed class ElasticSearchSyncJob : IJob
 {
-    private readonly IApplicationDbContext _dbContext = dbcontext;
-    private readonly IElasticClient _elasticClient = elasticClient;
+    private readonly IApplicationDbContext _dbContext;
+    private readonly IElasticClient _elasticClient;
+
+    public ElasticSearchSyncJob(IApplicationDbContext dbContext, IElasticClient elasticClient)
+    {
+        _dbContext = dbContext;
+        _elasticClient = elasticClient;
+    }
 
     public async Task Execute(IJobExecutionContext context)
     {

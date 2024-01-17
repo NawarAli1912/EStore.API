@@ -1,5 +1,5 @@
-﻿using Application.Common.DatabaseAbstraction;
-using Application.Common.Repository;
+﻿using Application.Common.Cache;
+using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +7,22 @@ using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.Get;
-internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffersRepository offersRepository) :
+internal sealed class GetCartQueryHandler :
     IRequestHandler<GetCartQuery, Result<CartResult>>
 {
-    private readonly IApplicationDbContext _context = context;
-    private readonly IOffersRepository _offersRepository = offersRepository;
+    private readonly IApplicationDbContext _context;
+    private readonly IOffersStore _offersStore;
+    private readonly IProductsStore _productsStore;
+
+    public GetCartQueryHandler(
+        IApplicationDbContext context,
+        IOffersStore offersStore,
+        IProductsStore productsStore)
+    {
+        _context = context;
+        _offersStore = offersStore;
+        _productsStore = productsStore;
+    }
 
     public async Task<Result<CartResult>> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
@@ -27,7 +38,7 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
             return DomainError.Customers.NotFound;
         }
 
-        var allOffers = await _offersRepository.List();
+        var allOffers = await _offersStore.List();
         var cartOffersIds = customer
             .Cart
             .CartItems
@@ -45,13 +56,11 @@ internal sealed class GetCartQueryHandler(IApplicationDbContext context, IOffers
             .Union(offersDict.Values.SelectMany(o => o.ListRelatedProductsIds()))
             .ToHashSet();
 
-        var productToPriceDict = await _context
-            .Products
-            .Where(p => productIds.Contains(p.Id))
-            .ToDictionaryAsync(
+        var productToPriceDict = (await _productsStore
+            .GetByIds(productIds, cancellationToken))
+            .ToDictionary(
                 p => p.Id,
-                p => p.CustomerPrice,
-                cancellationToken);
+                p => p.CustomerPrice);
 
         if (productIds.Count != productToPriceDict.Count)
         {

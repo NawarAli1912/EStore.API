@@ -5,11 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.DataSeed;
 
-public class DbInit(UserManager<IdentityUser> userManager, RoleManager<Role> roleManager, ApplicationDbContext dbContext)
+public class DbInit
 {
-    private readonly UserManager<IdentityUser> _userManager = userManager;
-    private readonly RoleManager<Role> _roleManager = roleManager;
-    private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly RoleManager<Role> _roleManager;
+    private readonly ApplicationDbContext _dbContext;
+
+    public DbInit(UserManager<IdentityUser> userManager, RoleManager<Role> roleManager, ApplicationDbContext dbContext)
+    {
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _dbContext = dbContext;
+    }
 
     public async Task Init()
     {

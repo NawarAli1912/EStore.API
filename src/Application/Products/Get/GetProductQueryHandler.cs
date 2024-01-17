@@ -7,10 +7,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.Get;
 
-internal sealed class GetProductQueryHandler(IApplicationDbContext context)
+internal sealed class GetProductQueryHandler
     : IRequestHandler<GetProductQuery, Result<Product>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public GetProductQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Product>> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {

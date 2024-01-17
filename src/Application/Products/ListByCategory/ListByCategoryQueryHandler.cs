@@ -5,13 +5,19 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.ListByCategory;
 
-public sealed class ListByCategoryQueryHandler(
-            IProductsRepository productsRepository,
-            ICategoriesRepository categoriesRepository)
+public sealed class ListByCategoryQueryHandler
     : IRequestHandler<ListByCategoryQuery, Result<ListProductResult>>
 {
-    private readonly IProductsRepository _productsRepository = productsRepository;
-    private readonly ICategoriesRepository _categoriesRepository = categoriesRepository;
+    private readonly IProductsRepository _productsRepository;
+    private readonly ICategoriesRepository _categoriesRepository;
+
+    public ListByCategoryQueryHandler(
+        IProductsRepository productsRepository,
+        ICategoriesRepository categoriesRepository)
+    {
+        _productsRepository = productsRepository;
+        _categoriesRepository = categoriesRepository;
+    }
 
     public async Task<Result<ListProductResult>> Handle(
         ListByCategoryQuery request,

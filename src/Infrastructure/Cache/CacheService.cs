@@ -3,39 +3,29 @@ using Microsoft.Extensions.Caching.Memory;
 using SharedKernel.Primitives;
 
 namespace Infrastructure.Caching;
-internal sealed class CacheService(IMemoryCache memoryCache)
+internal sealed class CacheService
     : ICacheService
 {
     private static readonly TimeSpan DefaultExpiration = TimeSpan.FromMinutes(5);
 
-    private readonly IMemoryCache _memoryCache = memoryCache;
+    private readonly IMemoryCache _memoryCache;
 
-    public async Task CacheAsync<TResponse>(
+    public CacheService(IMemoryCache memoryCache)
+    {
+        _memoryCache = memoryCache;
+    }
+
+    public void Set<T>(
         string key,
-        TResponse response,
+        T item,
         TimeSpan? expiration)
     {
         var cacheEntryOptions = new MemoryCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = expiration ?? DefaultExpiration
+            SlidingExpiration = expiration ?? DefaultExpiration
         };
 
-        await Task.Run(() => _memoryCache.Set(key, response, cacheEntryOptions));
-    }
-
-    public async Task<TResponse?> TryGetFromCacheAsync<TResponse>(string key)
-    {
-        var result = await Task.Run(() =>
-        {
-            if (_memoryCache.TryGetValue(key, out TResponse? cachedResponse))
-            {
-                return cachedResponse;
-            }
-
-            return default;
-        });
-
-        return result;
+        _memoryCache.Set(key, item, cacheEntryOptions);
     }
 
     public async Task<T> GetOrCreateAsync<T>(
@@ -59,6 +49,27 @@ internal sealed class CacheService(IMemoryCache memoryCache)
             });
 
         return result!;
+    }
+
+    public TResponse? TryGet<TResponse>(string key)
+
+    {
+        if (_memoryCache.TryGetValue(key, out TResponse? cachedResponse))
+        {
+            return cachedResponse;
+        }
+
+        if (cachedResponse is null)
+        {
+            return default;
+        }
+
+        return cachedResponse;
+    }
+
+    public void Remove(string key)
+    {
+        _memoryCache.Remove(key);
     }
 }
 

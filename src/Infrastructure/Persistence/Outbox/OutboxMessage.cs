@@ -13,5 +13,7 @@ public sealed class OutboxMessage
 
     public string? Error { get; set; }
 
+    public bool Done { get; set; }
+
     public int RetryCount { get; set; } = 0;
 }

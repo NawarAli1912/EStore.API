@@ -8,10 +8,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Categories.GetFullHierarchy;
 
-public sealed class GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnectionFactory)
+public sealed class GetFullHierarchyQueryHandler
     : IRequestHandler<GetFullHierarchyQuery, Result<List<Category>>>
 {
-    private readonly ISqlConnectionFactory _sqlConnectionFactory = sqlConnectionFactory;
+    private readonly ISqlConnectionFactory _sqlConnectionFactory;
+
+    public GetFullHierarchyQueryHandler(ISqlConnectionFactory sqlConnectionFactory)
+    {
+        _sqlConnectionFactory = sqlConnectionFactory;
+    }
 
     public async Task<Result<List<Category>>> Handle(GetFullHierarchyQuery request, CancellationToken cancellationToken)
     {

@@ -3,9 +3,14 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Idempotency;
-internal class IdempotencyService(ApplicationDbContext context) : IIdemptencyService
+internal sealed class IdempotencyService : IIdemptencyService
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly ApplicationDbContext _context;
+
+    public IdempotencyService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task CreateRequest(Guid requestId, string name)
     {

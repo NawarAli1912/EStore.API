@@ -6,10 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Orders.GetCustomerOrders;
-internal sealed class GetCustomerOrdersQueryHandler(IApplicationDbContext context)
+internal sealed class GetCustomerOrdersQueryHandler
         : IRequestHandler<GetCustomerOrdersQuery, Result<List<Order>>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public GetCustomerOrdersQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<List<Order>>> Handle(GetCustomerOrdersQuery request, CancellationToken cancellationToken)
     {

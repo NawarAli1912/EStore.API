@@ -12,11 +12,17 @@ using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredCla
 
 namespace Infrastructure.Authentication.Jwt;
 
-internal class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings, IServiceProvider serviceProvider)
+internal class JwtTokenGenerator
     : IJwtTokenGenerator
 {
-    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly JwtSettings _jwtSettings;
+    private readonly IServiceProvider _serviceProvider;
+
+    public JwtTokenGenerator(IOptions<JwtSettings> jwtSettings, IServiceProvider serviceProvider)
+    {
+        _jwtSettings = jwtSettings.Value;
+        _serviceProvider = serviceProvider;
+    }
 
     public async Task<string> Generate(
         IdentityUser user)

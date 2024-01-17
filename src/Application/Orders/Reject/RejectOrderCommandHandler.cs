@@ -5,10 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Orders.Reject;
-internal sealed class RejectOrderCommandHandler(IApplicationDbContext context)
+internal sealed class RejectOrderCommandHandler
         : IRequestHandler<RejectOrderCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public RejectOrderCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(
         RejectOrderCommand request,

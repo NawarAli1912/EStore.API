@@ -4,12 +4,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Authentication.Authorization;
-public sealed class PermissionService(
-    UserManager<IdentityUser> userManager,
-    RoleManager<Role> roleManager) : IPermissionService
+public sealed class PermissionService : IPermissionService
 {
-    private readonly UserManager<IdentityUser> _userManager = userManager;
-    private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly RoleManager<Role> _roleManager;
+
+    public PermissionService(UserManager<IdentityUser> userManager, RoleManager<Role> roleManager)
+    {
+        _userManager = userManager;
+        _roleManager = roleManager;
+    }
 
     public async Task<int> GetPermissions(string userId)
     {

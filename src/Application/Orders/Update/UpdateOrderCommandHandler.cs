@@ -1,5 +1,5 @@
-﻿using Application.Common.DatabaseAbstraction;
-using Application.Common.Repository;
+﻿using Application.Common.Cache;
+using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using Domain.Orders.Enums;
 using Domain.Services;
@@ -9,11 +9,22 @@ using SharedKernel.Primitives;
 
 namespace Application.Orders.Update;
 
-internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, IOffersRepository offersRepository)
+internal sealed class UpdateOrderCommandHandler
         : IRequestHandler<UpdateOrderCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
-    private readonly IOffersRepository _offersRepository = offersRepository;
+    private readonly IApplicationDbContext _context;
+    private readonly IOffersStore _offersStore;
+    private readonly IProductsStore _productsStore;
+
+    public UpdateOrderCommandHandler(
+        IApplicationDbContext context,
+        IOffersStore offersStore,
+        IProductsStore productsStore)
+    {
+        _context = context;
+        _offersStore = offersStore;
+        _productsStore = productsStore;
+    }
 
     public async Task<Result<Updated>> Handle(
         UpdateOrderCommand request,
@@ -34,10 +45,7 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
             return DomainError.Orders.InvalidStatus(order.Status);
         }
 
-        var originalLineItemsIds = order
-            .LineItems.Select(li => li.Id).ToList();
-
-        var allOffers = await _offersRepository.List();
+        var allOffers = await _offersStore.List();
 
         var relatedOffersIds =
             request.AddOffers.Select(item => item.OfferId)
@@ -60,10 +68,8 @@ internal sealed class UpdateOrderCommandHandler(IApplicationDbContext context, I
             .Concat(relatedOffers.SelectMany(offer => offer.ListRelatedProductsIds()))
             .ToHashSet();
 
-        var requestedProducts = await _context
-            .Products
-            .Where(p => productsIds.Contains(p.Id))
-            .ToListAsync(cancellationToken);
+        var requestedProducts = await _productsStore
+            .GetByIds(productsIds, cancellationToken);
 
 
         if (requestedProducts.Count != productsIds.Count)

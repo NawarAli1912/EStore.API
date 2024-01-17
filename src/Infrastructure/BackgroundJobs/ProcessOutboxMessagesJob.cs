@@ -1,30 +1,37 @@
 ﻿using Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
+using Serilog;
 using SharedKernel.Primitives;
 
 namespace Infrastructure.BackgroundJobs;
 
 [DisallowConcurrentExecution]
-public sealed class ProcessOutboxMessagesJob(
-    ApplicationDbContext dbContext,
-    IPublisher publisher,
-    ILogger<ProcessOutboxMessagesJob> logger) : IJob
+public sealed class ProcessOutboxMessagesJob : IJob
 {
-    private readonly ApplicationDbContext _dbContext = dbContext;
-    private readonly IPublisher _publisher = publisher;
-    private readonly ILogger<ProcessOutboxMessagesJob> _logger = logger;
+    private readonly ApplicationDbContext _dbContext;
+    private readonly IPublisher _publisher;
 
     private const int MaxRetries = 3;
 
+    public ProcessOutboxMessagesJob(ApplicationDbContext dbContext, IPublisher publisher)
+    {
+        _dbContext = dbContext;
+        _publisher = publisher;
+    }
+
     public async Task Execute(IJobExecutionContext context)
     {
+        var serializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        };
+
         var messages = await _dbContext
                         .OutboxMessages
-                        .Where(m => m.ProcessedOnUtc == null)
+                        .Where(m => m.Done == false)
                         .OrderBy(m => m.Id)
                         .Take(20)
                         .ToListAsync(context.CancellationToken);
@@ -32,10 +39,7 @@ public sealed class ProcessOutboxMessagesJob(
         foreach (var message in messages)
         {
             IDomainEvent? domainEvent = JsonConvert
-                .DeserializeObject(message.Content, new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.All
-                }) as IDomainEvent;
+                .DeserializeObject(message.Content, serializerSettings) as IDomainEvent;
 
             if (domainEvent is null)
             {
@@ -44,26 +48,23 @@ public sealed class ProcessOutboxMessagesJob(
 
             try
             {
-                if (message.RetryCount > MaxRetries)
-                {
-                    continue;
-                }
-
                 await _publisher.Publish(domainEvent, context.CancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to process domain event {message.Type}");
+                Log.Error($"Failed to process domain event {message.Type} with exception {ex.Message}");
+
                 message.RetryCount++;
                 if (message.RetryCount == MaxRetries)
                 {
                     message.Error = ex.Message.ToString();
+                    message.Done = true;
                 }
-
-                continue;
             }
-
-            message.ProcessedOnUtc = DateTime.UtcNow;
+            finally
+            {
+                message.ProcessedOnUtc = DateTime.UtcNow;
+            }
         }
 
         await _dbContext.SaveChangesAsync();

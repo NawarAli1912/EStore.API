@@ -2,10 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.FriendlyIdentifiers;
-internal class FriendlyIdGenerator(ApplicationDbContext dbContext)
+internal class FriendlyIdGenerator
     : IFriendlyIdGenerator
 {
-    private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly ApplicationDbContext _dbContext;
+
+    public FriendlyIdGenerator(ApplicationDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
 
     public async Task<List<string>> GenerateOrderFriendlyId(int count)
     {

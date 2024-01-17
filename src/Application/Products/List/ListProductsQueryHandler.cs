@@ -4,10 +4,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.List;
 
-internal sealed class ListProductsQueryHandler(IProductsRepository productsRepository)
+internal sealed class ListProductsQueryHandler
     : IRequestHandler<ListProductsQuery, Result<ListProductResult>>
 {
-    private readonly IProductsRepository _productsRepository = productsRepository;
+    private readonly IProductsRepository _productsRepository;
+
+    public ListProductsQueryHandler(IProductsRepository productsRepository)
+    {
+        _productsRepository = productsRepository;
+    }
 
     public async Task<Result<ListProductResult>> Handle(
         ListProductsQuery request,

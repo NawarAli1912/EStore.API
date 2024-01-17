@@ -1,4 +1,5 @@
-﻿using Application.Common.DatabaseAbstraction;
+﻿using Application.Common.Cache;
+using Application.Common.DatabaseAbstraction;
 using Domain.Categories;
 using Domain.Errors;
 using MediatR;
@@ -8,19 +9,25 @@ using SharedKernel.Primitives;
 
 namespace Application.Categories.Create;
 
-internal sealed class CreateCategoryCommandHandler(IApplicationDbContext context)
+internal sealed class CreateCategoryCommandHandler
         : IRequestHandler<CreateCategoryCommand, Result<Created>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+    private readonly IProductsStore _productsStore;
+
+    public CreateCategoryCommandHandler(IApplicationDbContext context, IProductsStore productsStore)
+    {
+        _context = context;
+        _productsStore = productsStore;
+    }
+
 
     public async Task<Result<Created>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
 
         Category? parentCategory = default!;
-        var products = await _context
-                        .Products
-                        .Where(p => request.Products.Contains(p.Id))
-                        .ToListAsync(cancellationToken);
+        var products = await _productsStore
+            .GetByIds(request.Products.ToHashSet(), cancellationToken);
 
         if (request.ParentCategoryId is not null)
         {

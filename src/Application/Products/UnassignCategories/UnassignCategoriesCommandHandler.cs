@@ -6,10 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Products.UnassignCategories;
-internal sealed class UnassignCategoriesCommandHandler(IApplicationDbContext context)
+internal sealed class UnassignCategoriesCommandHandler
     : IRequestHandler<UnassignCategoriesCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public UnassignCategoriesCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(UnassignCategoriesCommand request, CancellationToken cancellationToken)
     {

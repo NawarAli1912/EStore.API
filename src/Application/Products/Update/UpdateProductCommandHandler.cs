@@ -6,10 +6,15 @@ using SharedKernel.Primitives;
 
 namespace Application.Products.Update;
 
-internal sealed class UpdateProductCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateProductCommandHandler
         : IRequestHandler<UpdateProductCommand, Result<Updated>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public UpdateProductCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<Updated>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {

@@ -14,11 +14,11 @@ internal class OfferConfiguration : IEntityTypeConfiguration<Offer>
 
         builder.Property(o => o.Name)
             .IsRequired()
-            .HasMaxLength(128);
+            .HasMaxLength(256);
 
         builder.
             Property(o => o.Description)
-            .HasMaxLength(512);
+            .HasMaxLength(1024);
 
         builder.HasDiscriminator(o => o.Type)
           .HasValue<Offer>(OfferType.None)

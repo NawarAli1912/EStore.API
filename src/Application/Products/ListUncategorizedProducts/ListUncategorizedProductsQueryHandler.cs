@@ -5,10 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 
 namespace Application.Products.ListUncategorizedProducts;
-internal sealed class ListUncategorizedProductsQueryHandler(IApplicationDbContext context) :
+internal sealed class ListUncategorizedProductsQueryHandler :
     IRequestHandler<ListUncategorizedProductsQuery, Result<ListProductResult>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
+
+    public ListUncategorizedProductsQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<ListProductResult>> Handle(
         ListUncategorizedProductsQuery request,

@@ -1,6 +1,6 @@
-﻿using Application.Common.DatabaseAbstraction;
+﻿using Application.Common.Cache;
+using Application.Common.DatabaseAbstraction;
 using Application.Common.FriendlyIdentifiers;
-using Application.Common.Repository;
 using Domain.Errors;
 using Domain.Services;
 using MediatR;
@@ -9,16 +9,25 @@ using SharedKernel.Enums;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.Checkout;
-internal sealed class CheckoutCommandHandler(
-    IApplicationDbContext context,
-    IOffersRepository offersRepository,
-    IFriendlyIdGenerator friendlyIdGenerator)
+internal sealed class CheckoutCommandHandler
         : IRequestHandler<CheckoutCommand, Result<Created>>
 {
-    private readonly IApplicationDbContext _context = context;
-    private readonly IOffersRepository _offersRepository = offersRepository;
-    private readonly IFriendlyIdGenerator _friendlyIdGenerator = friendlyIdGenerator;
+    private readonly IApplicationDbContext _context;
+    private readonly IOffersStore _offersStore;
+    private readonly IProductsStore _productsStore;
+    private readonly IFriendlyIdGenerator _friendlyIdGenerator;
 
+    public CheckoutCommandHandler(
+        IApplicationDbContext context,
+        IOffersStore offersStore,
+        IFriendlyIdGenerator friendlyIdGenerator,
+        IProductsStore productsStore)
+    {
+        _context = context;
+        _offersStore = offersStore;
+        _friendlyIdGenerator = friendlyIdGenerator;
+        _productsStore = productsStore;
+    }
 
     public async Task<Result<Created>> Handle(
         CheckoutCommand request,
@@ -40,7 +49,7 @@ internal sealed class CheckoutCommandHandler(
             return DomainError.Carts.EmptyCart;
         }
 
-        var allOffers = await _offersRepository.List();
+        var allOffers = await _offersStore.List();
         var cartOffersIds = customer
             .Cart
             .CartItems
@@ -58,10 +67,8 @@ internal sealed class CheckoutCommandHandler(
             .Concat(requestedOffers.SelectMany(o => o.ListRelatedProductsIds()))
             .ToHashSet();
 
-        var requestedProducts = await _context
-            .Products
-            .Where(p => productIds.Contains(p.Id))
-            .ToListAsync(cancellationToken);
+        var requestedProducts = await _productsStore
+            .GetByIds(productIds, cancellationToken);
 
         if (requestedProducts.Count != productIds.Count)
         {

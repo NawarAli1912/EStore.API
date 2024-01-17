@@ -186,6 +186,7 @@ public class Product : AggregateRoot
         {
             _associatedOffers.Remove(offerId);
         }
+
         RaiseDomainEvent(new ProductUpdatedDomainEvent(this));
     }
 

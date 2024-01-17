@@ -13,11 +13,16 @@ using SharedKernel.Primitives;
 
 namespace Application.Carts.RemoveCartItem;
 
-internal sealed class RemoveCartItemCommandHandler(IApplicationDbContext context)
+internal sealed class RemoveCartItemCommandHandler
     : IRequestHandler<RemoveCartItemCommand, Result<AddRemoveCartItemResult>>
 {
-    private readonly IApplicationDbContext _context = context;
+    private readonly IApplicationDbContext _context;
     private CartOperationService? _cartOperationService;
+
+    public RemoveCartItemCommandHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
 
     public async Task<Result<AddRemoveCartItemResult>> Handle(RemoveCartItemCommand request, CancellationToken cancellationToken)
     {

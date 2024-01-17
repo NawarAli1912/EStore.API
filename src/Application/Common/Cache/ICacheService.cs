@@ -11,11 +11,13 @@ public interface ICacheService
         CancellationToken cancellationToken = default)
         where T : IResult;
 
-    Task<TResponse?> TryGetFromCacheAsync<TResponse>(string key);
+    TResponse? TryGet<TResponse>(string key);
 
 
-    Task CacheAsync<TResponse>(
+    void Set<T>(
         string key,
-        TResponse response,
+        T item,
         TimeSpan? expiration = null);
+
+    void Remove(string key);
 }

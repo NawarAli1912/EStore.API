@@ -16,9 +16,14 @@ using SharedKernel.Primitives;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
-    IdentityDbContext<IdentityUser, Role, string>(options), IApplicationDbContext
+public class ApplicationDbContext :
+    IdentityDbContext<IdentityUser, Role, string>, IApplicationDbContext
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
+
     private IDbContextTransaction? _currentTransaction;
 
     public DbSet<Product> Products { get; set; } = default!;

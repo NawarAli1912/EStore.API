@@ -7,14 +7,20 @@ using SharedKernel.Primitives;
 
 namespace Application.Authentication.Login;
 
-internal sealed class LoginQueryHandler(
-    UserManager<IdentityUser> userManager,
-    IJwtTokenGenerator jwtTokenGenerator) :
+internal sealed class LoginQueryHandler :
     IRequestHandler<LoginQuery, Result<AuthenticationResult>>
 {
 
-    private readonly UserManager<IdentityUser> _userManager = userManager;
-    private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+
+    public LoginQueryHandler(
+        UserManager<IdentityUser> userManager,
+        IJwtTokenGenerator jwtTokenGenerator)
+    {
+        _userManager = userManager;
+        _jwtTokenGenerator = jwtTokenGenerator;
+    }
 
     public async Task<Result<AuthenticationResult>> Handle(
         LoginQuery request,
