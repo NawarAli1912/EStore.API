@@ -15,7 +15,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasKey(p => p.Id);
 
         builder.Property(p => p.CustomerPrice)
-            .HasColumnType("decimal(12,2)");
+            .HasColumnType("decimal(12,2)")
+            .IsConcurrencyToken();
 
         builder.Property(p => p.PurchasePrice)
             .HasColumnType("decimal(12,2)");
@@ -27,11 +28,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMany(p => p.Reviews)
             .WithOne()
             .HasForeignKey(r => r.ProductId);
-
-        builder
-            .Property("_version")
-            .HasColumnName("Version")
-            .IsRowVersion();
 
         builder
             .Property(p => p.AssociatedOffers)

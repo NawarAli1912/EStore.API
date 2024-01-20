@@ -5,6 +5,7 @@ using Domain.Orders;
 using Domain.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using SharedKernel.Primitives;
 
 namespace Application.Common.DatabaseAbstraction;
@@ -22,6 +23,8 @@ public interface IApplicationDbContext
     DbSet<Offer> Offers { get; set; }
 
     ChangeTracker ChangeTracker { get; }
+
+    DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

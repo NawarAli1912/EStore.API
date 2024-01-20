@@ -12,8 +12,6 @@ namespace Domain.Products;
 
 public class Product : AggregateRoot
 {
-    private byte[] _version { get; set; }
-
     private readonly List<Category> _categories = [];
 
     private readonly HashSet<ProductReview> _reviews = [];
@@ -43,8 +41,6 @@ public class Product : AggregateRoot
     public IReadOnlyCollection<ProductReview> Reviews => _reviews;
 
     public List<Guid> AssociatedOffers => _associatedOffers.ToList();
-
-    public byte[] Version => _version;
 
     public double AverageRating => _ratings.Count > 0 ?
         _ratings.Select(r => r.Value).Sum() / _ratings.Count :

@@ -2,9 +2,16 @@ using Application;
 using Infrastructure;
 using Infrastructure.Persistence.DataSeed;
 using Presentation;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Host.UseSerilog((context, loggerCofig) =>
+    {
+        loggerCofig.ReadFrom
+            .Configuration(context.Configuration);
+    });
+
     builder.Services
         .AddPresentation()
         .AddApplication()
@@ -28,6 +35,7 @@ var app = builder.Build();
 
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();
+    app.UseSerilogRequestLogging();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
