@@ -54,7 +54,7 @@ public sealed class SqlQueries
         FROM
             ProductsWithRank
         WHERE
-            ""ProductRank"" > (@PageIndex-1)*@PageIndex AND ""ProductRank"" <= ((@PageIndex-1)*@PageIndex) + @PageSize
+            ""ProductRank"" > (@PageIndex-1)*@PageSize AND ""ProductRank"" <= ((@PageIndex-1)*@PageSize) + @PageSize
         ORDER BY
             ""Id""";
 
@@ -120,7 +120,7 @@ public sealed class SqlQueries
                  FROM
                     ProductsWithRank
                  WHERE
-                    ""ProductRank"" > (@PageIndex-1)*@PageIndex AND ""ProductRank"" <= ((@PageIndex-1)*@PageIndex) + @PageSize";
+                    ""ProductRank"" > (@PageIndex-1)*@PageSize AND ""ProductRank"" <= ((@PageIndex-1)*@PageSize) + @PageSize";
 
     public const string ProductsCategoryCount =
         @"
