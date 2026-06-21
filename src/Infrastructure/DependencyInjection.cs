@@ -1,12 +1,10 @@
-﻿using Amazon.S3;
-using Application.Common.Authentication;
+﻿using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Cache;
 using Application.Common.DatabaseAbstraction;
 using Application.Common.FriendlyIdentifiers;
 using Application.Common.Idempotency;
 using Application.Common.Repository;
-using Application.Common.Storage;
 using Domain.Authentication;
 using Domain.ModelsSnapshots;
 using Infrastructure.Authentication;
@@ -22,7 +20,6 @@ using Infrastructure.Persistence.DataSeed;
 using Infrastructure.Persistence.FriendlyIdentifiers;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repository;
-using Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -43,10 +40,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IProductsStore, ProductsStore>();
         services.AddScoped<IIdemptencyService, IdempotencyService>();
-
-        services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));
-        services.AddSingleton<IStorageService, StorageService>();
-        services.AddSingleton<IAmazonS3, AmazonS3Client>();
 
         services.AddAuth(configuration);
 
