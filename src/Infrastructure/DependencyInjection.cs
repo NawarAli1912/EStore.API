@@ -121,7 +121,7 @@ public static class DependencyInjection
                 var outBoxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
                 var auditalbeInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
 
-                options.UseSqlServer(configuration.GetConnectionString("Default"))
+                options.UseNpgsql(configuration.GetConnectionString("Default"))
                     .AddInterceptors(
                         outBoxInterceptor!,
                         auditalbeInterceptor!);

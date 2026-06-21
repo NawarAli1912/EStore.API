@@ -3,7 +3,6 @@ using Dapper;
 using Domain.Categories;
 using Domain.Errors;
 using MediatR;
-using Microsoft.Data.SqlClient;
 using SharedKernel.Primitives;
 
 namespace Application.Categories.GetFullHierarchy;
@@ -20,9 +19,9 @@ public sealed class GetFullHierarchyQueryHandler
 
     public async Task<Result<List<Category>>> Handle(GetFullHierarchyQuery request, CancellationToken cancellationToken)
     {
-        await using SqlConnection sqlConnection = _sqlConnectionFactory.Create();
+        await using var sqlConnection = _sqlConnectionFactory.Create();
 
-        var sql = @"SELECT * FROM Categories";
+        var sql = @"SELECT * FROM ""Categories""";
 
         var queryResult = (await sqlConnection.QueryAsync<Category>(sql)).ToList();
 

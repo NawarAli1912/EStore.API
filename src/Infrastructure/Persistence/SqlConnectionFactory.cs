@@ -1,6 +1,7 @@
-﻿using Application.Common.DatabaseAbstraction;
-using Microsoft.Data.SqlClient;
+using System.Data.Common;
+using Application.Common.DatabaseAbstraction;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace Infrastructure.Persistence;
 public sealed class SqlConnectionFactory : ISqlConnectionFactory
@@ -12,9 +13,9 @@ public sealed class SqlConnectionFactory : ISqlConnectionFactory
         _configuration = configuration;
     }
 
-    public SqlConnection Create()
+    public DbConnection Create()
     {
-        return new SqlConnection(
+        return new NpgsqlConnection(
             _configuration.GetConnectionString("Default"));
     }
 }

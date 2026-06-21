@@ -1,138 +1,138 @@
-﻿namespace Infrastructure.Persistence;
+namespace Infrastructure.Persistence;
 public sealed class SqlQueries
 {
     public const string ProductsFilterQuery =
         @"WITH ProductsWithRank AS (
         SELECT
-            p.Id,
-            p.Name,
-            p.Code,
-            p.Description,
-            p.Quantity,
-            p.PurchasePrice,
-            p.CustomerPrice,
-            p.AssociatedOffers AS AssociatedOffersString,
-            c.Id AS CategoryId,
-            c.Name AS CategoryName,
-            c.ParentCategoryId,
-        DENSE_RANK() OVER (ORDER BY p.Id) AS ProductRank
+            p.""Id"",
+            p.""Name"",
+            p.""Code"",
+            p.""Description"",
+            p.""Quantity"",
+            p.""PurchasePrice"",
+            p.""CustomerPrice"",
+            p.""AssociatedOffers"" AS ""AssociatedOffersString"",
+            c.""Id"" AS ""CategoryId"",
+            c.""Name"" AS ""CategoryName"",
+            c.""ParentCategoryId"",
+        DENSE_RANK() OVER (ORDER BY p.""Id"") AS ""ProductRank""
         FROM
-            Products p
+            ""Products"" p
         JOIN
-            CategoryProduct cp ON p.Id = cp.ProductsId
+            ""CategoryProduct"" cp ON p.""Id"" = cp.""ProductsId""
         JOIN
-            Categories c ON cp.CategoriesId = c.Id
-        WHERE 
-        (@SearchTerm IS NULL OR P.Name LIKE '%' + @SearchTerm + '%' OR P.Description LIKE '%' + @SearchTerm + '%')
-        AND (@MinPrice IS NULL OR P.CustomerPrice >= @MinPrice)
-        AND (@MaxPrice IS NULL OR P.CustomerPrice <= @MaxPrice)
-        AND (@MinQuantity IS NULL OR P.Quantity >= @MinQuantity)
-        AND (@MaxQuantity IS NULL OR P.Quantity <= @MaxQuantity)
+            ""Categories"" c ON cp.""CategoriesId"" = c.""Id""
+        WHERE
+        (@SearchTerm IS NULL OR p.""Name"" ILIKE '%' || @SearchTerm || '%' OR p.""Description"" ILIKE '%' || @SearchTerm || '%')
+        AND (@MinPrice IS NULL OR p.""CustomerPrice"" >= @MinPrice)
+        AND (@MaxPrice IS NULL OR p.""CustomerPrice"" <= @MaxPrice)
+        AND (@MinQuantity IS NULL OR p.""Quantity"" >= @MinQuantity)
+        AND (@MaxQuantity IS NULL OR p.""Quantity"" <= @MaxQuantity)
         AND (
             @OnOffer IS NULL
             OR (
-                @OnOffer = 1 AND P.AssociatedOffers IS NOT NULL AND JSON_QUERY(P.AssociatedOffers) <> '[]'
+                @OnOffer = TRUE AND p.""AssociatedOffers"" IS NOT NULL AND p.""AssociatedOffers"" <> '[]'
             )
             OR (
-                @OnOffer = 0 AND (P.AssociatedOffers IS NULL OR JSON_QUERY(P.AssociatedOffers) = '[]')
+                @OnOffer = FALSE AND (p.""AssociatedOffers"" IS NULL OR p.""AssociatedOffers"" = '[]')
             )
         )
-        AND (p.Status IN @Stasuses))
+        AND (p.""Status"" IN @Stasuses))
 
         SELECT
-            Id,
-            Code,
-            Name,
-            Description,
-            Quantity,
-            PurchasePrice,
-            CustomerPrice,
-            AssociatedOffersString,
-            CategoryId,
-            CategoryName,
-            ParentCategoryId
-        FROM 
+            ""Id"",
+            ""Code"",
+            ""Name"",
+            ""Description"",
+            ""Quantity"",
+            ""PurchasePrice"",
+            ""CustomerPrice"",
+            ""AssociatedOffersString"",
+            ""CategoryId"",
+            ""CategoryName"",
+            ""ParentCategoryId""
+        FROM
             ProductsWithRank
-        WHERE 
-            ProductRank > (@PageIndex-1)*@PageIndex AND ProductRank <= ((@PageIndex-1)*@PageIndex) + @PageSize
-        ORDER BY 
-            Id";
+        WHERE
+            ""ProductRank"" > (@PageIndex-1)*@PageIndex AND ""ProductRank"" <= ((@PageIndex-1)*@PageIndex) + @PageSize
+        ORDER BY
+            ""Id""";
 
     public const string ProductsFilterCount =
         @"
         SELECT
-            Count(DISTINCT p.Id)
+            Count(DISTINCT p.""Id"")
         FROM
-            Products p
-	    WHERE 
-		    (@SearchTerm IS NULL OR P.Name LIKE '%' + @SearchTerm + '%' OR P.Description LIKE '%' + @SearchTerm + '%')
-		    AND (@MinPrice IS NULL OR P.CustomerPrice >= @MinPrice)
-		    AND (@MaxPrice IS NULL OR P.CustomerPrice <= @MaxPrice)
-		    AND (@MinQuantity IS NULL OR P.Quantity >= @MinQuantity)
-		    AND (@MaxQuantity IS NULL OR P.Quantity <= @MaxQuantity)
+            ""Products"" p
+	    WHERE
+		    (@SearchTerm IS NULL OR p.""Name"" ILIKE '%' || @SearchTerm || '%' OR p.""Description"" ILIKE '%' || @SearchTerm || '%')
+		    AND (@MinPrice IS NULL OR p.""CustomerPrice"" >= @MinPrice)
+		    AND (@MaxPrice IS NULL OR p.""CustomerPrice"" <= @MaxPrice)
+		    AND (@MinQuantity IS NULL OR p.""Quantity"" >= @MinQuantity)
+		    AND (@MaxQuantity IS NULL OR p.""Quantity"" <= @MaxQuantity)
 		    AND (
 			    @OnOffer IS NULL
 			    OR (
-				    @OnOffer = 1 AND P.AssociatedOffers IS NOT NULL AND JSON_QUERY(P.AssociatedOffers) <> '[]'
+				    @OnOffer = TRUE AND p.""AssociatedOffers"" IS NOT NULL AND p.""AssociatedOffers"" <> '[]'
 			    )
 			    OR (
-				    @OnOffer = 0 AND (P.AssociatedOffers IS NULL OR JSON_QUERY(P.AssociatedOffers) = '[]')
+				    @OnOffer = FALSE AND (p.""AssociatedOffers"" IS NULL OR p.""AssociatedOffers"" = '[]')
 			    )
 		    )
-            AND (p.Status IN @Stasuses)";
+            AND (p.""Status"" IN @Stasuses)";
 
     public const string ProductsCategoryFilter =
         @"
              WITH ProductsWithRank AS (
                  SELECT
-                     p.Id,
-                     p.Name,
-                     p.Code,
-                     p.Description,
-                     p.Quantity,
-                     p.PurchasePrice,
-                     p.CustomerPrice,
-                     p.AssociatedOffers AS AssociatedOffersString,
-                     c.Id AS CategoryId,
-                     c.Name AS CategoryName,
-                     c.ParentCategoryId,
-             	     DENSE_RANK() OVER (ORDER BY p.Id) AS ProductRank
+                     p.""Id"",
+                     p.""Name"",
+                     p.""Code"",
+                     p.""Description"",
+                     p.""Quantity"",
+                     p.""PurchasePrice"",
+                     p.""CustomerPrice"",
+                     p.""AssociatedOffers"" AS ""AssociatedOffersString"",
+                     c.""Id"" AS ""CategoryId"",
+                     c.""Name"" AS ""CategoryName"",
+                     c.""ParentCategoryId"",
+             	     DENSE_RANK() OVER (ORDER BY p.""Id"") AS ""ProductRank""
                  FROM
-                     Products p
+                     ""Products"" p
                  JOIN
-                     CategoryProduct cp ON p.Id = cp.ProductsId
+                     ""CategoryProduct"" cp ON p.""Id"" = cp.""ProductsId""
                  JOIN
-                     Categories c ON cp.CategoriesId = c.Id
+                     ""Categories"" c ON cp.""CategoriesId"" = c.""Id""
                  WHERE
-                     cp.CategoriesId IN @CategoryIds)
+                     cp.""CategoriesId"" IN @CategoryIds)
                  SELECT
-                     Id,
-                     Name,
-                     Code,
-                     Description,
-                     Quantity,
-                     PurchasePrice,
-                     CustomerPrice,
-                     AssociatedOffersString,
-                     CategoryId,
-                     CategoryName,
-                     ParentCategoryId
-                 FROM 
+                     ""Id"",
+                     ""Name"",
+                     ""Code"",
+                     ""Description"",
+                     ""Quantity"",
+                     ""PurchasePrice"",
+                     ""CustomerPrice"",
+                     ""AssociatedOffersString"",
+                     ""CategoryId"",
+                     ""CategoryName"",
+                     ""ParentCategoryId""
+                 FROM
                     ProductsWithRank
-                 WHERE 
-                    ProductRank > (@PageIndex-1)*@PageIndex AND ProductRank <= ((@PageIndex-1)*@PageIndex) + @PageSize";
+                 WHERE
+                    ""ProductRank"" > (@PageIndex-1)*@PageIndex AND ""ProductRank"" <= ((@PageIndex-1)*@PageIndex) + @PageSize";
 
     public const string ProductsCategoryCount =
         @"
         SELECT
-            COUNT(DISTINCT p.Id)
+            COUNT(DISTINCT p.""Id"")
         FROM
-            Categories c
+            ""Categories"" c
         LEFT JOIN
-            CategoryProduct cp ON c.Id = cp.CategoriesId
+            ""CategoryProduct"" cp ON c.""Id"" = cp.""CategoriesId""
         LEFT JOIN
-            Products p ON cp.ProductsId = p.Id
+            ""Products"" p ON cp.""ProductsId"" = p.""Id""
         WHERE
-            c.Id IN @CategoryIds
+            c.""Id"" IN @CategoryIds
         ";
 }

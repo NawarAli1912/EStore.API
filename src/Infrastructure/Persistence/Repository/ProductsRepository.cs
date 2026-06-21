@@ -209,7 +209,8 @@ public sealed class ProductsRepository(
                  filter.MaxPrice,
                  filter.MinQuantity,
                  filter.MaxQuantity,
-                 Stasuses = filter.ProductStatus,
+                 // Npgsql cannot bind a CLR enum directly; send the underlying int values
+                 Stasuses = filter.ProductStatus?.Select(s => (int)s).ToArray(),
                  PageIndex = pageIndex,
                  PageSize = pageSize,
                  filter.OnOffer
