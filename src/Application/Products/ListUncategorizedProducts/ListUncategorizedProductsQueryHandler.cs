@@ -1,6 +1,6 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Application.Products.List;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 

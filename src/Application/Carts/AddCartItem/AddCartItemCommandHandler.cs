@@ -6,7 +6,7 @@ using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Products;
 using Domain.Services;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 

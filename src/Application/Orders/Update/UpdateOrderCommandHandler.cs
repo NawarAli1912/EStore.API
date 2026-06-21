@@ -3,7 +3,7 @@ using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using Domain.Orders.Enums;
 using Domain.Services;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 

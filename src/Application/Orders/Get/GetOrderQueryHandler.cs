@@ -1,7 +1,7 @@
 ﻿using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using Domain.Orders;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 

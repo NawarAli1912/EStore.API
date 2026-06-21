@@ -3,7 +3,7 @@ using Application.Offers.CreatePercentageDiscountOffer;
 using Application.Offers.List;
 using Contracts.Offers;
 using MapsterMapper;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
 

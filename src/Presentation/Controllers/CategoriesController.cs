@@ -7,7 +7,7 @@ using Application.Common.Authentication.Models;
 using Contracts.Categories;
 using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
 using SubcategoryActions = Contracts.Categories.SubcategoryActions;

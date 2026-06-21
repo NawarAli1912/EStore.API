@@ -1,5 +1,5 @@
 ﻿using Infrastructure.Persistence;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Quartz;

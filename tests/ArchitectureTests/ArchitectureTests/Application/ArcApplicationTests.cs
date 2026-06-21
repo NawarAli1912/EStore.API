@@ -1,5 +1,5 @@
 ﻿using Application;
-using MediatR;
+using SharedKernel.Messaging;
 using NetArchTest.Rules;
 using System.Reflection;
 

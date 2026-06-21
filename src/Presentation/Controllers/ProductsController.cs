@@ -11,7 +11,7 @@ using Application.Products.Update;
 using Contracts.Products;
 using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Common.Models.Paging;
 using Presentation.Controllers.Common;

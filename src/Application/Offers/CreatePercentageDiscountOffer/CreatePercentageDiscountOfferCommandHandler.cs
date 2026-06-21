@@ -4,7 +4,7 @@ using Domain.Offers;
 using Domain.Offers.Enums;
 using Domain.Offers.Events;
 using Domain.Products.Enums;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Primitives;
 

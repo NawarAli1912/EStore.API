@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using SharedKernel.Messaging;
 
 namespace Application.Common.Cache;
 

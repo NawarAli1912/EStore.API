@@ -2,7 +2,7 @@
 using Dapper;
 using Domain.Categories;
 using Domain.Errors;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Categories.GetHierarchyDownward;

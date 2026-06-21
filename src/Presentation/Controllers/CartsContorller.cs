@@ -7,7 +7,7 @@ using Application.Common.Authentication.Models;
 using Contracts.Carts;
 using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
 using System.Security.Claims;

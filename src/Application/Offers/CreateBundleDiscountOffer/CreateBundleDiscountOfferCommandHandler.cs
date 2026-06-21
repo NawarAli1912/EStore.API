@@ -4,7 +4,7 @@ using Domain.Errors;
 using Domain.Offers;
 using Domain.Offers.Events;
 using Domain.Products.Enums;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Offers.CreateBundleDiscountOffer;

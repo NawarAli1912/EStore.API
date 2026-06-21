@@ -1,7 +1,7 @@
 ﻿using Application.Common.Cache;
 using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;

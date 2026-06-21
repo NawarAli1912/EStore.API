@@ -1,5 +1,5 @@
 ﻿using Domain.Categories;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Categories.GetHierarchyDownward;
