@@ -37,7 +37,7 @@ public sealed class SqlQueries
                 @OnOffer = FALSE AND (p.""AssociatedOffers"" IS NULL OR p.""AssociatedOffers"" = '[]')
             )
         )
-        AND (p.""Status"" IN @Stasuses))
+        AND (p.""Status"" IN @Statuses))
 
         SELECT
             ""Id"",
@@ -79,7 +79,7 @@ public sealed class SqlQueries
 				    @OnOffer = FALSE AND (p.""AssociatedOffers"" IS NULL OR p.""AssociatedOffers"" = '[]')
 			    )
 		    )
-            AND (p.""Status"" IN @Stasuses)";
+            AND (p.""Status"" IN @Statuses)";
 
     public const string ProductsCategoryFilter =
         @"

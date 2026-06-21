@@ -39,7 +39,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IProductsStore, ProductsStore>();
-        services.AddScoped<IIdemptencyService, IdempotencyService>();
+        services.AddScoped<IIdempotencyService, IdempotencyService>();
 
         services.AddAuth(configuration);
 
@@ -81,11 +81,11 @@ public static class DependencyInjection
                                 .OnEveryDay()
                                 .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 0))));
 
-            var cahceProductsJobKey = new JobKey(nameof(CacheProductsJob));
-            configure.AddJob<CacheProductsJob>(cahceProductsJobKey)
+            var cacheProductsJobKey = new JobKey(nameof(CacheProductsJob));
+            configure.AddJob<CacheProductsJob>(cacheProductsJobKey)
                 .AddTrigger(
                     trigger => trigger
-                        .ForJob(cahceProductsJobKey)
+                        .ForJob(cacheProductsJobKey)
                         .StartNow() // Trigger the job to run as soon as possible
                         .WithSimpleSchedule(x => x
                             .WithMisfireHandlingInstructionFireNow() // Handle misfires by firing immediately
@@ -112,12 +112,12 @@ public static class DependencyInjection
             (sp, options) =>
             {
                 var outBoxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
-                var auditalbeInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+                var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
 
                 options.UseNpgsql(configuration.GetConnectionString("Default"))
                     .AddInterceptors(
                         outBoxInterceptor!,
-                        auditalbeInterceptor!);
+                        auditableInterceptor!);
             });
 
         services.AddScoped<DbInit>();
@@ -198,7 +198,7 @@ public static class DependencyInjection
 
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthroizationPolicyProvider>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
         return services;
     }

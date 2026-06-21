@@ -96,7 +96,7 @@ public sealed class ProductsController(
                             Problem);
     }
 
-    [HttpGet("{id:guid}/details", Name = "GetDetailes")]
+    [HttpGet("{id:guid}/details", Name = "GetDetails")]
     [HasPermission(Permissions.ReadDetails)]
     public async Task<IActionResult> GetDetails(Guid id)
     {

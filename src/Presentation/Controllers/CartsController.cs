@@ -16,7 +16,7 @@ namespace Presentation.Controllers;
 
 
 [Route("api/carts")]
-public sealed class CartsContorller(ISender sender, IMapper mapper) : ApiController
+public sealed class CartsController(ISender sender, IMapper mapper) : ApiController
 {
     private readonly ISender _sender = sender;
     private readonly IMapper _mapper = mapper;

@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.Idempotency;
 
-public interface IIdemptencyService
+public interface IIdempotencyService
 {
     Task<bool> RequestExists(Guid requestId);
 
