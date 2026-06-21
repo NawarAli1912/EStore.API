@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a .NET 8 Web API built following the principles of Clean Architecture.
+This project is a .NET 10 Web API built following the principles of Clean Architecture.
 It leverages various technologies and design patterns from DDD to provide a robust and scalable solution.
 Offering a wide range of endpoints to effectively manage products, orders, categories, carts and other essential e-commerce functionalities.
 It features a seamless integration with Elasticsearch, ensuring fast and accurate search capabilities for an enhanced product discovery experience.
@@ -32,26 +32,30 @@ This API is designed to streamline the operations of an online store, catering t
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
+- [Docker](https://www.docker.com/) (with Docker Compose v2)
 
-### Installation
+PostgreSQL and Elasticsearch run in containers, so nothing else needs to be installed locally. The [.NET 10 SDK](https://dotnet.microsoft.com/download) is only required to build or run the API outside Docker.
 
-1. **Clone the repository.**
-2. **Configure the database connection in `appsettings.json`.**
-3. **Run database migrations using `dotnet ef database update`.**
-4. **Start the Elasticsearch server.**
-5. **Configure AWS S3 settings for product images.**
-   - **AWS S3 Configuration:**
-     - Make sure you have an AWS account and access to the S3 service.
-     - Configure your AWS credentials on your machine.
-     - Since this project is currently set up to use AWS services with the root user, ensure that you are using the appropriate credentials on your local machine.
-6. **Start the application using `dotnet run`.**
+### Run with Docker Compose
+
+```bash
+docker compose up -d --build
+```
+
+This builds the API image and starts the API (port 8080), PostgreSQL (5432), and Elasticsearch (9200). On startup the API applies EF Core migrations and seeds an admin user.
+
+- Swagger UI: http://localhost:8080/swagger
+- Seeded admin: `admin@estore.com` / `estoreadmin` — POST `/api/login` to obtain a JWT.
+
+Stop the stack (data persists in named volumes):
+
+```bash
+docker compose down
+```
 
 ### Usage
 
-- Ensure Elasticsearch is running.
-- Explore the API Endpoints to understand available endpoints and their functionalities.
+- Explore the API endpoints via Swagger to understand available functionality.
 
 ### Entity Framework Core and Dapper: 
 This combination offers a balanced approach to data access.
