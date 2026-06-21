@@ -2,8 +2,7 @@
 using Dapper;
 using Domain.Categories;
 using Domain.Errors;
-using MediatR;
-using Microsoft.Data.SqlClient;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Categories.GetHierarchyDownward;
@@ -22,32 +21,32 @@ public sealed class GetHierarchyDownwardQueryHandler :
         GetHierarchyDownwardQuery request,
         CancellationToken cancellationToken)
     {
-        await using SqlConnection sqlConnection = _sqlConnectionFactory.Create();
+        await using var sqlConnection = _sqlConnectionFactory.Create();
 
         var sql = @"
-                WITH RecursiveCategoryCTE AS (
+                WITH RECURSIVE RecursiveCategoryCTE AS (
                     SELECT
-                        Id,
-                        Name,
-                        ParentCategoryId
+                        ""Id"",
+                        ""Name"",
+                        ""ParentCategoryId""
                     FROM
-                        Categories
+                        ""Categories""
                     WHERE
-                        Id = @RootCategoryId
+                        ""Id"" = @RootCategoryId
                     UNION ALL
                     SELECT
-                        c.Id,
-                        c.Name,
-                        c.ParentCategoryId
+                        c.""Id"",
+                        c.""Name"",
+                        c.""ParentCategoryId""
                     FROM
-                        Categories c
+                        ""Categories"" c
                     INNER JOIN
-                        RecursiveCategoryCTE r ON c.ParentCategoryId = r.Id
+                        RecursiveCategoryCTE r ON c.""ParentCategoryId"" = r.""Id""
                 )
                 SELECT
-                    Id,
-                    Name,
-                    ParentCategoryId
+                    ""Id"",
+                    ""Name"",
+                    ""ParentCategoryId""
                 FROM
                     RecursiveCategoryCTE
                 ";

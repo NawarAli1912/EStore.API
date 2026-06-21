@@ -1,0 +1,66 @@
+name: estore
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: estore-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: estore
+      POSTGRES_PASSWORD: estore
+      POSTGRES_DB: estore
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U estore -d estore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    container_name: estore-elasticsearch
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: estore-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=estore;Username=estore;Password=estore"
+      ElasticSearchSettings__BaseUrl: "http://elasticsearch:9200"
+      ElasticSearchSettings__DefaultIndex: "products"
+      JwtSettings__Secret: "dev-super-secret-key-please-change-in-prod-0123456789"
+      JwtSettings__Issuer: "EStore.API"
+      JwtSettings__Audience: "EStore.API"
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres-data:
+  elasticsearch-data:

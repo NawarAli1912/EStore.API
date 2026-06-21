@@ -3,7 +3,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Idempotency;
-internal sealed class IdempotencyService : IIdemptencyService
+internal sealed class IdempotencyService : IIdempotencyService
 {
     private readonly ApplicationDbContext _context;
 

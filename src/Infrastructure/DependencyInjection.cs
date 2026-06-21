@@ -1,12 +1,10 @@
-﻿using Amazon.S3;
-using Application.Common.Authentication;
+﻿using Application.Common.Authentication;
 using Application.Common.Authentication.Jwt;
 using Application.Common.Cache;
 using Application.Common.DatabaseAbstraction;
 using Application.Common.FriendlyIdentifiers;
 using Application.Common.Idempotency;
 using Application.Common.Repository;
-using Application.Common.Storage;
 using Domain.Authentication;
 using Domain.ModelsSnapshots;
 using Infrastructure.Authentication;
@@ -22,7 +20,6 @@ using Infrastructure.Persistence.DataSeed;
 using Infrastructure.Persistence.FriendlyIdentifiers;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repository;
-using Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -42,11 +39,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IProductsStore, ProductsStore>();
-        services.AddScoped<IIdemptencyService, IdempotencyService>();
-
-        services.Configure<StorageSettings>(configuration.GetSection(StorageSettings.SectionName));
-        services.AddSingleton<IStorageService, StorageService>();
-        services.AddSingleton<IAmazonS3, AmazonS3Client>();
+        services.AddScoped<IIdempotencyService, IdempotencyService>();
 
         services.AddAuth(configuration);
 
@@ -88,11 +81,11 @@ public static class DependencyInjection
                                 .OnEveryDay()
                                 .StartingDailyAt(Quartz.TimeOfDay.HourAndMinuteOfDay(0, 0))));
 
-            var cahceProductsJobKey = new JobKey(nameof(CacheProductsJob));
-            configure.AddJob<CacheProductsJob>(cahceProductsJobKey)
+            var cacheProductsJobKey = new JobKey(nameof(CacheProductsJob));
+            configure.AddJob<CacheProductsJob>(cacheProductsJobKey)
                 .AddTrigger(
                     trigger => trigger
-                        .ForJob(cahceProductsJobKey)
+                        .ForJob(cacheProductsJobKey)
                         .StartNow() // Trigger the job to run as soon as possible
                         .WithSimpleSchedule(x => x
                             .WithMisfireHandlingInstructionFireNow() // Handle misfires by firing immediately
@@ -119,12 +112,12 @@ public static class DependencyInjection
             (sp, options) =>
             {
                 var outBoxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>();
-                var auditalbeInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+                var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
 
-                options.UseSqlServer(configuration.GetConnectionString("Default"))
+                options.UseNpgsql(configuration.GetConnectionString("Default"))
                     .AddInterceptors(
                         outBoxInterceptor!,
-                        auditalbeInterceptor!);
+                        auditableInterceptor!);
             });
 
         services.AddScoped<DbInit>();
@@ -205,7 +198,7 @@ public static class DependencyInjection
 
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthroizationPolicyProvider>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
         return services;
     }

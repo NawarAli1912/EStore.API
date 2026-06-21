@@ -1,5 +1,5 @@
 ﻿using Domain.Orders;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Orders.Get;

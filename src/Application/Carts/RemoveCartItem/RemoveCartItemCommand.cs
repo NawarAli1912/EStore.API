@@ -1,5 +1,5 @@
 ﻿using Application.Carts.Common;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Carts.RemoveCartItem;

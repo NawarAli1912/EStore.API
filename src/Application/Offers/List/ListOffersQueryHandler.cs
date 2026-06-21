@@ -2,7 +2,7 @@
 using Application.Common.DatabaseAbstraction;
 using Domain.Errors;
 using Domain.Services.OffersPricingStartegy;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Offers.List;

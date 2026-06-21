@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using SharedKernel.Messaging;
 using SharedKernel.Enums;
 using SharedKernel.Primitives;
 

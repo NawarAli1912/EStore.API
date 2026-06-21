@@ -1,0 +1,24 @@
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# IDE / VCS
+**/.git/
+**/.gitignore
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+**/*.suo
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Docs / misc
+README.md
+LICENSE.txt
+**/.DS_Store

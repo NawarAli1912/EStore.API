@@ -1,5 +1,5 @@
 ﻿using Domain.Offers;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Offers.CreatePercentageDiscountOffer;

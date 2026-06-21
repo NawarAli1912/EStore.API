@@ -2,7 +2,7 @@
 using Domain.Offers;
 using Domain.Offers.Events;
 using Domain.Products;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Offers.EventsHandlers;

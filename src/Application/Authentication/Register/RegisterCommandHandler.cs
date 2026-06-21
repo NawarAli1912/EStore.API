@@ -4,7 +4,7 @@ using Application.Common.Authentication.Models;
 using Application.Common.DatabaseAbstraction;
 using Domain.Customers;
 using Domain.Errors;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Identity;
 using SharedKernel.Primitives;
 

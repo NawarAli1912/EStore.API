@@ -20,6 +20,10 @@ public class DbInit
 
     public async Task Init()
     {
+        // Apply any pending migrations so the container self-initializes its schema
+        // (Permissions and the friendly-id sequence are seeded via migration HasData).
+        await _dbContext.Database.MigrateAsync();
+
         if (!await _userManager.Users.AnyAsync())
         {
             var permissions = await _dbContext.Permissions.ToListAsync();

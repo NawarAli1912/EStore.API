@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using SharedKernel.Messaging;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using SharedKernel.Primitives;

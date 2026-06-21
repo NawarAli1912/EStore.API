@@ -1,6 +1,6 @@
 ﻿using Application.Common;
 using Domain.Offers.Events;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.Offers.EventsHandlers;
@@ -9,12 +9,10 @@ public sealed class OfferCreatedDomainEventHandler(IMemoryCache memoryCache)
 {
     private readonly IMemoryCache _memoryCache = memoryCache;
 
-    public async Task Handle(OfferCreatedDomainEvent notification,
+    public Task Handle(OfferCreatedDomainEvent notification,
         CancellationToken cancellationToken)
     {
-        await Task.Run(() =>
-        {
-            _memoryCache.Remove(CacheKeys.OffersCacheKey);
-        }, cancellationToken);
+        _memoryCache.Remove(CacheKeys.OffersCacheKey);
+        return Task.CompletedTask;
     }
 }

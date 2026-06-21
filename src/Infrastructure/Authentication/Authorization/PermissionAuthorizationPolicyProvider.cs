@@ -2,12 +2,12 @@
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Authentication.Authorization;
-public sealed class PermissionAuthroizationPolicyProvider
+public sealed class PermissionAuthorizationPolicyProvider
                 : DefaultAuthorizationPolicyProvider
 {
     private readonly AuthorizationOptions _options;
 
-    public PermissionAuthroizationPolicyProvider(IOptions<AuthorizationOptions> options)
+    public PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
         : base(options)
     {
         _options = options.Value;

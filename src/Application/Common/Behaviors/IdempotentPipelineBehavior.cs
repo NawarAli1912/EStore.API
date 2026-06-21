@@ -1,14 +1,14 @@
 ﻿using Application.Common.Idempotency;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Common.Behaviors;
-public sealed class IdempotentPipelineBehavior<TRequest, TResponse>(IIdemptencyService idemptoecyService)
+public sealed class IdempotentPipelineBehavior<TRequest, TResponse>(IIdempotencyService idempotencyService)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IdempotentCommand<TResponse>
     where TResponse : IResult
 {
-    private readonly IIdemptencyService _idemptoecyService = idemptoecyService;
+    private readonly IIdempotencyService _idempotencyService = idempotencyService;
 
     public async Task<TResponse> Handle(
         TRequest request,
@@ -17,7 +17,7 @@ public sealed class IdempotentPipelineBehavior<TRequest, TResponse>(IIdemptencyS
     {
         List<Error> errors = [];
 
-        if (await _idemptoecyService.RequestExists(request.RequestId))
+        if (await _idempotencyService.RequestExists(request.RequestId))
         {
             errors.Add(Error.Validation("Idempotency.AlreadyExists", "Idempotency key already exists."));
         }
@@ -27,7 +27,7 @@ public sealed class IdempotentPipelineBehavior<TRequest, TResponse>(IIdemptencyS
             return (dynamic)errors;
         }
 
-        await _idemptoecyService.CreateRequest(request.RequestId, typeof(TRequest).Name);
+        await _idempotencyService.CreateRequest(request.RequestId, typeof(TRequest).Name);
 
         return await next();
     }

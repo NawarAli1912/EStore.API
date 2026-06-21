@@ -3,7 +3,7 @@ using Application.Common.Cache;
 using Application.Common.ElasticSearch;
 using Domain.ModelsSnapshots;
 using Domain.Products.Events;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.Extensions.Logging;
 using Nest;
 

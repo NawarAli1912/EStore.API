@@ -1,5 +1,5 @@
 ﻿using Application.Products.List;
-using MediatR;
+using SharedKernel.Messaging;
 using SharedKernel.Primitives;
 
 namespace Application.Products.ListByCategory;

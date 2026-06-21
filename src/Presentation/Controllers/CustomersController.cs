@@ -1,7 +1,7 @@
 ﻿using Application.Common.Authentication.Models;
 using Infrastructure.Authentication.Authorization;
 using MapsterMapper;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
 

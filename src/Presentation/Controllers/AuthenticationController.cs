@@ -2,7 +2,7 @@
 using Application.Authentication.Register;
 using Contracts.Authentication;
 using MapsterMapper;
-using MediatR;
+using SharedKernel.Messaging;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
 using LoginRequest = Contracts.Authentication.LoginRequest;
